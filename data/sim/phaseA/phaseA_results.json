@@ -1,0 +1,26 @@
+{
+  "sls": {
+    "k1": 20000000000.0,
+    "k2": 20000000000.0,
+    "tau": 0.1,
+    "C_relaxed": 5e-11,
+    "C_instant": 2.5e-11,
+    "f_loss_peak_hz": 1.5915494309189535
+  },
+  "loop_area": {
+    "median_rel_err_vs_analytic": 4.134396108014853e-05,
+    "max_rel_err": 0.0005146574814093788,
+    "f_peak_numeric_hz": 1.7782794100389228,
+    "f_peak_analytic_hz": 1.5915494309189535
+  },
+  "gate0_consistency": {
+    "max_abs_crosstalk_err": 6.245004513516506e-17,
+    "note": "constant-compliance(1/k1) SLS network vs Gate 0 model"
+  },
+  "checks": {
+    "area_matches_analytic": true,
+    "peak_at_1over2pitau": true,
+    "reduces_to_gate0": true
+  },
+  "verdict": "PASS"
+}
