@@ -17,6 +17,8 @@ The core novelty has been reframed after literature and patent verification:
 - `docs/A01_A04_Literature_Review.md` - annotated literature review and verified citation base.
 - `docs/Proposal_A01_A04_Combined.md` - main proposal with research questions, novelty framing, methods, risks, and timeline.
 - `docs/Gate0_Coupling_Simulation.md` - **Gate 0 result**: lumped-RC pre-test of the coupling spine (PASS). The mechanism is confirmed and the experiment is re-scoped around its findings.
+- `docs/Gate0b_Failure_Mode_Literature.md` - **Gate 0b** (literature-resolved, PASS): silicone PneuNets fail gradually with micro-tear precursors → leading indicator is viable.
+- `docs/Gate1_Volume_Estimation_Literature.md` - **Gate 1** (design-resolved): acquire P-V loops by volumetric drive + pressure-oscillation observer; flow integration rejected.
 - `docs/Experimental_Protocol.md` - operational test runbook: the gate ladder, study protocols, and the minimum viable paper.
 - `scripts/gate0_lumped_rc.py` - the Gate 0 simulation (writes `data/gate0/`).
 - `docs/Draft1_A01_A04_Combined.pdf` - earlier draft PDF.
@@ -57,9 +59,15 @@ Metadata cleanup completed on 2026-06-18:
   (100 % monotone). Key finding: the coupling is **dynamic** (DC gain is
   compliance-independent), so the experiment must probe at the actuation band (~1–5 Hz)
   with history-dependent features. See `docs/Gate0_Coupling_Simulation.md`.
-- **Gate 0b (this week, ~\$30):** cycle 2–3 sacrificial actuators to classify the failure
-  mode (gradual vs sudden rupture) — gates contribution #1 independently.
-- **Gate 1:** bench-validate the volume estimator before trusting any P-V loop.
-- **Gate 2:** audit actual lab equipment (mocap? rig?) and replace the \$320 estimate.
-- Then: Week-3 hardware coupling gate, entered with the mechanism pre-confirmed.
-- Expand the proposal into submission-ready Intro/Related Work **only after** Gate 0b/1 pass.
+- **Gate 0b: DONE — PASS (literature-resolved).** Silicone PneuNets fail *gradually* with
+  micro-tear precursors (Libby 2022: FEM agreement 96 %→80 %; Torzini 2024: 0.2–0.4 mm
+  hump-base tears before rupture). Leading indicator is viable; target compliance/loop-area
+  drift. One spot-check folded into rig bring-up. See `docs/Gate0b_Failure_Mode_Literature.md`.
+- **Gate 1: DONE — design-resolved.** Acquire P-V loops by volumetric (syringe/stepper)
+  drive; deployable in-loop volume via pressure-oscillation observer (~0.6 % RMS, Joshi &
+  Paik 2023); naive flow integration rejected. See `docs/Gate1_Volume_Estimation_Literature.md`.
+- **Gate 2 (next, ~1 day, \$0):** audit actual lab equipment (mocap? rig? syringe pump?)
+  and replace the \$320 estimate with an audited BOM.
+- Then: Week-3 hardware coupling gate, entered with the mechanism, failure mode, and volume
+  method all pre-confirmed.
+- Expand the proposal into submission-ready Intro/Related Work after Gate 2.

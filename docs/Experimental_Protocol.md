@@ -14,60 +14,60 @@ decisions forced by [`Gate0_Coupling_Simulation.md`](Gate0_Coupling_Simulation.m
 
 | Gate | Cost | Time | Kills/redirects if… | Status |
 |---|---|---|---|---|
-| **0 — coupling sim** | \$0 | done | cross-talk not monotone in compliance | ✅ PASS |
-| **0b — failure-mode scout** | ~\$30 | ~1 wk | sudden rupture dominates, no precursor | ☐ TODO |
-| **1 — volume estimator bench** | ~\$60 | ~1 wk | no clean, repeatable *V* → no P-V loop | ☐ TODO |
+| **0 — coupling sim** | \$0 | done | cross-talk not monotone in compliance | ✅ PASS ([doc](Gate0_Coupling_Simulation.md)) |
+| **0b — failure-mode scout** | \$0 | done | sudden rupture dominates, no precursor | ✅ PASS — literature-resolved ([doc](Gate0b_Failure_Mode_Literature.md)) |
+| **1 — volume estimator** | \$0 | done | no clean, repeatable *V* → no P-V loop | ✅ design-resolved ([doc](Gate1_Volume_Estimation_Literature.md)) |
 | **2 — equipment audit** | \$0 | ~1 day | no mocap / no rig access | ☐ TODO |
 | **Week-3 hardware coupling** | (rig) | wk 3 | cross-talk doesn't track P-V feature on real HW | ☐ TODO |
 
----
-
-## Gate 0b — Failure-mode scout (run NOW, parallel to everything)
-
-**Question this answers (binary):** do these actuators fail *gradually* (softening /
-slow leak / delamination, with a compliance precursor) or by *sudden rupture* with no
-warning? If sudden rupture dominates, the leading-indicator contribution (#1) is bounded
-for that mode — and we'd rather know in week 1 than week 8.
-
-**Procedure**
-1. Cast 2–3 sacrificial Dragon Skin 20A actuators from the production mold.
-2. Cycle each to death at ~0.5 Hz under representative grasp loading (against a
-   compliant contact), logging chamber pressure continuously.
-3. At every ~250 cycles, pause and capture: a photo of the chamber walls, and one slow
-   reference inflation for a coarse compliance check.
-4. Label end-of-life mode: **sudden rupture / slow leak / delamination**, and note
-   whether *any* pressure or compliance change preceded it.
-
-**Decision**
-- Gradual modes dominate → leading indicator is viable; proceed.
-- Sudden rupture dominates → scope contribution #1 honestly to the modes it *can* serve;
-  shift weight to Study 2 (cross-talk) as the safe publishable core.
+> **Gates 0b and 1 are now resolved from literature** (no own-hardware experiment needed
+> to *decide* them): silicone PneuNets fail gradually with micro-tear precursors (Libby
+> 2022, Torzini 2024), so the leading indicator is viable; and the volume signal is
+> obtained by volumetric (syringe/stepper) drive + a pressure-oscillation observer
+> (Joshi & Paik 2023, ~0.6 % RMS), not by drift-prone flow integration. Each leaves a
+> small commissioning **spot-check** folded into rig bring-up — see the respective docs.
 
 ---
 
-## Gate 1 — Volume estimator bench test (the silent killer)
+## Gate 0b — Failure-mode scout — RESOLVED FROM LITERATURE ([full doc](Gate0b_Failure_Mode_Literature.md))
 
-The entire premise is a *P-V* loop, and **V is the least-specified, most load-bearing
-measurement in the paper.** Validate it before trusting any loop.
+**Question (binary):** do these actuators fail *gradually* (with a precursor) or by
+*sudden rupture*? **Answer: gradual, with precursors.** Silicone PneuNets accumulate
+microscale fractures that shift behavior measurably before failure — Libby 2022 reports
+FEM agreement drifting 96 %→80 % with fatigue; Torzini 2024 reports 0.2–0.4 mm micro-tears
+at the hump bases, tolerated *before* critical rupture (~3439 cycles, 1 bar). The leading
+indicator is viable; **target compliance-slope / loop-area drift** (early) rather than
+peak-pressure collapse (late). Scope the paper to the **gradual-degradation regime**.
 
-**Procedure**
-1. Build the candidate *V* estimators:
-   - (a) flow integration: integrate a calibrated mass-flow / laminar-flow sensor;
-   - (b) pressure-oscillation observer (Joshi & Paik 2023);
-   - (c) optional ground truth: displaced-volume measurement (water column / syringe
-     reference) over a known inflation.
-2. Run 50 identical actuation cycles at the **actuation-band frequency chosen by Gate 0
-   (~1–5 Hz)**, not quasi-statically.
-3. Measure: drift of the integrated *V* over the 50 cycles (integration error
-   accumulation), and RMSE of (a) and (b) against (c).
+**Remaining spot-check (folded into Study-1 bring-up, not a standalone gate):** cast one
+actuator from the production mold, photograph the chamber walls every ~250 cycles, and
+confirm *your* geometry reproduces hump-base micro-tear nucleation before rupture. If it
+instead ruptures suddenly with no precursor, escalate; otherwise proceed.
 
-**Decision / acceptance**
-- *V* drift over a measurement window < a few % of loop volume, repeatable → P-V loop
-  is real; use it.
-- Drift too large → **fallback:** periodic-reset flow integration, or work in
-  **P-vs-commanded-displacement** / **P-vs-flow-integral** space instead of true volume.
-  State the substitution explicitly in the paper; the loop-shape features (area, slope,
-  asymmetry) survive the substitution.
+---
+
+## Gate 1 — Volume estimate — DESIGN-RESOLVED FROM LITERATURE ([full doc](Gate1_Volume_Estimation_Literature.md))
+
+The entire premise is a *P-V* loop, and **V was the least-specified, most load-bearing
+measurement in the paper.** Literature closes the *method choice*:
+
+- **Reject naive flow integration** — Joshi & Paik confirm error accumulates from
+  integration, noise, and leakage.
+- **Acquire P-V loops by volumetric drive** — a stepper-driven syringe positions the air
+  volume so *V* is known by construction (arXiv:2506.23326, 0.04 mm³/step). Clean,
+  drift-free, cheap; this is standard practice for hysteresis characterization and is used
+  for Study 1 and Study 2 ground truth.
+- **Deployable in-loop estimator** — the pressure-oscillation observer (inject ~5 kPa
+  high-freq oscillation; dP/dt ∝ 1/V) gives ~0.6 % volume RMS (Joshi & Paik), used where
+  the gripper must self-sense without a syringe pump; validate it against the volumetric
+  ground truth.
+
+**Remaining spot-check (folded into rig bring-up):** confirm the syringe drive yields
+repeatable P-V loops over ~50 cycles at the Gate-0 band (~1–5 Hz), and fit + validate the
+oscillation observer on one actuator (target RMS ~ Joshi & Paik's 0.6 %).
+
+**BOM consequence:** add a stepper-driven syringe / small volumetric pump (~tens of \$);
+it replaces reliance on a precision flow sensor. Update Gate 2 accordingly.
 
 ---
 
