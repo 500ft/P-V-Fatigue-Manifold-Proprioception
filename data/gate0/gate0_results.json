@@ -1,0 +1,80 @@
+{
+  "params": {
+    "n_chambers": 3,
+    "P_s": 80000.0,
+    "R_s": 200000000.0,
+    "R_v": 800000000.0,
+    "R_l": 8000000000.0,
+    "C0": 5e-11,
+    "C_m": 5e-12,
+    "fatigue_min": 1.0,
+    "fatigue_max": 2.0,
+    "fatigue_steps": 11,
+    "f_actuation_hz": 3.0,
+    "monotonic_rho_min": 0.99,
+    "rel_drift_min": 0.1
+  },
+  "dc_independence": {
+    "crosstalk_healthy": 0.02173913043478254,
+    "crosstalk_fatigued": 0.02173913043478254,
+    "relative_change": 0.0,
+    "note": "DC cross-talk is compliance-independent by construction; near-zero change confirms the coupling drift is purely dynamic."
+  },
+  "headline_metric": {
+    "actuation_freq_hz": 3.0,
+    "crosstalk_vs_fatigue": [
+      0.11755249395666427,
+      0.12911362826269704,
+      0.14068995512321572,
+      0.1522780097179997,
+      0.16387530416895102,
+      0.17548000652765386,
+      0.18709073832531867,
+      0.19870644263578502,
+      0.2103262956087811,
+      0.22194964565356828,
+      0.23357597070046568
+    ],
+    "fatigue_levels": [
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7000000000000002,
+      1.8,
+      1.9,
+      2.0
+    ],
+    "spearman_rho": 1.0,
+    "spearman_p": 0.0,
+    "relative_drift": 0.9869928985647337,
+    "monotone_ok": true,
+    "drift_ok": true
+  },
+  "most_sensitive_frequency": {
+    "freq_hz": 1.5685151643735478,
+    "relative_drift": 0.9541299691103016,
+    "abs_crosstalk_drift": 211195731520.5948,
+    "spearman_rho": 1.0,
+    "usable_band_hz": [
+      0.2908433564064048,
+      5.7133684283155795
+    ],
+    "selection_note": "ranked by absolute change in |H21| (measurable neighbor-pressure response), not the saturating |H21/H11| ratio."
+  },
+  "verdict": "PASS",
+  "interpretation": "Spine holds in simulation: inter-chamber cross-talk drifts monotonically with chamber-1 compliance. The signal is dynamic (DC gain is compliance-independent), strongest near 1.6 Hz, usable across 0.29-5.7 Hz. EXPERIMENTAL IMPLICATION: actuate/probe in this band and use history-dependent (ARX/ESN) features; a static ridge map on instantaneous pressure will not see the fatigue->cross-talk coupling. Green-light the Week-3 hardware gate.",
+  "robustness": {
+    "n": 400,
+    "frac_monotone": 1.0,
+    "frac_pass": 0.9,
+    "all_same_sign_positive": true,
+    "median_abs_rho": 1.0,
+    "drift_median": 0.7929981857654482,
+    "drift_p10": 0.1030016072054109,
+    "drift_p90": 0.992250995658608
+  }
+}

@@ -41,6 +41,16 @@ The draft asserted the coupling in §6; this proposal makes it a **predicted, fa
 
 > fatigue ↑ → chamber compliance *C* ↑ → manifold pressure-redistribution gain *G(C)* ↑ → cross-talk matrix coefficients drift → pressure-only pose estimate (calibrated on fresh actuators) degrades.
 
+> **Gate 0 update (2026-06-19, PASS — see [`Gate0_Coupling_Simulation.md`](Gate0_Coupling_Simulation.md)).**
+> A lumped-RC simulation now confirms this mechanism *in software, before any hardware*:
+> inter-chamber cross-talk rises monotonically with chamber compliance in 100 % of 400
+> randomized parameter sets. Critically, the coupling is **dynamic** — the steady-state
+> (DC) cross-talk gain is compliance-independent, so the fatigue signal lives in the
+> pressure *transients* and is observable only near the actuation band (~1–5 Hz). This
+> sharpens the prediction: the cross-talk drift is visible to history-dependent (ARX/ESN)
+> correctors and invisible to a static ridge map — making the §5.3 corrector comparison a
+> *mechanistically predicted* result, not just an empirical sweep.
+
 - **Confirming result:** cross-talk coefficients track the P-V compliance feature with *r* ≥ 0.5 (*p* < 0.05) over early-to-mid fatigue; a P-V-triggered recalibration restores pose RMSE toward the fresh baseline. → Full coupled paper.
 - **Negative result (still publishable):** if the cross-talk corrector re-estimates online faster than fatigue drifts, the coupling is *benign*. That is itself a useful finding and the paper still delivers (1) the leading-indicator study and (2) the first shared-manifold cross-talk characterization for pressure-only sensing.
 
@@ -72,9 +82,15 @@ Either way there is a result floor — the reason this is the right primary bet.
 - Track the cross-talk matrix and pose RMSE as actuators age; test the §4 prediction (cross-talk drift vs. P-V feature correlation).
 - Evaluate a **P-V-triggered recalibration** policy (recalibrate when the health monitor crosses threshold) vs. fixed calibration and vs. always-on continual learning (Kushawaha 2025 as the baseline-to-beat on efficiency).
 
-## 6. Go/No-Go decision gate (Week 3) — and the fallback
+## 6. Go/No-Go decision gates — and the fallback
 
-Before the full N=10 campaign, run the **cheap coupling check**: on 2–3 actuators, fatigue partially and test whether the cross-talk matrix shifts with the P-V compliance feature.
+**Gate 0 (simulation, \$0) — DONE, PASS.** Before any hardware, the coupling spine was
+pre-tested in a lumped-RC model (`Gate0_Coupling_Simulation.md`): cross-talk is monotone
+in compliance across 400 randomized configs, and the coupling is dynamic (probe at
+~1–5 Hz). The full gate ladder (0 → 0b failure-mode scout → 1 volume-estimator bench →
+2 equipment audit → Week-3 hardware) is in [`Experimental_Protocol.md`](Experimental_Protocol.md).
+
+**Week-3 hardware gate.** Before the full N=10 campaign, run the **cheap coupling check**: on 2–3 actuators, fatigue partially and test whether the cross-talk matrix shifts with the P-V compliance feature.
 - **Coupling real (r ≥ 0.5):** commit to the full coupled study.
 - **Coupling weak:** pivot freed effort to **G02 (kirigami force-stroke fatigue maps)** — it reuses the *same cycling rig and force/displacement instrumentation*, has a guaranteed result floor, and is a clean parallel mechanics paper. (The combined paper still stands on Studies 1+2 as a reduced contribution.)
 
