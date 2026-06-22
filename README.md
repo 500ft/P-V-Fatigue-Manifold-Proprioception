@@ -21,6 +21,10 @@ The core novelty has been reframed after literature and patent verification:
 - `docs/Gate1_Volume_Estimation_Literature.md` - **Gate 1** (design-resolved): acquire P-V loops by volumetric drive + pressure-oscillation observer; flow integration rejected.
 - `docs/Experimental_Protocol.md` - operational test runbook: the gate ladder, study protocols, and the minimum viable paper.
 - `scripts/gate0_lumped_rc.py` - the Gate 0 simulation (writes `data/gate0/`).
+- `sim/fatigue.py` - **Phase B model**: synthetic Mullins/recovery, irreversible
+  compliance drift, acceleration onset, and late leak growth.
+- `scripts/phaseB_fatigue_demo.py` - Phase B consistency demo (writes
+  `data/sim/phaseB/`), including the independent pressure-decay leak observable.
 - `docs/Draft1_A01_A04_Combined.pdf` - earlier draft PDF.
 - `docs/paper_drafts.md` - draft paper/proposal text history.
 - `docs/report.md` - research topic report.
@@ -70,4 +74,26 @@ Metadata cleanup completed on 2026-06-18:
   and replace the \$320 estimate with an audited BOM.
 - Then: Week-3 hardware coupling gate, entered with the mechanism, failure mode, and volume
   method all pre-confirmed.
+- **Remote simulation Phase A: DONE — PASS.** The SLS plant produces rate-dependent
+  P-V loops and reduces to the Gate 0 model.
+- **Remote simulation Phase B: DONE — PASS (synthetic consistency only).** The canonical
+  actuator injects 16 % no-rest compliance/loop-area drift, a 30 % permanent Mullins
+  floor with 24 h recovery time constant, curvature acceleration onset at 70 % life,
+  and late leak growth to 20x conductance. Leakage is observed by a separate closed-valve
+  pressure-decay probe; it is not observable in imposed-volume P-V loops.
+- **Next remote simulation work: Phase C.** Extract P-V features, fit degradation/health
+  indicators, separate linear-drift detectability from curvature-onset estimation, and
+  run the pre-registered cadence/noise identifiability grid.
 - Expand the proposal into submission-ready Intro/Related Work after Gate 2.
+
+## License
+
+This repository is dual-licensed:
+
+- **Source code** (e.g. `sim/`, `scripts/`, `tests/`) is licensed under the
+  **MIT License** — see [`LICENSE`](LICENSE).
+- **The manuscript, documentation, and figures** (notably `docs/`) are licensed
+  under **Creative Commons Attribution 4.0 International (CC BY 4.0)** — see
+  [`LICENSE-docs`](LICENSE-docs).
+
+Copyright (c) 2026 Mergen Ulziibayar.
