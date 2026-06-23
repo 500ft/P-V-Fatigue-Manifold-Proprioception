@@ -1,0 +1,55 @@
+{
+  "n_lags": 8,
+  "alpha": 1.0,
+  "test_actuators": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "features": [
+    "manifold_pressure",
+    "all_chamber_commands"
+  ],
+  "experimentB_static_vs_dynamic_young_to_old": {
+    "isolated": {
+      "static_kappa_rmse": 0.2948773750137143,
+      "dynamic_kappa_rmse": 0.2947304275515174,
+      "static_position_rmse_m": 0.0010174976667428326,
+      "dynamic_position_rmse_m": 0.0010169929663269926,
+      "dynamic_improvement": 0.0004983341369953051
+    },
+    "shared": {
+      "static_kappa_rmse": 0.24390179245147137,
+      "dynamic_kappa_rmse": 0.24389944592593868,
+      "static_position_rmse_m": 0.0008417474615660521,
+      "dynamic_position_rmse_m": 0.0008417550809486359,
+      "dynamic_improvement": 9.620780188214436e-06
+    }
+  },
+  "experimentA_static_drift_over_life": {
+    "life_fractions": [
+      0.1,
+      0.3,
+      0.5,
+      0.7,
+      0.9
+    ],
+    "isolated": [
+      0.004261113886989407,
+      0.012403214317354902,
+      0.02369109618420852,
+      0.035221242982354156,
+      0.5554662589023226
+    ],
+    "shared": [
+      0.004174489000400418,
+      0.011957450431225277,
+      0.022751869541489913,
+      0.03378623525683166,
+      0.4563615233775684
+    ]
+  }
+}

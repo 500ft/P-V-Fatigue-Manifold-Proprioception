@@ -5,3 +5,6 @@ __pycache__/
 venv/
 tmp/
 output/
+# Phase D dataset arrays are large and deterministically regenerable
+# (python -m scripts.phaseD_dataset); integrity is pinned by manifest SHA-256.
+data/sim/phaseD/*.npz
