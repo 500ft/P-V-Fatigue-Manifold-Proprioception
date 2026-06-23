@@ -125,6 +125,81 @@ def simulate_volumetric(t, V_func, sls: SLSParams, x_d0=None):
     return {"t": t, "V": V, "P": P, "x_d": sol.y[0]}
 
 
+def simulate_pressure_decay(t, P_initial, sls: SLSParams, R_l, P_atm=0.0):
+    """Simulate a closed-inlet pressure-hold test with leakage to atmosphere.
+
+    This is the explicit leak observable. It is intentionally separate from
+    :func:`simulate_volumetric`, whose imposed volume makes ``R_l`` unobservable.
+    The chamber starts fully relaxed at ``P_initial`` and then loses volume through
+    ``Q_l = (P-P_atm)/R_l`` while the SLS internal state also relaxes.
+    """
+    t = np.asarray(t, dtype=float)
+    if t.ndim != 1 or t.size < 2 or not np.all(np.isfinite(t)):
+        raise ValueError("t must be a finite one-dimensional array with at least two points")
+    if np.any(np.diff(t) <= 0):
+        raise ValueError("t must be strictly increasing")
+    if not np.isfinite(P_initial) or not np.isfinite(P_atm) or P_initial <= P_atm:
+        raise ValueError("P_initial must be finite and greater than P_atm")
+    if not np.isfinite(R_l) or R_l <= 0:
+        raise ValueError("R_l must be finite and > 0")
+
+    x0 = P_initial / sls.k1
+    V_initial = sls.V0 + x0
+
+    def rhs(_tt, y):
+        V, x_d = y
+        P = float(sls_pressure(V, x_d, sls))
+        dV = -(P - P_atm) / R_l
+        dx_d = ((V - sls.V0) - x_d) / sls.tau
+        return [dV, dx_d]
+
+    duration = t[-1] - t[0]
+    sol = solve_ivp(
+        rhs,
+        (t[0], t[-1]),
+        [V_initial, x0],
+        t_eval=t,
+        method="RK45",
+        rtol=1e-9,
+        atol=1e-13,
+        max_step=duration / 1000,
+    )
+    if not sol.success:
+        raise RuntimeError(f"pressure-decay integration failed: {sol.message}")
+    V, x_d = sol.y
+    P = sls_pressure(V, x_d, sls)
+    return {"t": t, "V": V, "P": P, "x_d": x_d}
+
+
+def operational_half_life(t, P, P_initial):
+    """Return first interpolated time where pressure reaches ``P_initial/2``.
+
+    Returns ``nan`` when the supplied trace never reaches the threshold. This is an
+    operational metric; an SLS decay generally contains more than one time scale.
+    """
+    t = np.asarray(t, dtype=float)
+    P = np.asarray(P, dtype=float)
+    if t.ndim != 1 or P.ndim != 1 or t.size != P.size or t.size < 2:
+        raise ValueError("t and P must be equal-length one-dimensional arrays")
+    if not np.all(np.isfinite(t)) or not np.all(np.isfinite(P)) or np.any(np.diff(t) <= 0):
+        raise ValueError("t and P must be finite and t strictly increasing")
+    if not np.isfinite(P_initial) or P_initial <= 0:
+        raise ValueError("P_initial must be finite and > 0")
+
+    threshold = P_initial / 2.0
+    crossings = np.flatnonzero(P <= threshold)
+    if crossings.size == 0:
+        return float("nan")
+    i = int(crossings[0])
+    if i == 0:
+        return float(t[0])
+    p0, p1 = P[i - 1], P[i]
+    if p1 == p0:
+        return float(t[i])
+    fraction = (threshold - p0) / (p1 - p0)
+    return float(t[i - 1] + fraction * (t[i] - t[i - 1]))
+
+
 def pv_loop(frequency, amplitude, sls: SLSParams, n_periods=8, n_per_period=400):
     """Drive V = V0 + A sin(2*pi*f*t) and return the STEADY P-V loop (last period) plus
     its numerically integrated area. Discards startup transient.
