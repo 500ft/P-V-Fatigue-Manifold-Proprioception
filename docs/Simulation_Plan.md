@@ -80,20 +80,39 @@ Ridge/PCA/ARX implemented in numpy; ESN from scratch (~50 lines). `scikit-learn`
   (regression test against `gate0_lumped_rc.py`).
 - **Deliverable:** one clean synthetic P-V loop + a Bode/cross-talk check vs Gate 0.
 
-### Phase B — Fatigue trajectory + Mullins/recovery
+### Phase B — Fatigue trajectory + Mullins/recovery  **DONE — PASS (2026-06-21)**
 - `sim/fatigue.py`: C(N) degradation (Mullins fast-stabilize over ~5–10 cycles → slow
   irreversible drift → accelerating end-of-life), leak-conductance growth, rest recovery.
-- **Validation:** injected failure-onset cycle is exactly known; loop features drift
-  monotonically through mid-life as designed; rest restores the reversible component.
+- **Consistency checks:** injected acceleration onset is recorded as ground truth but is
+  not claimed recoverable in Phase B; loop features follow their designed trajectories;
+  rest removes only the recoverable Mullins component.
 - **Deliverable:** a sequence of P-V loops along one actuator's life; feature drift plot.
 
-### Phase C — Feature extraction + degradation + HI metrics  *(pipeline #2 core)*
+Implemented with a deterministic canonical actuator (`sim/fatigue.py`) and explicit
+assumption labeling. Defaults inject 16 % no-rest terminal compliance/loop-area drift,
+a 30 % permanent Mullins floor, a 24 h recovery time constant, curvature acceleration
+from 70 % life, and leak-conductance growth to 20x at rupture. Because Gate 1's
+volumetric probe imposes volume and cannot observe `R_l`, leak is measured independently
+through a closed-valve pressure-decay simulation. The PASS verdict covers numerical and
+model-consistency checks only; it is not empirical fatigue validation. See
+`data/sim/phaseB/phaseB_results.json` and `docs/specs/phase-b-fatigue/`.
+
+### Phase C — Feature extraction + degradation + HI metrics  **DONE — PASS (2026-06-23)**
 - `pipeline/features.py`, `degradation.py`, `hi_metrics.py`, `mullins.py`.
 - **Validation (the payoff):** run Study-1 analysis on synthetic loops where the true
   failure onset is known → confirm the fitted **lead-time recovers it**, and the HI
   monotonicity/trendability/prognosability match the injected ground truth. Confirm the
   Mullins separator removes the reversible component.
 - **Deliverable:** `run_study1.py` end-to-end → lead-time distribution (with CIs) + AUC.
+
+Implemented as a causal, ground-truth recovery study rather than a physical lead-time
+claim. The registered run covers 144 onset/noise/cadence/generator conditions, 200 noisy
+trials per condition, and 5,000-path CUSUM calibration. The segmented estimator is
+reported as a form-matched identifiability ceiling and is stress-tested against logistic
+onsets with sharpness 8/20/50. Noise-free alarm metrics are omitted as undefined. The
+canonical comparison found that two-feature fusion did not beat loop area monotonicity
+(0.657 vs 0.714), confirming that fusion value must be tested rather than assumed. See
+`data/sim/study1/study1_results.json` and `docs/specs/phase-c-health-indicators/`.
 
 ### Phase D — Kinematics + sensors + dataset
 - `sim/kinematics.py` (pressure→PCC→tip SE(3)), `sim/sensors.py` (noise/contact),

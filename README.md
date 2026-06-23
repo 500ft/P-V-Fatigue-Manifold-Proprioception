@@ -81,9 +81,14 @@ Metadata cleanup completed on 2026-06-18:
   floor with 24 h recovery time constant, curvature acceleration onset at 70 % life,
   and late leak growth to 20x conductance. Leakage is observed by a separate closed-valve
   pressure-decay probe; it is not observable in imposed-volume P-V loops.
-- **Next remote simulation work: Phase C.** Extract P-V features, fit degradation/health
-  indicators, separate linear-drift detectability from curvature-onset estimation, and
-  run the pre-registered cadence/noise identifiability grid.
+- **Remote simulation Phase C: DONE — PASS (synthetic validation only).** Causal P-V
+  features, Mullins recovery normalization, HI metrics, matched-FA 3σ/CUSUM detectors,
+  and four degradation models were tested across the registered 144-condition grid.
+  The matched segmented model recovers the quadratic onset ceiling, but fails strongly
+  on logistic-onset variants — the intended inverse-crime/generalization result.
+- **Next remote simulation work: Phase D.** Add PCC kinematics, realistic sensor effects,
+  and the ~2000-trace shared-manifold versus isolated-supply dataset. Phase C metrics
+  arrive pre-validated and are applied, not re-validated, in Phase D.
 - Expand the proposal into submission-ready Intro/Related Work after Gate 2.
 
 ## License
