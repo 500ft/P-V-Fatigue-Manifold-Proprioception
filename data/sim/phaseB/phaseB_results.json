@@ -1,0 +1,291 @@
+{
+  "label": "SYNTHETIC SIMULATION \u2014 not experimental validation",
+  "canonical_parameters": {
+    "rupture_cycles": 3500.0,
+    "acceleration_onset_fraction": 0.7,
+    "mullins_amplitude": 0.04,
+    "mullins_cycles_tau": 3.0,
+    "mullins_permanent_fraction": 0.3,
+    "recovery_tau_s": 86400.0,
+    "slow_fatigue_amplitude": 0.04,
+    "accelerating_fatigue_amplitude": 0.08,
+    "mullins_loss_coupling": 1.0,
+    "fatigue_loss_coupling": 1.0,
+    "terminal_leak_multiplier": 20.0
+  },
+  "parameter_anchor": {
+    "target_no_rest_terminal_compliance_rise_fraction": 0.16,
+    "target_no_rest_terminal_loop_area_rise_fraction": 0.16,
+    "note": "Order-of-magnitude synthetic anchor motivated by Libby's 96% to 80% FEM-agreement change; not a conversion from accuracy to compliance."
+  },
+  "rupture_cycle": 3500.0,
+  "acceleration_onset_cycle": 2450.0,
+  "injected_acceleration_window_cycles": 1050.0000000000002,
+  "injected_acceleration_window_note": "Structural model interval only; not a warning time or predicted lead time.",
+  "probe": {
+    "frequency_hz": 1.5915494309189535,
+    "volume_amplitude_m3": 2e-06,
+    "pv_leak_observability": "None under imposed-volume probing; leakage is measured by pressure decay.",
+    "pressure_decay_initial_pa": 60000.0
+  },
+  "life_stages": [
+    {
+      "cycles": 0.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.0,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.0,
+      "mullins_recoverable": 0.0,
+      "mullins_total": 0.0,
+      "fatigue_slow": 0.0,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.0,
+      "compliance_multiplier": 1.0,
+      "loss_multiplier": 1.0,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5e-11,
+      "pv_loop_area_j": 0.12565852736201327
+    },
+    {
+      "cycles": 5.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.0014285714285714286,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.009733492765949259,
+      "mullins_recoverable": 0.02271148312054827,
+      "mullins_total": 0.03244497588649753,
+      "fatigue_slow": 5.714285714285714e-05,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 5.714285714285714e-05,
+      "compliance_multiplier": 1.0325021187436403,
+      "loss_multiplier": 1.0325021187436403,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.162510593718201e-11,
+      "pv_loop_area_j": 0.12974269573948455
+    },
+    {
+      "cycles": 10.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.002857142857142857,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.011571912079832972,
+      "mullins_recoverable": 0.027001128186276934,
+      "mullins_total": 0.03857304026610991,
+      "fatigue_slow": 0.00011428571428571428,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.00011428571428571428,
+      "compliance_multiplier": 1.0386873259803957,
+      "loss_multiplier": 1.0386873259803957,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.1934366299019783e-11,
+      "pv_loop_area_j": 0.13051991977228405
+    },
+    {
+      "cycles": 250.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.07142857142857142,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.002857142857142857,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.002857142857142857,
+      "compliance_multiplier": 1.042857142857143,
+      "loss_multiplier": 1.042857142857143,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.214285714285715e-11,
+      "pv_loop_area_j": 0.13104389282038528
+    },
+    {
+      "cycles": 1000.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.2857142857142857,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.011428571428571429,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.011428571428571429,
+      "compliance_multiplier": 1.0514285714285714,
+      "loss_multiplier": 1.0514285714285714,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.257142857142857e-11,
+      "pv_loop_area_j": 0.13212096591205996
+    },
+    {
+      "cycles": 2000.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.5714285714285714,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.022857142857142857,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.022857142857142857,
+      "compliance_multiplier": 1.062857142857143,
+      "loss_multiplier": 1.062857142857143,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.3142857142857147e-11,
+      "pv_loop_area_j": 0.13355706336762577
+    },
+    {
+      "cycles": 2450.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.7,
+      "acceleration_coordinate": 0.0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.027999999999999997,
+      "fatigue_accelerating": 0.0,
+      "fatigue_total": 0.027999999999999997,
+      "compliance_multiplier": 1.068,
+      "loss_multiplier": 1.068,
+      "leak_multiplier": 1.0,
+      "relaxed_compliance_m3_per_pa": 5.34e-11,
+      "pv_loop_area_j": 0.13420330722263038
+    },
+    {
+      "cycles": 2800.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.8,
+      "acceleration_coordinate": 0.3333333333333336,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.032,
+      "fatigue_accelerating": 0.008888888888888903,
+      "fatigue_total": 0.040888888888888905,
+      "compliance_multiplier": 1.080888888888889,
+      "loss_multiplier": 1.080888888888889,
+      "leak_multiplier": 3.1111111111111143,
+      "relaxed_compliance_m3_per_pa": 5.4044444444444455e-11,
+      "pv_loop_area_j": 0.13582290601974076
+    },
+    {
+      "cycles": 3200.0,
+      "rest_s": 0.0,
+      "normalized_life": 0.9142857142857143,
+      "acceleration_coordinate": 0.7142857142857142,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.036571428571428574,
+      "fatigue_accelerating": 0.040816326530612235,
+      "fatigue_total": 0.07738775510204081,
+      "compliance_multiplier": 1.1173877551020408,
+      "loss_multiplier": 1.1173877551020408,
+      "leak_multiplier": 10.693877551020407,
+      "relaxed_compliance_m3_per_pa": 5.586938775510204e-11,
+      "pv_loop_area_j": 0.1404092997984688
+    },
+    {
+      "cycles": 3500.0,
+      "rest_s": 0.0,
+      "normalized_life": 1.0,
+      "acceleration_coordinate": 1.0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "mullins_total": 0.039999999999999994,
+      "fatigue_slow": 0.04,
+      "fatigue_accelerating": 0.08,
+      "fatigue_total": 0.12,
+      "compliance_multiplier": 1.1600000000000001,
+      "loss_multiplier": 1.1600000000000001,
+      "leak_multiplier": 20.0,
+      "relaxed_compliance_m3_per_pa": 5.8000000000000007e-11,
+      "pv_loop_area_j": 0.14576389173993515
+    }
+  ],
+  "pressure_decay": [
+    {
+      "cycles": 0,
+      "leak_multiplier": 1.0,
+      "half_life_s": 0.211926879190116
+    },
+    {
+      "cycles": 2450,
+      "leak_multiplier": 1.0,
+      "half_life_s": 0.2215120773562047
+    },
+    {
+      "cycles": 2975,
+      "leak_multiplier": 5.75,
+      "half_life_s": 0.026182797268469584
+    },
+    {
+      "cycles": 3500,
+      "leak_multiplier": 20.0,
+      "half_life_s": 0.007034067733026105
+    }
+  ],
+  "recovery": [
+    {
+      "rest_hours": 0,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.027999999999999997,
+      "compliance_multiplier": 1.062857142857143
+    },
+    {
+      "rest_hours": 1,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.026857304799055865,
+      "compliance_multiplier": 1.0617144476561988
+    },
+    {
+      "rest_hours": 24,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.010300624352800384,
+      "compliance_multiplier": 1.0451577672099432
+    },
+    {
+      "rest_hours": 72,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 0.0013940379143001903,
+      "compliance_multiplier": 1.0362511807714432
+    },
+    {
+      "rest_hours": 168,
+      "mullins_permanent": 0.012,
+      "mullins_recoverable": 2.5532695035526452e-05,
+      "compliance_multiplier": 1.0348826755521785
+    }
+  ],
+  "sensitivity": {
+    "acceleration_onset_fractions": [
+      0.5,
+      0.7,
+      0.85
+    ],
+    "terminal_leak_multipliers": [
+      {
+        "terminal_multiplier": 10.0,
+        "rupture_half_life_s": 0.01444258220813883
+      },
+      {
+        "terminal_multiplier": 20.0,
+        "rupture_half_life_s": 0.007034067733026105
+      },
+      {
+        "terminal_multiplier": 40.0,
+        "rupture_half_life_s": 0.0034974223115495804
+      }
+    ]
+  },
+  "checks_kind": "numerical and model-consistency checks, not empirical validation",
+  "checks": {
+    "cycle_zero_identity": true,
+    "mullins_stable_by_cycle_10": true,
+    "three_tau_removes_95pct_recoverable": true,
+    "canonical_compliance_rise_16pct": true,
+    "canonical_loop_area_rise_16pct": true,
+    "terminal_leak_20x": true,
+    "compliance_monotone_by_construction": true,
+    "loop_area_monotone_by_construction": true,
+    "pressure_half_life_decreases_with_conductance_at_fixed_sls": true
+  },
+  "verdict": "PASS"
+}
