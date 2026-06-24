@@ -61,8 +61,14 @@ for both grad school and industry is the written, public artifact.
       P-V-triggered recalibration meets a 0.159 mm accuracy budget at 60% fewer recalibrations
       than always-on (2 vs 5 per actuator), threshold train-selected and applied to held-out.
       See [`docs/result_spine.md`](docs/result_spine.md).
-- [ ] **Wks 6-8 — Paper:** assemble the modeling paper (intro, methods, the
+- [~] **Wks 6-8 — Paper:** assemble the modeling paper (intro, methods, the
       pre-registered results, honest limitations) and **post to arXiv.**
+      **Draft v1 written (2026-06-24):** [`docs/preprint_v1.md`](docs/preprint_v1.md) — full
+      manuscript with the negative cross-talk result and the one-generator caveat foregrounded
+      in the abstract; every cited number verified against the frozen study JSON; references
+      grounded in the literature base. Remaining: figure polish, optional PDF render, **venue
+      decision (arXiv-first; RA-L/Soft Robotics only with hardware)**, and the
+      submission go/no-go (an explicit approval checkpoint — not yet taken).
 
 ## Honesty constraint (non-negotiable)
 
