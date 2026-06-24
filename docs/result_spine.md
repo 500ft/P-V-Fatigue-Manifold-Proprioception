@@ -77,3 +77,33 @@ per-actuator calibration, held-out actuators.
 **Revised contribution.** The defensible headline is the **compliance-drift leading indicator +
 P-V-triggered recalibration** (Phase F), not dynamic cross-talk recovery. Cross-talk is reported
 honestly as present-but-second-order.
+
+## Findings (Phase F — 2026-06-24) — the headline, CONFIRMED
+
+Observable P-V loop area as the health signal; static-ridge estimator; threshold selected on
+train actuators only and applied unchanged to held-out test actuators; error **and**
+recalibration count reported together.
+
+- **Leading indicator — strong, robust.** P-V loop-area fractional growth vs fixed-calibration
+  pose error over life: **r = 0.885, 95% CI [0.835, 0.958]** (excludes 0). The observable P-V
+  loop tracks the proprioception degradation — this is the core publishable result (Fig 3).
+- **Recalibration trade-off (held-out actuators, Fig 4).** Against a stated 0.159 mm accuracy
+  budget (selected on train actuators as halfway from always-on toward never-recalibrate):
+
+  | policy | pose RMSE | recal / actuator |
+  |---|---|---|
+  | fixed (never)   | 0.40 mm | 1 |
+  | **P-V-triggered (tau\*=0.05)** | **0.06 mm** | **2** |
+  | always-on       | 0.02 mm | 5 |
+
+  P-V-triggered holds near always-on accuracy at **60% fewer recalibrations** (2 vs 5), ~7x
+  better than fixed.
+- **Honest caveat.** Absolute pose errors are sub-mm even under fixed calibration at these
+  sensor-noise levels, so the *operational* value of triggered recalibration grows with tighter
+  pose requirements / softer actuators (larger per-stage drift). The mechanism and the
+  error-vs-count trade-off are demonstrated; the absolute stakes are regime-dependent.
+
+**Net story for the preprint:** P-V loop-shape is a quantified leading indicator of
+fatigue-driven proprioception drift (r≈0.89), and a P-V-triggered recalibration policy meets an
+accuracy budget at a fraction of the recalibration cost of always-on — all in simulation,
+cross-talk reported as second-order. Phases D–F complete.
