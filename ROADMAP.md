@@ -54,8 +54,13 @@ for both grad school and industry is the written, public artifact.
       compliance-scale change (topology-independent, ~100x), which motivates Phase F
       recalibration; the dynamic corrector does **not** beat static (cross-talk is
       second-order) — negative result retained, see [`docs/result_spine.md`](docs/result_spine.md).
-- [ ] **Wks 4-5 — Phase F:** cross-talk-drift vs P-V-compliance correlation over
-      life; P-V-triggered recalibration vs fixed vs always-on.
+- [x] **Wks 4-5 — Phase F:** cross-talk-drift vs P-V-compliance correlation over
+      life; P-V-triggered recalibration vs fixed vs always-on. **DONE (2026-06-24):**
+      `pipeline/coupling.py`, `scripts/run_study3.py`, `tests/test_coupling.py`. P-V loop-area
+      is a strong leading indicator of proprioception drift (r=0.885, CI [0.835, 0.958]);
+      P-V-triggered recalibration meets a 0.159 mm accuracy budget at 60% fewer recalibrations
+      than always-on (2 vs 5 per actuator), threshold train-selected and applied to held-out.
+      See [`docs/result_spine.md`](docs/result_spine.md).
 - [ ] **Wks 6-8 — Paper:** assemble the modeling paper (intro, methods, the
       pre-registered results, honest limitations) and **post to arXiv.**
 
