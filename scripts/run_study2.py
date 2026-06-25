@@ -142,17 +142,19 @@ def main():
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from scripts import figstyle
+        figstyle.apply()
     except Exception as exc:  # pragma: no cover
         print(f"(matplotlib unavailable, skipped figures: {exc})")
         return
-    plt.figure(figsize=(5, 3.2))
+    plt.figure()
     plt.plot(LIFE_ALL, expA["shared"], "o-", label="shared manifold")
     plt.plot(LIFE_ALL, expA["isolated"], "s--", label="isolated supply")
     plt.xlabel("normalized life"); plt.ylabel("curvature RMSE [1/m]")
     plt.title("Static calibrator drift over life"); plt.legend(); plt.tight_layout()
-    plt.savefig(os.path.join(DATA, "study2_fig1_drift.png"), dpi=130); plt.close()
+    figstyle.save(plt.gcf(), os.path.join(DATA, "study2_fig1_drift")); plt.close()
 
-    plt.figure(figsize=(5, 3.2))
+    plt.figure()
     x = np.arange(2); w = 0.35
     plt.bar(x - w/2, [expB["isolated"]["static_kappa_rmse"], expB["shared"]["static_kappa_rmse"]],
             w, label="static ridge")
@@ -161,7 +163,7 @@ def main():
     plt.xticks(x, ["isolated", "shared"]); plt.ylabel("curvature RMSE [1/m]")
     plt.title("Static-blind / dynamic-recover (held-out actuators, old life)")
     plt.legend(); plt.tight_layout()
-    plt.savefig(os.path.join(DATA, "study2_fig2_static_vs_dynamic.png"), dpi=130); plt.close()
+    figstyle.save(plt.gcf(), os.path.join(DATA, "study2_fig2_static_vs_dynamic")); plt.close()
     print(f"figures + results -> {DATA}/")
 
 
