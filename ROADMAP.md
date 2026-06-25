@@ -27,8 +27,8 @@ code.
 
 ## Target by end of August
 
-Phases D-F complete **and a preprint on arXiv.** The deliverable that matters
-for both grad school and industry is the written, public artifact.
+Phases D-F complete **and a complete manuscript aimed at a robotics venue** (IEEE RoboSoft;
+RA-L once hardware exists), held as a draft pending an explicit submission decision.
 
 ## Milestones
 
@@ -62,13 +62,14 @@ for both grad school and industry is the written, public artifact.
       than always-on (2 vs 5 per actuator), threshold train-selected and applied to held-out.
       See [`docs/result_spine.md`](docs/result_spine.md).
 - [~] **Wks 6-8 — Paper:** assemble the modeling paper (intro, methods, the
-      pre-registered results, honest limitations) and **post to arXiv.**
-      **Draft v1 written (2026-06-24):** [`docs/preprint_v1.md`](docs/preprint_v1.md) — full
-      manuscript with the negative cross-talk result and the one-generator caveat foregrounded
-      in the abstract; every cited number verified against the frozen study JSON; references
-      grounded in the literature base. Remaining: figure polish, optional PDF render, **venue
-      decision (arXiv-first; RA-L/Soft Robotics only with hardware)**, and the
-      submission go/no-go (an explicit approval checkpoint — not yet taken).
+      pre-registered results, honest limitations) aimed at a **robotics venue**.
+      **Draft v1 + publication figures + rendered PDF done (2026-06-24/25):**
+      [`docs/preprint_v1.md`](docs/preprint_v1.md) / `docs/preprint_v1.pdf` — full manuscript with
+      the negative cross-talk result and the one-generator caveat foregrounded in the abstract; the
+      cross-talk envelope characterized (study 4); every cited number verified against the frozen
+      study JSON. **Venue DECIDED: a robotics venue — IEEE RoboSoft (the sim/method fit); RA-L once
+      hardware exists.** Remaining: the submission go/no-go — an explicit approval checkpoint,
+      **NOT yet taken; do not submit or post publicly until then.**
 
 ## Honesty constraint (non-negotiable)
 

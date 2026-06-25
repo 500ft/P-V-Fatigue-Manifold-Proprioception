@@ -6,11 +6,13 @@
 experiments are reported; every result is synthetic and is labeled as such. Modeling
 assumptions are stated as choices, not as calibrated predictions for a physical actuator.
 
-**Venue note (decision pending, not a content blocker).** This draft is written venue-neutral.
-Because the contribution is simulation-only, the honest first destination is an **arXiv
-preprint**. RA-L and *Soft Robotics* (the proposal's targets) typically expect hardware
-validation; they become appropriate only if/when a physical bench campaign is added. Do not
-submit anywhere without an explicit go decision.
+**Venue (decided — a robotics venue; submission not yet authorized).** The target is a robotics
+venue. For a simulation/method contribution in soft robotics, **IEEE RoboSoft** is the natural
+fit (it accepts modeling/simulation work); **RA-L** becomes appropriate once a physical bench
+campaign is added (RA-L typically expects hardware validation). The simulation-only scope and
+the single-generator caveat are foregrounded above so the framing matches the venue. **This
+manuscript is held as a complete draft and is NOT to be submitted (or otherwise posted
+publicly) until an explicit go decision is given.**
 
 ---
 
