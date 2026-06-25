@@ -73,6 +73,18 @@ per-actuator calibration, held-out actuators.
   ARX/dynamic corrector is not needed. Whether a softer supply (larger cross-talk) changes this
   is a parameter-sensitivity question left as future work — deliberately NOT tuned here, to
   avoid fishing for the hypothesized result.
+- **Parameter-sensitivity sweep (study 4, 2026-06-25) — envelope characterized.** Added
+  `scripts/run_study4.py` (sweep of the supply-softness parameters via `probe_coupling`) and
+  `tests/test_study4.py`. The cross-talk coupling ratio increases monotonically with supply
+  softness (verified by assert): at the default network params it is **6.3%** (second-order),
+  crossing **10%** only at supply resistance R_s **≈1.7×** softer and **20%** at **≈4.3×** softer.
+  Manifold compliance C_m is a weak knob — coupling stays in **5.8–6.3%** across a 128× span
+  (×0.25–×32) and never reaches 10%. So the negative cross-talk result is not knife-edge: it
+  holds across realistic shared-manifold designs and would become first-order for pose only under
+  a several-fold under-provisioned supply. (Confirmatory corrector check at the softer settings:
+  the dynamic corrector still does not beat the static ridge at these small-sample sizes, but its
+  penalty shrinks as coupling grows — consistent with cross-talk only mattering far from default.)
+  Result JSON: `data/sim/phaseD/study4_results.json`; figure: `study4_fig_crosstalk_sensitivity`.
 
 **Revised contribution.** The defensible headline is the **compliance-drift leading indicator +
 P-V-triggered recalibration** (Phase F), not dynamic cross-talk recovery. Cross-talk is reported
