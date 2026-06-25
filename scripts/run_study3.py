@@ -186,6 +186,8 @@ def main():
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from scripts import figstyle
+        figstyle.apply()
     except Exception as exc:  # pragma: no cover
         print(f"(matplotlib unavailable, skipped figures: {exc})")
         return
@@ -193,26 +195,28 @@ def main():
     # Fig 3: leading indicator — health drift & fixed-cal error over life (mean over test acts)
     mean_h = np.mean([hn[a] for a in test_ids], axis=0)
     mean_fixed = np.mean([[err[a][i][0] for i in range(len(LIFE))] for a in test_ids], axis=0)
-    fig, ax1 = plt.subplots(figsize=(5, 3.2))
-    ax1.plot(LIFE, mean_h, "o-", color="tab:blue", label="P-V loop-area growth")
-    ax1.set_xlabel("normalized life"); ax1.set_ylabel("P-V loop area (xyoung)", color="tab:blue")
+    fig, ax1 = plt.subplots()
+    ax1.plot(LIFE, mean_h, "o-", color="#0072B2", label="P-V loop-area growth")
+    ax1.set_xlabel("normalized life"); ax1.set_ylabel("P-V loop area (×young)", color="#0072B2")
+    ax1.tick_params(axis="y", labelcolor="#0072B2")
     ax2 = ax1.twinx()
-    ax2.plot(LIFE, mean_fixed, "s--", color="tab:red", label="fixed-cal pose error")
-    ax2.set_ylabel("fixed-cal pose RMSE [mm]", color="tab:red")
-    plt.title(f"P-V loop area leads pose degradation (r={results['leading_indicator_corr']['r']:.2f})")
-    fig.tight_layout(); fig.savefig(os.path.join(DATA, "study3_fig3_leading_indicator.png"), dpi=130)
+    ax2.plot(LIFE, mean_fixed, "s--", color="#D55E00", label="fixed-cal pose error")
+    ax2.set_ylabel("fixed-cal pose RMSE [mm]", color="#D55E00")
+    ax2.tick_params(axis="y", labelcolor="#D55E00"); ax2.grid(False)
+    plt.title(f"P-V loop area leads pose degradation (r = {results['leading_indicator_corr']['r']:.2f})")
+    fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "study3_fig3_leading_indicator"))
     plt.close(fig)
 
     # Fig 4: the trade-off — pose error vs recalibration count per policy
-    plt.figure(figsize=(5, 3.2))
+    plt.figure()
     for name, mk in [("fixed", "o"), ("triggered", "D"), ("always", "s")]:
         p = pol[name]
-        plt.scatter(p["recal_per_actuator"], p["mean_pose_rmse_mm"], s=90, marker=mk, label=name)
+        plt.scatter(p["recal_per_actuator"], p["mean_pose_rmse_mm"], s=110, marker=mk, label=name)
     plt.xlabel("recalibrations per actuator (over life)")
     plt.ylabel("pose RMSE [mm]")
     plt.title("Recalibration trade-off (held-out actuators)")
     plt.legend(); plt.tight_layout()
-    plt.savefig(os.path.join(DATA, "study3_fig4_recal_tradeoff.png"), dpi=130)
+    figstyle.save(plt.gcf(), os.path.join(DATA, "study3_fig4_recal_tradeoff"))
     plt.close()
     print(f"figures + results -> {DATA}/")
 

@@ -189,7 +189,7 @@ machine precision; isolated-supply off-diagonal coupling at the solver-noise flo
 shared coupling is measurable (>10⁻⁴); and the Gate-0 property that DC cross-talk is
 compliance-independent while actuation-band cross-talk drifts with fatigue. (125 unit tests pass.)
 
-### 4.2 Cross-talk is real but second-order (negative result, retained)
+### 4.2 Cross-talk is real but second-order (negative result, retained; Fig. 1)
 The proposal predicted that shared-manifold cross-talk drift would be visible to a dynamic
 corrector and invisible to a static ridge, making the dynamic corrector win under the shared
 manifold. **This does not occur.** With all chamber commands available as features and
@@ -202,7 +202,11 @@ negative result and did not tune network parameters to manufacture the predicted
 a much softer supply enlarges the cross-talk enough to matter is left as an explicit
 parameter-sensitivity question.
 
-### 4.3 Compliance drift dominates the proprioception error
+![Static vs dynamic corrector](../data/sim/phaseD/study2_fig2_static_vs_dynamic.png)
+
+*Figure 1. Static vs dynamic (lagged-input) corrector on held-out actuators at old life; the dynamic corrector yields ~0% improvement under either supply topology — the predicted shared-manifold cross-talk advantage does not appear.*
+
+### 4.3 Compliance drift dominates the proprioception error (Fig. 2)
 A young-calibrated static estimator's curvature RMSE grows by roughly two orders of magnitude
 over life (≈0.004 → ≈0.46–0.56 1/m at 0.9 life), and the shared and isolated curves are
 comparable — the difference does not consistently favor the
@@ -210,11 +214,19 @@ shared-manifold-degrades-more hypothesis. The dominant pressure-only propriocept
 therefore the **topology-independent fatigue compliance-scale drift**, not cross-talk. This both
 explains §4.2 and motivates recalibration as the right intervention.
 
+![Compliance drift over life](../data/sim/phaseD/study2_fig1_drift.png)
+
+*Figure 2. Young-calibrated static estimator curvature RMSE over normalized life (shared vs isolated supply); error grows ~100x by end of life and is comparable across topologies — the degradation is the topology-independent compliance drift, not cross-talk.*
+
 ### 4.4 P-V loop area is a leading indicator (Fig. 3)
 On held-out actuators, the observable P-V loop-area fractional growth tracks the
 fixed-calibration pose error over life with **Pearson *r* = 0.885, 95% CI [0.835, 0.958]**
 (bootstrap, 2,000 resamples; CI excludes 0). The observable loop shape leads the proprioception
 degradation — the core positive result.
+
+![P-V loop area leads pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
+
+*Figure 3. Observable P-V loop-area growth (left axis) leads the fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958].*
 
 ### 4.5 Recalibration trade-off (Fig. 4)
 Against a stated 0.159 mm accuracy budget (selected on training actuators as halfway from the
@@ -231,6 +243,10 @@ P-V-triggered recalibration holds pose error near the always-on band (well insid
 **60% fewer recalibrations** (2 vs 5), and ≈7× better than fixed. Absolute errors are sub-mm in
 all policies (see §5), so the demonstrated value is the error-vs-cost trade-off and its transfer
 to unseen actuators, not the absolute accuracy.
+
+![Recalibration trade-off](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
+
+*Figure 4. Recalibration trade-off on held-out actuators — pose error vs recalibrations per actuator for fixed, P-V-triggered, and always-on policies; the triggered policy meets the accuracy budget at 60% fewer recalibrations than always-on.*
 
 ## 5. Discussion and limitations
 
