@@ -198,9 +198,8 @@ static ridge by **≈0% under either topology** (shared: 0.244 vs 0.244 1/m; iso
 0.295 1/m; pose ≈0.84 vs 0.84 mm and 1.02 vs 1.02 mm). The cross-talk is genuine in the network
 dynamics (§4.1) but is a small perturbation (≈4% of the focal curvature at these physically
 reasonable parameters) that does not materially degrade pose estimation. We retain this as a
-negative result and did not tune network parameters to manufacture the predicted effect; whether
-a much softer supply enlarges the cross-talk enough to matter is left as an explicit
-parameter-sensitivity question.
+negative result and did not tune network parameters to manufacture the predicted effect; §5
+characterizes the envelope over which it holds by sweeping the supply softness.
 
 ![Static vs dynamic corrector](../data/sim/phaseD/study2_fig2_static_vs_dynamic.png)
 
@@ -259,11 +258,28 @@ to unseen actuators, not the absolute accuracy.
   (Gate 0) but second-order for pose at realistic parameters. The proposal anticipated this
   "benign coupling" outcome as a publishable floor; the deliverable is the leading-indicator +
   recalibration result via the compliance-drift pathway.
+- **Parameter-sensitivity of cross-talk (envelope, Fig. 5).** To make the "second-order" claim a
+  characterized regime rather than a single-point assertion, we swept the network parameters that
+  set the coupling magnitude and measured the neighbor/driven response ratio at the actuation band
+  (`probe_coupling`, `scripts/run_study4.py`). The coupling rises monotonically with supply
+  softness: at the default parameters it is **6.3%**, and it crosses the **10%** "starts to matter"
+  line only when the supply resistance R_s is **≈1.7×** softer and the **20%** line at **≈4.3×**
+  softer. The manifold compliance C_m is a far weaker knob — a larger buffer reduces coupling, and
+  across a 128× span (×0.25 to ×32) it stays in the **5.8–6.3%** band and never reaches 10%. So
+  the negative result is not knife-edge: cross-talk remains second-order across realistic
+  shared-manifold designs and would only become first-order for pose under a deliberately
+  under-provisioned (several-fold throttled) supply. A confirmatory corrector check at the softer
+  settings is consistent — the dynamic (lagged) corrector still does not beat the static ridge at
+  these small-sample sizes, though its penalty shrinks as coupling grows.
 - **Sub-millimeter absolute errors.** Even never-recalibrating yields ≈0.40 mm pose RMSE at this
   sensor-noise level, so the operational case for triggered recalibration strengthens with
   tighter pose requirements, softer actuators (larger per-stage drift), or higher noise.
 - **Modeling choices.** The fatigue law, PCC single-segment kinematics, and lumped network are
   transparent assumptions chosen for analytic checkability, not calibrated fits.
+
+![Cross-talk vs shared-supply softness](../data/sim/phaseD/study4_fig_crosstalk_sensitivity.png)
+
+*Figure 5. Cross-talk coupling ratio (neighbor/driven response at the actuation band) vs shared-supply softness, as a multiple of each default parameter. Coupling rises monotonically with supply resistance R_s and is ≈6.3% at the default operating point (marked); it reaches the 10% and 20% "first-order" lines only at R_s ≈1.7× and ≈4.3× softer. Manifold compliance C_m is a weak knob (stays 5.8–6.3% across ×0.25–×32). The negative cross-talk result holds across realistic shared-manifold designs.*
 
 ## 6. Conclusion
 In simulation, the observable P-V loop shape is a quantified leading indicator (*r* ≈ 0.89) of
@@ -278,8 +294,9 @@ companion proposal).
 ## 7. Reproducibility
 All code, the dataset generator, and the analysis scripts are in the repository. The dataset is
 regenerable from a fixed seed (`python -m scripts.phaseD_dataset`; integrity pinned by the
-manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors) and
-`python -m scripts.run_study3` (leading indicator + recalibration). Frozen result JSON and
+manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors), `python -m scripts.run_study3`
+(leading indicator + recalibration), and `python -m scripts.run_study4` (cross-talk
+parameter-sensitivity envelope). Frozen result JSON and
 figures are committed under `data/sim/phaseD/`; the pre-registered claim and target figures are
 in `docs/result_spine.md`. 125 unit tests gate the pipeline.
 
