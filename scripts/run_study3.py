@@ -6,12 +6,20 @@ operational question is *when to recalibrate*. The thesis: the observable P-V lo
 (``pipeline.coupling``) is a leading indicator of that drift, so a P-V-health-triggered
 recalibration holds accuracy near an always-on policy at far fewer recalibrations.
 
-Three policies, each starting from one calibration at the youngest life stage:
+Four policies, each starting from one calibration at the youngest life stage:
   * fixed       — never recalibrate.
   * always      — recalibrate at every life stage.
+  * scheduled   — sensing-free clock baseline: recalibrate every ``period`` actuation cycles
+                  (absolute cycles — a clock cannot know an actuator's rupture life, so the
+                  period is global). **period is selected on TRAIN actuators only** by the
+                  same budget rule as tau.
   * triggered   — recalibrate when fractional P-V loop-area growth since the last calibration
                   exceeds tau. **tau is selected on TRAIN actuators only**, then applied to the
                   held-out TEST actuators.
+
+The scheduled baseline isolates what the *P-V measurement* buys over any monotone-with-time
+signal: the clock misaligns with per-actuator degradation state whenever rupture life varies
+across devices, while the trigger reads that state directly.
 
 Honesty rule (non-negotiable): report estimation error **and** recalibration count together, so
 a "savings" cannot hide degraded accuracy. The estimator is the static ridge (Phase E showed
@@ -32,6 +40,7 @@ from pipeline.correctors import RidgeCorrector, rmse
 from pipeline.coupling import (
     apply_schedule,
     bootstrap_correlation,
+    cycle_schedule,
     health_trajectory,
     recalibration_schedule,
 )
@@ -44,6 +53,7 @@ ALPHA = 1.0
 CAL_REPS = {0, 1, 2}        # calibration split
 EVAL_REPS = {3, 4}          # evaluation split
 TAU_GRID = np.round(np.linspace(0.0, 1.0, 21), 3)   # fractional loop-area growth thresholds
+PERIOD_GRID = np.arange(0.0, 4001.0, 100.0)          # clock periods [cycles] for the baseline
 # Operational accuracy budget: tolerate this fraction of the way from the best-achievable
 # (always-on) pose error toward the never-recalibrate (fixed) error. Selected on TRAIN
 # actuators, then the triggering threshold is applied unchanged to held-out TEST actuators.
@@ -104,21 +114,29 @@ def policy_metrics(err, hn, policy, tau=None):
     return float(np.mean(realized_err)), n_recal, realized_err
 
 
+def scheduled_metrics(err, cycles, period):
+    flags = cycle_schedule(cycles, period)
+    realized_err, n_recal = realized(err, flags)
+    return float(np.mean(realized_err)), n_recal, realized_err
+
+
 def main():
     d, m = load()
     train_ids = m["split_by_actuator_identity"]["train_ids"]
     test_ids = m["split_by_actuator_identity"]["test_ids"]
     acts = {a["id"]: a for a in m["actuators"]}
 
-    # per-actuator error matrices + normalized health trajectories
+    # per-actuator error matrices + normalized health trajectories + absolute cycle counts
     err = {}
     hn = {}
+    cyc = {}
     for aid in train_ids + test_ids:
         a = acts[aid]
         err[aid] = error_matrix(d, aid, a)
         h = health_trajectory(SLSParams(k1=a["k1"], k2=a["k2"], tau=a["tau"]),
                               a["rupture_cycles"], LIFE)
         hn[aid] = h / h[0]                         # fractional growth, starts at 1.0
+        cyc[aid] = np.asarray(LIFE) * a["rupture_cycles"]   # absolute cycles at each stage
 
     # --- threshold selection on TRAIN actuators only, against an accuracy budget ---
     train_always = np.mean([policy_metrics(err[a], hn[a], "always")[0] for a in train_ids])
@@ -134,11 +152,26 @@ def main():
     selected = max(ok, key=lambda s: s["tau"]) if ok else sweep[0]   # fewest recals within budget
     tau_star = selected["tau"]
 
+    # --- clock-baseline period selection on TRAIN actuators, same budget rule ---
+    period_sweep = []
+    for period in PERIOD_GRID:
+        em = [scheduled_metrics(err[a], cyc[a], period) for a in train_ids]
+        period_sweep.append({"period_cycles": float(period),
+                             "train_error_mm": float(np.mean([x[0] for x in em])),
+                             "train_recal": float(np.mean([x[1] for x in em]))})
+    ok_p = [s for s in period_sweep if s["train_error_mm"] <= budget_mm]
+    # fewest recals within budget -> longest period; tie-break toward lower error
+    sel_p = (max(ok_p, key=lambda s: s["period_cycles"]) if ok_p else period_sweep[0])
+    period_star = sel_p["period_cycles"]
+
     # --- apply to held-out TEST actuators ---
     def agg(policy, tau=None):
         es, rs = [], []
         for a in test_ids:
-            e, r, _ = policy_metrics(err[a], hn[a], policy, tau)
+            if policy == "scheduled":
+                e, r, _ = scheduled_metrics(err[a], cyc[a], period_star)
+            else:
+                e, r, _ = policy_metrics(err[a], hn[a], policy, tau)
             es.append(e); rs.append(r)
         return {"mean_pose_rmse_mm": float(np.mean(es)),
                 "total_recalibrations": int(np.sum(rs)),
@@ -147,15 +180,18 @@ def main():
     results = {
         "estimator": "static ridge (Phase E: dynamic adds nothing)",
         "life_fractions": LIFE, "tau_selected": tau_star,
+        "period_selected_cycles": period_star,
         "accuracy_budget_mm": float(budget_mm), "budget_frac": BUDGET_FRAC,
         "train_fixed_error_mm": float(train_fixed), "train_always_error_mm": float(train_always),
         "train_actuators": train_ids, "test_actuators": test_ids,
         "policies_on_heldout": {
             "fixed": agg("fixed"),
+            "scheduled": agg("scheduled"),
             "triggered": agg("triggered", tau_star),
             "always": agg("always"),
         },
         "threshold_sweep_train": sweep,
+        "period_sweep_train": period_sweep,
     }
 
     # --- leading-indicator: P-V health drift vs fixed-calibration pose error (held-out) ---
@@ -173,8 +209,9 @@ def main():
     pol = results["policies_on_heldout"]
     print(f"accuracy budget = {budget_mm:.3f} mm (train fixed {train_fixed:.2f} / always {train_always:.2f})")
     print(f"selected tau* = {tau_star} (fractional P-V loop-area growth; train-selected)")
+    print(f"selected clock period* = {period_star:.0f} cycles (train-selected, same budget rule)")
     print("=== held-out actuators: error vs recalibration count ===")
-    for name in ("fixed", "triggered", "always"):
+    for name in ("fixed", "scheduled", "triggered", "always"):
         p = pol[name]
         print(f"  {name:9s} pose RMSE {p['mean_pose_rmse_mm']:.2f} mm | "
               f"recal/actuator {p['recal_per_actuator']:.1f} | total {p['total_recalibrations']}")
@@ -209,7 +246,7 @@ def main():
 
     # Fig 4: the trade-off — pose error vs recalibration count per policy
     plt.figure()
-    for name, mk in [("fixed", "o"), ("triggered", "D"), ("always", "s")]:
+    for name, mk in [("fixed", "o"), ("scheduled", "^"), ("triggered", "D"), ("always", "s")]:
         p = pol[name]
         plt.scatter(p["recal_per_actuator"], p["mean_pose_rmse_mm"], s=110, marker=mk, label=name)
     plt.xlabel("recalibrations per actuator (over life)")

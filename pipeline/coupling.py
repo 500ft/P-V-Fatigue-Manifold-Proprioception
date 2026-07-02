@@ -97,6 +97,29 @@ def recalibration_schedule(health, policy, tau=None):
     raise ValueError(f"unknown policy {policy!r}")
 
 
+def cycle_schedule(cycles, period):
+    """Per-life-stage calibrate? flags for a sensing-free cycle-count (clock) policy.
+
+    The obvious cheap competitor to the P-V trigger: recalibrate whenever the
+    accumulated actuation-cycle count since the last calibration exceeds ``period``
+    (absolute cycles — a real clock cannot know an actuator's rupture life, so the
+    period is global, not per-actuator). Stage 0 always calibrates. Decisions are
+    only available at observation stages, same as the trigger, so the comparison
+    is like-for-like.
+    """
+    cycles = np.asarray(cycles, float)
+    n = cycles.size
+    if n == 0:
+        return []
+    flags = [True] + [False] * (n - 1)
+    last = cycles[0]
+    for i in range(1, n):
+        if cycles[i] - last > period:
+            flags[i] = True
+            last = cycles[i]
+    return flags
+
+
 def apply_schedule(flags, errors_if_recalibrated, errors_if_stale):
     """Resolve realized per-stage error given a calibrate? schedule.
 

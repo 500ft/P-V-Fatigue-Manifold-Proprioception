@@ -33,7 +33,8 @@ fatigue-coupled piecewise-constant-curvature (PCC) tip kinematics; a seeded sens
 shared-manifold-versus-isolated-supply network simulator in which inter-chamber cross-talk lives
 in the actuation-band dynamics. From 2,000 labeled traces (20 actuators × 5 life stages × 2
 supply topologies × 2 contact states × 5 repetitions), split by **actuator identity**, we
-evaluate static and dynamic pressure-only correctors and three recalibration policies.
+evaluate static and dynamic pressure-only correctors and four recalibration policies
+(never, cycle-count clock, P-V-triggered, always-on).
 
 We report three findings, including a negative one. **(1)** A predicted advantage of a dynamic
 (lagged-input) corrector over a static ridge map under the shared manifold **does not
@@ -45,7 +46,10 @@ roughly two orders of magnitude over life. **(3)** The observable P-V loop area 
 leading indicator of that drift (Pearson *r* = 0.885, 95% CI [0.835, 0.958] on held-out
 actuators), and a P-V-health-triggered recalibration policy holds pose error within a stated
 accuracy budget at **60% fewer recalibrations** than an always-on policy (2 vs 5 per actuator),
-with the trigger threshold selected on training actuators only. **Scope caveat (stated up
+with the trigger threshold selected on training actuators only. A sensing-free cycle-count
+schedule tuned by the same rule fails that budget on held-out actuators (0.21 mm vs the
+0.159 mm budget) at a similar recalibration count — the measured P-V state, not the mere
+passage of cycles, is what transfers across actuators. **Scope caveat (stated up
 front):** all 20 actuators are drawn from a single generative model, so "generalization to
 unseen actuators" tests robustness to that generator, not real device-to-device variation; and
 absolute pose errors remain sub-millimeter throughout, so the operational value of triggered
@@ -108,8 +112,10 @@ masks anomalous sensors [Sugiyama 2025]; a *fatigue-health-triggered* recalibrat
 contrast we evaluate.
 
 **Ground truth and evaluation.** We follow the soft-proprioception evaluation conventions of
-Zhang et al. [2023] and report pose RMSE and contact F1; PCC [Webster & Jones 2010] is treated
-as a modeled output, never as measured truth.
+Zhang et al. [2023] and report pose RMSE (contact state is generated and stored in the dataset
+but is not an estimation target in this study — the correctors regress curvature/pose only, so
+no contact F1 is reported); PCC [Webster & Jones 2010] is treated as a modeled output, never as
+measured truth.
 
 ## 3. Modeling and methods
 
@@ -234,23 +240,33 @@ degradation — the core positive result.
 
 ### 4.5 Recalibration trade-off (Fig. 4)
 Against a stated 0.159 mm accuracy budget (selected on training actuators as halfway from the
-always-on error toward the never-recalibrate error), the trigger threshold τ\* = 0.05 fractional
-loop-area growth, selected on training actuators, transfers to held-out actuators as:
+always-on error toward the never-recalibrate error), we compare four policies. Besides fixed and
+always-on, the P-V trigger must beat the obvious *sensing-free* competitor: a **cycle-count
+clock** that recalibrates every *T* actuation cycles. Both adaptive policies are tuned on
+training actuators by the same rule (fewest recalibrations within budget): τ\* = 0.05 fractional
+loop-area growth for the trigger, *T*\* = 2,700 cycles for the clock (train errors 0.044 and
+0.132 mm respectively — both within budget on train). On held-out actuators:
 
-| Policy | Pose RMSE (held-out) | Recalibrations / actuator |
-|---|---:|---:|
-| fixed (never) | 0.40 mm | 1 |
-| **P-V-triggered (τ\*=0.05)** | **0.06 mm** | **2** |
-| always-on | 0.02 mm | 5 |
+| Policy | Pose RMSE (held-out) | Recalibrations / actuator | Meets 0.159 mm budget? |
+|---|---:|---:|---|
+| fixed (never) | 0.40 mm | 1 | no |
+| cycle-count clock (*T*\*=2,700) | 0.21 mm | 1.5 | **no — fails on transfer** |
+| **P-V-triggered (τ\*=0.05)** | **0.06 mm** | **2** | **yes (2.7× margin)** |
+| always-on | 0.02 mm | 5 | yes |
 
-P-V-triggered recalibration holds pose error near the always-on band (well inside budget) at
-**60% fewer recalibrations** (2 vs 5), and ≈7× better than fixed. Absolute errors are sub-mm in
-all policies (see §5), so the demonstrated value is the error-vs-cost trade-off and its transfer
-to unseen actuators, not the absolute accuracy.
+Two comparisons matter. Against always-on, the trigger holds pose error near the always-on band
+at **60% fewer recalibrations** (2 vs 5 per actuator). Against the clock — the comparison that
+isolates what the *P-V measurement itself* buys — the clock, tuned within budget on training
+actuators, **violates the budget on held-out actuators** (0.21 mm > 0.159 mm) at a similar
+recalibration count, because a global cycle period misaligns with per-actuator degradation
+state whenever rupture life varies across devices (here drawn from 3,000–4,000 cycles), while
+the trigger reads that state directly and transfers safely. Absolute errors are sub-mm in all
+policies (see §5), so the demonstrated value is the error-vs-cost trade-off and its transfer to
+unseen actuators, not the absolute accuracy.
 
 ![Recalibration trade-off](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*Figure 4. Recalibration trade-off on held-out actuators — pose error vs recalibrations per actuator for fixed, P-V-triggered, and always-on policies; the triggered policy meets the accuracy budget at 60% fewer recalibrations than always-on.*
+*Figure 4. Recalibration trade-off on held-out actuators — pose error vs recalibrations per actuator for fixed, cycle-count clock, P-V-triggered, and always-on policies. The triggered policy meets the accuracy budget at 60% fewer recalibrations than always-on; the sensing-free clock, tuned within budget on training actuators by the same rule, fails the budget on transfer.*
 
 ## 5. Discussion and limitations
 
@@ -259,6 +275,23 @@ to unseen actuators, not the absolute accuracy.
 - **One generative model.** All 20 actuators come from a single generator, so held-out
   evaluation tests robustness to that generator's variation, not real device-to-device spread.
   This is the first thing a reviewer should weigh and is stated in the abstract.
+- **What could have made *r* low (why 0.885 is informative and not built in).** A fair
+  objection: the fatigue model makes both compliance drift and loop area monotone in the same
+  latent life variable, so doesn't the correlation follow by construction? Between the latent
+  state and the reported statistic sit the mechanisms the study exists to test, and each could
+  have broken it: the correlation uses the **observable** loop area from a noisy, quantized,
+  decimated volumetric probe at one drive frequency — not the ground-truth compliance — so probe
+  noise and the finite excitation could have decorrelated it; **Mullins recovery** superimposes
+  a reversible, rest-history-dependent loop-area component on the irreversible drift, and a
+  probe that failed to separate them would track rest schedule, not damage; the pose error
+  depends on the *estimator through the PCC map and sensor chain*, not on compliance directly,
+  so a poorly conditioned corrector could have decoupled error growth from loop-area growth; and
+  per-actuator variation in geometry, wall stiffness, and rupture life (drawn independently)
+  scatters the pooled correlation — the same variation that defeats the cycle-count clock in
+  §4.5. The CI half-width (±0.06) measures how much these mechanisms *did* degrade the link.
+  What the single-generator caveat still owns: real silicone adds failure modes (delamination,
+  local tearing, temperature sensitivity) that no parameter draw from this generator produces —
+  which is exactly what the hardware spot-check must test.
 - **The headline cross-talk hypothesis was not supported.** Cross-talk is monotone in compliance
   (Gate 0) but second-order for pose at realistic parameters. The proposal anticipated this
   "benign coupling" outcome as a publishable floor; the deliverable is the leading-indicator +
@@ -290,7 +323,8 @@ to unseen actuators, not the absolute accuracy.
 In simulation, the observable P-V loop shape is a quantified leading indicator (*r* ≈ 0.89) of
 fatigue-driven pressure-only proprioception drift in shared-manifold soft grippers, and a
 P-V-health-triggered recalibration policy meets an accuracy budget at a fraction of the
-recalibration cost of always-on adaptation, transferring from training to held-out actuators.
+recalibration cost of always-on adaptation, transferring from training to held-out actuators —
+where a sensing-free cycle-count schedule tuned by the same rule does not.
 The shared-manifold cross-talk, while real, is second-order for pose at realistic parameters — a
 retained negative result. The natural next step is a physical bench campaign to anchor the
 synthetic story (single-actuator micro-tear spot-check, then the N≈10 fatigue campaign of the
