@@ -6,13 +6,16 @@
 experiments are reported; every result is synthetic and is labeled as such. Modeling
 assumptions are stated as choices, not as calibrated predictions for a physical actuator.
 
-**Venue (decided — a robotics venue; submission not yet authorized).** The target is a robotics
-venue. For a simulation/method contribution in soft robotics, **IEEE RoboSoft** is the natural
-fit (it accepts modeling/simulation work); **RA-L** becomes appropriate once a physical bench
-campaign is added (RA-L typically expects hardware validation). The simulation-only scope and
-the single-generator caveat are foregrounded above so the framing matches the venue. **This
-manuscript is held as a complete draft and is NOT to be submitted (or otherwise posted
-publicly) until an explicit go decision is given.**
+**Venue & status (GO decision taken 2026-07-02).** The submission hold is lifted: **GO for
+arXiv-first posting** (`cs.RO`, cross-list `eess.SY`), decided 2026-07-02 under the owner's
+delegated portfolio review. Rationale: the summer deliverable was defined as a *public* arXiv
+preprint; the manuscript is complete, verified against the study JSONs, and written for exactly
+this scope (sim-only honesty and the single-generator caveat are foregrounded); an unshipped
+finished preprint loses value every week while carrying no upside. Peer-review submission is a
+separate, later decision: **IEEE RoboSoft** at its next deadline cycle for the sim/method
+contribution; **RA-L** only once a physical bench campaign exists. The remaining action is the
+mechanical upload by the owner (arXiv account + possible first-submission endorsement) — see
+`docs/SUBMISSION.md` for the checklist.
 
 ---
 
