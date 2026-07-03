@@ -2,7 +2,7 @@
 
 **Author:** Mergen Ulziibayar · NYU Tandon, Dept. of Mechanical & Aerospace Engineering
 
-**Status:** Draft v1.1 (2026-07-03). **This is a simulation-only modeling study.** No physical
+**Status:** Draft v1.2 (2026-07-03). **This is a simulation-only modeling study.** No physical
 experiments are reported; every result is synthetic and is labeled as such. Modeling
 assumptions are stated as choices, not as calibrated predictions for a physical actuator.
 
@@ -36,7 +36,7 @@ supply topologies × 2 contact states × 5 repetitions), split by **actuator ide
 evaluate static and dynamic pressure-only correctors and four recalibration policies
 (never, cycle-count clock, P-V-triggered, always-on).
 
-We report three findings, including a negative one. **(1)** A predicted advantage of a dynamic
+We report four findings, including two negative/audit results. **(1)** A predicted advantage of a dynamic
 (lagged-input) corrector over a static ridge map under the shared manifold **does not
 materialize**: the cross-talk is real in the network dynamics but second-order, and the dynamic
 corrector improves pose error by ≈0% at physically reasonable parameters. **(2)** The dominant
@@ -44,16 +44,17 @@ pressure-only proprioception error is instead the fatigue **compliance-scale dri
 topology-independent and causes a young-calibrated estimator's curvature error to grow by
 roughly two orders of magnitude over life. **(3)** The observable P-V loop area is a strong
 health indicator of that drift (Pearson *r* = 0.885, 95% CI [0.835, 0.958] on held-out
-actuators; per-actuator *r* median 0.957, range [0.9570, 0.9574], reported for structure only),
-and a P-V-health-triggered recalibration policy holds pose error within a stated accuracy budget
-at **60% fewer recalibrations** than an always-on policy (2 vs 5 per actuator), with the trigger
-threshold selected on training actuators only. A lead-time audit found **no positive temporal
+actuators), but a lead-time audit found **no positive temporal
 lead** under that deployed threshold on the 5-stage grid: the trigger crossing occurred at life
 0.83, while the fixed-calibration budget crossing occurred earlier (median 0.71, range
 0.56-0.71), giving median lead = -0.123 normalized life (6/6 held-out actuators nonpositive).
-A sensing-free cycle-count
-schedule tuned by the same rule fails that budget on held-out actuators (0.21 mm vs the
-0.159 mm budget) at a similar recalibration count — the measured P-V state, not the mere
+A descriptive frontier shows why: lowering sensitivity to τ=0.01 buys positive lead for all
+held-out actuators (median +0.346 normalized life) while still using 40% fewer recalibrations
+than always-on. **(4)** The deployed P-V-health-triggered recalibration policy holds pose error
+within a stated accuracy budget at **60% fewer recalibrations** than an always-on policy (2 vs
+5 per actuator), with the trigger threshold selected on training actuators only. A sensing-free
+cycle-count schedule tuned by the same rule fails that budget on held-out actuators (0.21 mm vs
+the 0.159 mm budget) at a similar recalibration count — the measured P-V state, not the mere
 passage of cycles, is what transfers across actuators. **Scope caveat (stated up
 front):** all 20 actuators are drawn from a single generative model, so "generalization to
 unseen actuators" tests robustness to that generator, not real device-to-device variation; and
@@ -85,7 +86,9 @@ precision; isolated supplies give numerically zero cross-talk), and every estima
 against its own ground truth. The contribution of this paper is therefore the **pipeline, the
 design outputs, and a pre-specified modeling result framed as a prediction** (frozen in
 `docs/result_spine.md`, commit `d856455`, before result write-up) — not an
-experimental claim.
+experimental claim. The pre-specified temporal-lead expectation was audited explicitly and
+downgraded when the deployed threshold failed to show positive lead, which is the intended role
+of the frozen spine.
 
 ## 2. Related work and prior-art boundary
 
@@ -239,22 +242,33 @@ explains §4.2 and motivates recalibration as the right intervention.
 ### 4.4 P-V loop area is a health indicator, not a positive-lead trigger on this grid (Fig. 3)
 On held-out actuators, the observable P-V loop-area fractional growth tracks the
 fixed-calibration pose error over life with **Pearson *r* = 0.885, 95% CI [0.835, 0.958]**
-(bootstrap, 2,000 resamples; CI excludes 0). The same monotone structure also appears within
+(bootstrap, 2,000 resamples; CI excludes 0). The same monotone structure appears within
 actuators: per-actuator *r* has median 0.957 and range [0.9570, 0.9574] across the six held-out
-actuators (5 stages each; reported for structure consistency, not significance).
+actuators (5 stages each). That tight range is not independent evidence from six distinct
+health trajectories: in this generator, young-normalization makes the P-V health trajectory
+identical to numerical precision across actuator parameter draws. The per-actuator result is
+therefore a decoded generator property and part of the single-generator caveat, not a claim of
+real device-to-device health-signal diversity.
 
-The temporal lead audit is negative. Using the deployed train-selected τ\*=0.05 threshold, the
-trigger crossing occurs at life 0.83 for each held-out actuator, while the young/fixed-calibration
-error crosses the 0.159 mm budget earlier: median life 0.71, range 0.56-0.71. Linear
-interpolation between the five life stages gives median lead = -0.123 normalized life, range
-[-0.269, -0.115] (about -972 to -375 cycles across the held-out rupture lives); all 6/6 held-out
-actuators are nonpositive-lead cases. Thus the observable loop area is a strong health correlate
-and useful recalibration trigger, but this 5-stage study does **not** demonstrate positive
-temporal lead.
+The temporal lead audit has three parts. First, at the deployed train-selected τ\*=0.05
+threshold, the trigger crossing occurs at life 0.83 for each held-out actuator, while the
+young/fixed-calibration error crosses the 0.159 mm budget earlier: median life 0.71, range
+0.56-0.71. Linear interpolation between the five life stages gives median lead = -0.123
+normalized life, range [-0.269, -0.115] (about -972 to -375 cycles across the held-out rupture
+lives); all 6/6 held-out actuators are nonpositive-lead cases. Second, a descriptive frontier
+shows that lead is purchasable, not free: τ=0.01 triggers at median life 0.36 with median lead
++0.346 normalized life (range +0.199 to +0.354), uses 3 recalibrations per actuator, and remains
+within budget at 0.029 mm; τ=0.02 still meets budget at 0.037 mm with 3 recalibrations, but 1/6
+held-out actuators has nonpositive lead. At the most sensitive frontier point, τ=0.005 fires
+at every life stage and is identical to always-on (5 recalibrations, 0.019 mm). Third, the
+deployed τ\*=0.05 point fires late because the normalized signal's full dynamic range is only
+6.5% over life, so τ\* consumes about 77% of the available range. Thus the observable loop area
+is a strong health correlate and useful recalibration trigger, but positive temporal lead is
+configuration-dependent and is not a title-level claim.
 
 ![P-V loop area tracks pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
 
-*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958]. The deployed trigger threshold does not provide positive temporal lead on the 5-stage grid.*
+*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958]. The deployed threshold does not provide positive temporal lead, but lower thresholds define a lead-vs-recalibration frontier.*
 
 ### 4.5 Recalibration trade-off (Fig. 4)
 Against a stated 0.159 mm accuracy budget (selected on training actuators as halfway from the
@@ -278,7 +292,8 @@ isolates what the *P-V measurement itself* buys — the clock, tuned within budg
 actuators, **violates the budget on held-out actuators** (0.21 mm > 0.159 mm) at a similar
 recalibration count, because a global cycle period misaligns with per-actuator degradation
 state whenever rupture life varies across devices (here drawn from 3,000–4,000 cycles), while
-the trigger reads that state directly and transfers safely. Absolute errors are sub-mm in all
+the trigger is effectively a normalized-life sensor in this generator and transfers safely.
+Absolute errors are sub-mm in all
 policies (see §5), so the demonstrated value is the error-vs-cost trade-off and its transfer to
 unseen actuators, not the absolute accuracy.
 
@@ -303,9 +318,10 @@ unseen actuators, not the absolute accuracy.
   a reversible, rest-history-dependent loop-area component on the irreversible drift, and a
   probe that failed to separate them would track rest schedule, not damage; the pose error
   depends on the *estimator through the PCC map and sensor chain*, not on compliance directly,
-  so a poorly conditioned corrector could have decoupled error growth from loop-area growth; and
-  per-actuator variation in geometry, wall stiffness, and rupture life (drawn independently)
-  scatters the pooled correlation — the same variation that defeats the cycle-count clock in
+  so a poorly conditioned corrector could have decoupled error growth from loop-area growth. In
+  the realized generator, however, the young-normalized P-V health trajectory is effectively
+  identical across actuators; the scatter that remains comes from the pose-error trajectories'
+  scale and rupture-life variation — the same variation that defeats the cycle-count clock in
   §4.5. The CI half-width (±0.06) measures how much these mechanisms *did* degrade the link.
   What the single-generator caveat still owns: real silicone adds failure modes (delamination,
   local tearing, temperature sensitivity) that no parameter draw from this generator produces —

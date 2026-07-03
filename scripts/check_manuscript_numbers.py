@@ -30,6 +30,14 @@ def pct(x: float) -> str:
     return f"{100 * x:.1f}%"
 
 
+def frontier_point(s3, tau: float):
+    points = s3["lead_frontier_heldout"]["points"]
+    for point in points:
+        if abs(point["tau"] - tau) < 1e-12:
+            return point
+    raise AssertionError(f"missing frontier tau={tau}")
+
+
 def main():
     text = MANUSCRIPT.read_text(encoding="utf-8")
     s3 = load_json(STUDY3)
@@ -39,7 +47,7 @@ def main():
     require(text, f"Pearson *r* = {corr['r']:.3f}, 95% CI [{corr['ci_low']:.3f}, {corr['ci_high']:.3f}]")
 
     per = s3["per_actuator_r"]
-    require(text, f"per-actuator *r* median {per['median']:.3f}, range [{per['min']:.4f}, {per['max']:.4f}]")
+    require(text, f"per-actuator *r* has median {per['median']:.3f} and range [{per['min']:.4f}, {per['max']:.4f}]")
 
     lead = s3["lead_time_heldout"]
     require(text, f"life {lead['median_trigger_life']:.2f}")
@@ -66,6 +74,31 @@ def main():
         require(text, f"| {recal_str} |")
     savings = 1.0 - policies["triggered"]["recal_per_actuator"] / policies["always"]["recal_per_actuator"]
     require(text, f"{savings:.0%} fewer recalibrations")
+
+    f005 = frontier_point(s3, 0.005)
+    f001 = frontier_point(s3, 0.01)
+    f002 = frontier_point(s3, 0.02)
+    f0050 = frontier_point(s3, 0.05)
+    if f0050["mean_pose_rmse_mm"] != policies["triggered"]["mean_pose_rmse_mm"]:
+        raise AssertionError("tau=0.05 frontier error must equal deployed triggered error")
+    if f0050["recal_per_actuator"] != policies["triggered"]["recal_per_actuator"]:
+        raise AssertionError("tau=0.05 frontier recals must equal deployed triggered recals")
+    if f005["mean_pose_rmse_mm"] != policies["always"]["mean_pose_rmse_mm"]:
+        raise AssertionError("tau=0.005 frontier error must equal always-on error")
+    if f005["recal_per_actuator"] != policies["always"]["recal_per_actuator"]:
+        raise AssertionError("tau=0.005 frontier recals must equal always-on recals")
+    require(text, f"τ=0.01 triggers at median life {f001['trigger_life_median']:.2f}")
+    require(text, f"median lead +{f001['lead_life_median']:.3f} normalized life")
+    require(text, f"range +{f001['lead_life_min']:.3f} to +{f001['lead_life_max']:.3f}")
+    require(text, f"{f001['recal_per_actuator']:.0f} recalibrations per actuator")
+    require(text, f"{f001['mean_pose_rmse_mm']:.3f} mm")
+    require(text, f"τ=0.02 still meets budget at {f002['mean_pose_rmse_mm']:.3f} mm")
+    require(text, f"{f002['n_nonpositive_lead']}/6 held-out actuators has nonpositive lead")
+    require(text, f"τ=0.005 fires at every life stage")
+    require(text, f"{f005['recal_per_actuator']:.0f} recalibrations, {f005['mean_pose_rmse_mm']:.3f} mm")
+    dyn = s3["lead_frontier_heldout"]["signal_dynamic_range_median"]
+    require(text, f"{100 * dyn:.1f}% over life")
+    require(text, f"{100 * s3['tau_selected'] / dyn:.0f}% of the available range")
 
     require(text, pct(s4["default_coupling"]))
     rs = s4["softness_multiplier_at_threshold"]["R_s"]

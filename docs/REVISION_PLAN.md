@@ -102,6 +102,12 @@ says unconditional "leading indicator"; then the owner uploads per
 
 _Original item prose (A2.1–A2.4) retained below for rationale:_
 
+**Executed 2026-07-03.** The descriptive frontier is stored in
+`lead_frontier_heldout`; τ\*=0.05 remains the deployed policy, τ=0.005 is
+identical to always-on, and §4.4 now reports that lead is purchasable but not
+free. Draft v1.2 keeps the health-indicator title, decodes normalized-health
+uniformity as a generator property, and leaves `docs/result_spine.md` frozen.
+
 ### A2.1 The lead-vs-recalibration frontier (core item)
 
 **Why.** The health signal's full dynamic range over life is only **6.5%

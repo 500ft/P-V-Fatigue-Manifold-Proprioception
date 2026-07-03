@@ -56,6 +56,7 @@ CAL_REPS = {0, 1, 2}        # calibration split
 EVAL_REPS = {3, 4}          # evaluation split
 TAU_GRID = np.round(np.linspace(0.0, 1.0, 21), 3)   # fractional loop-area growth thresholds
 PERIOD_GRID = np.arange(0.0, 4001.0, 100.0)          # clock periods [cycles] for the baseline
+LEAD_FRONTIER_TAU = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
 # Operational accuracy budget: tolerate this fraction of the way from the best-achievable
 # (always-on) pose error toward the never-recalibrate (fixed) error. Selected on TRAIN
 # actuators, then the triggering threshold is applied unchanged to held-out TEST actuators.
@@ -140,10 +141,67 @@ def summarize_leads(records):
         "min_budget_violation_life": float(np.min(budget)) if budget else None,
         "max_budget_violation_life": float(np.max(budget)) if budget else None,
         "min_lead_cycles": float(np.min(cycles)) if cycles else None,
+        "median_lead_cycles": float(np.median(cycles)) if cycles else None,
         "max_lead_cycles": float(np.max(cycles)) if cycles else None,
         "n_excluded": int(len(records) - len(finite)),
         "status_counts": {s: int(sum(r["status"] == s for r in records))
                           for s in ("ok", "never_triggers", "never_violates", "nonpositive_lead")},
+    }
+
+
+def frontier_point(tau, test_ids, err, hn, acts, budget_mm):
+    """Held-out lead/error/recalibration summary for one descriptive threshold."""
+    records = []
+    errors, recals = [], []
+    for aid in test_ids:
+        fixed_err = [err[aid][i][0] for i in range(len(LIFE))]
+        lt = lead_time(hn[aid], fixed_err, tau, budget_mm, LIFE)
+        lead_life = lt["lead_life"]
+        records.append({
+            "actuator_id": int(aid),
+            "rupture_cycles": float(acts[aid]["rupture_cycles"]),
+            "trigger_life": lt["trigger_life"],
+            "budget_violation_life": lt["budget_violation_life"],
+            "lead_life": lead_life,
+            "lead_cycles": float(lead_life * acts[aid]["rupture_cycles"]) if lead_life is not None else None,
+            "status": lt["status"],
+        })
+        e, r, _ = policy_metrics(err[aid], hn[aid], "triggered", tau)
+        errors.append(e)
+        recals.append(r)
+    lead = summarize_leads(records)
+    return {
+        "tau": float(tau),
+        "trigger_life_median": lead["median_trigger_life"],
+        "trigger_life_min": lead["min_trigger_life"],
+        "trigger_life_max": lead["max_trigger_life"],
+        "lead_life_median": lead["median_lead_life"],
+        "lead_life_min": lead["min_lead_life"],
+        "lead_life_max": lead["max_lead_life"],
+        "lead_cycles_median": lead["median_lead_cycles"],
+        "lead_cycles_min": lead["min_lead_cycles"],
+        "lead_cycles_max": lead["max_lead_cycles"],
+        "recal_per_actuator": float(np.mean(recals)),
+        "mean_pose_rmse_mm": float(np.mean(errors)),
+        "budget_met": bool(float(np.mean(errors)) <= budget_mm),
+        "n_positive_lead": int(sum(r["status"] == "ok" for r in records)),
+        "n_nonpositive_lead": int(sum(r["status"] == "nonpositive_lead" for r in records)),
+        "n_excluded": lead["n_excluded"],
+        "status_counts": lead["status_counts"],
+        "per_actuator": records,
+    }
+
+
+def lead_frontier(test_ids, err, hn, acts, budget_mm, tau_values=LEAD_FRONTIER_TAU):
+    """Descriptive held-out lead/recalibration frontier; does not select a policy."""
+    points = [frontier_point(tau, test_ids, err, hn, acts, budget_mm) for tau in tau_values]
+    ranges = [float(np.max(hn[aid]) - hn[aid][0]) for aid in test_ids]
+    return {
+        "tau_values": [float(t) for t in tau_values],
+        "signal_dynamic_range_median": float(np.median(ranges)),
+        "signal_dynamic_range_min": float(np.min(ranges)),
+        "signal_dynamic_range_max": float(np.max(ranges)),
+        "points": points,
     }
 
 
@@ -249,6 +307,7 @@ def main():
                          for rec in per_act["values"]]
     results["per_actuator_r"] = per_act
     results["lead_time_heldout"] = summarize_leads(lead_records)
+    results["lead_frontier_heldout"] = lead_frontier(test_ids, err, hn, acts, budget_mm)
 
     os.makedirs(DATA, exist_ok=True)
     json.dump(results, open(os.path.join(DATA, "study3_results.json"), "w"), indent=2)

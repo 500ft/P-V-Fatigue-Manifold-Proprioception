@@ -22,6 +22,17 @@ def test_health_signal_grows_with_life():
     assert h[-1] > h[0]
 
 
+def test_normalized_health_is_generator_life_fraction_signal():
+    life = [0.1, 0.3, 0.5, 0.7, 0.9]
+    a = health_trajectory(SLSParams(k1=1.0e7, k2=2.5e6, tau=0.07),
+                          rupture_cycles=3000.0, life_fractions=life)
+    b = health_trajectory(SLSParams(k1=1.4e7, k2=1.8e6, tau=0.12),
+                          rupture_cycles=4000.0, life_fractions=life)
+    # In this generator, young-normalization cancels actuator parameters; the
+    # health signal is effectively a normalized-life trajectory.
+    np.testing.assert_allclose(a / a[0], b / b[0], atol=1e-12, rtol=0.0)
+
+
 def test_pv_loop_area_positive():
     assert pv_loop_area(SLSParams()) > 0.0
 
