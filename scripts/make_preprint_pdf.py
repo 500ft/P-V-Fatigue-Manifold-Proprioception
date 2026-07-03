@@ -139,7 +139,7 @@ def build():
 
     SimpleDocTemplate(OUT, pagesize=LETTER, leftMargin=0.9*inch, rightMargin=0.9*inch,
                       topMargin=0.9*inch, bottomMargin=0.9*inch,
-                      title="P-V Loop Shape as a Fatigue Leading Indicator (preprint draft)").build(story)
+                      title="P-V Loop Shape as a Fatigue Health Indicator (preprint draft)").build(story)
     print(f"PDF written: {OUT}")
 
 

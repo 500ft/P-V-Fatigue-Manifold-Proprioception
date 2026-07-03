@@ -1,4 +1,4 @@
-# arXiv Submission Checklist — preprint v1
+# arXiv Submission Checklist — preprint v1.2
 
 **Decision: GO for arXiv-first posting, taken 2026-07-02** (delegated portfolio
 review; rationale recorded in the manuscript status block and

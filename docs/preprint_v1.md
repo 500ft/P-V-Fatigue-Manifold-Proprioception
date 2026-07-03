@@ -259,8 +259,10 @@ lives); all 6/6 held-out actuators are nonpositive-lead cases. Second, a descrip
 shows that lead is purchasable, not free: τ=0.01 triggers at median life 0.36 with median lead
 +0.346 normalized life (range +0.199 to +0.354), uses 3 recalibrations per actuator, and remains
 within budget at 0.029 mm; τ=0.02 still meets budget at 0.037 mm with 3 recalibrations, but 1/6
-held-out actuators has nonpositive lead. At the most sensitive frontier point, τ=0.005 fires
-at every life stage and is identical to always-on (5 recalibrations, 0.019 mm). Third, the
+held-out actuators has nonpositive lead; that case is actuator 17, the same early budget-crossing
+held-out actuator that dominates the deployed threshold's worst negative lead. At the most
+sensitive frontier point, τ=0.005 fires at every life stage and is identical to always-on
+(5 recalibrations, 0.019 mm). Third, the
 deployed τ\*=0.05 point fires late because the normalized signal's full dynamic range is only
 6.5% over life, so τ\* consumes about 77% of the available range. Thus the observable loop area
 is a strong health correlate and useful recalibration trigger, but positive temporal lead is
