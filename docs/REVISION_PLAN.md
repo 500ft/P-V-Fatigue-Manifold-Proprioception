@@ -24,10 +24,83 @@ arXiv upload; Wave B is the RoboSoft-deadline package and does NOT block it._
 
 ## Wave A.2 — post-audit corrections (~half a session; blocks the upload)
 
-_Added 2026-07-03 after the independent audit of commit `6c538d4`. The Wave A
-execution was verified correct (code, tests, CI, spine left frozen, downgrade
-propagated). The audit found the negative-lead story is told too bleakly and
-one uniformity in the results is reported without being decoded. Three items._
+_Added 2026-07-03 after the independent audit of commit `6c538d4`; **FINALIZED
+2026-07-03 after owner review** — this section is now the implementation spec.
+The Wave A execution was verified correct (code, tests, CI, spine left frozen,
+downgrade propagated). The audit found the negative-lead story is told too
+bleakly and one uniformity in the results is reported without being decoded._
+
+### FINAL implementation spec (supersedes the item prose below where they differ)
+
+**Hard rules (owner-confirmed):**
+- The title stays "health indicator". The frontier proves temporal lead is
+  threshold-dependent — that is not a title-level "leading indicator" claim.
+- Deployed policy frozen: `TAU_GRID`, `tau_selected = 0.05`, the §4.5 policy
+  table, recal counts, T\*, and all budget claims stay byte-identical.
+  `check_manuscript_numbers.py` (already asserting them) is the guard.
+- `result_spine.md` stays frozen.
+
+**Step 1 — `lead_frontier_heldout` (descriptive sweep, `run_study3.py`).**
+`FRONTIER_TAUS = (0.005, 0.01, 0.02, 0.03, 0.04, 0.05)`. Per τ, on held-out
+actuators only (no training involvement, no selection):
+```
+{tau, trigger_life_median,
+ lead_life: {median, min, max}, lead_cycles: {min, max},
+ recal_per_actuator, mean_pose_rmse_mm,
+ budget_met,            # EXPLICITLY the §4.5 metric: mean held-out
+                        # realized pose RMSE <= accuracy_budget_mm
+ n_positive_lead, n_nonpositive_lead, status_counts}
+```
+`n_positive/nonpositive` per τ is mandatory so the frontier cannot hide
+per-actuator failures (read-only check indicates τ=0.02 has 1/6 nonpositive).
+
+**Step 2 — free correctness invariants (assert in
+`check_manuscript_numbers.py`, they cost nothing and catch implementation
+bugs):**
+- The τ=0.05 frontier row must equal the deployed §4.5 triggered row exactly
+  (same code path ⇒ same numbers).
+- The τ=0.005 row must equal the always-on row exactly (per-stage health
+  growth ≈0.0077 > 0.005 ⇒ fires every stage ⇒ identical schedule).
+Also assert every frontier number quoted in §4.4 against the JSON.
+
+**Step 3 — uniformity test + wording.** Test: normalized `health_trajectory`
+for two *different* actuator parameter draws agrees within a measured
+tolerance (implementer measures the true max deviation and asserts the
+tightest defensible bound, e.g. `atol=1e-9`; do **not** use `array_equal`
+unless it actually holds). Manuscript prose says "identical to numerical
+precision" / "effectively identical" — never "bitwise". The conceptual point
+to land: normalized health is a generator-level life-fraction signal, not
+independent per-actuator evidence.
+
+**Step 4 — manuscript §4.4 rewrite (three beats).** (a) Negative lead at the
+deployed fewest-recal threshold — existing numbers unchanged. (b) The
+frontier: lead is purchasable but not free. Expected values from the owner's
+read-only check — **quote final numbers only from the committed JSON after
+Step 1, not from this plan**:
+- τ=0.005: trigger ≈0.23, median lead ≈+0.476, 5 recals (= always-on cost), ≈0.019 mm
+- τ=0.01: trigger ≈0.36, median lead ≈+0.346 [≈+0.199, +0.354], 3 recals, ≈0.029 mm
+- τ=0.02: trigger ≈0.62, median lead ≈+0.085 but 1/6 nonpositive, 3 recals, ≈0.037 mm
+- τ=0.05 (deployed): trigger 0.83, median lead −0.123, 2 recals, 0.058 mm
+(c) Why the deployed point fires late: τ\*=0.05 is ~77% of the signal's 6.5%
+full-scale life-growth. Fig. 3 caption gains the frontier clause. §4.4's
+per-actuator-r sentence rewritten per Step 3's conceptual point; §4.5 gains
+the normalized-life-sensor clause; §5 falsifiability bullet gains the
+health-signal-has-no-scatter clause.
+
+**Step 5 — abstract + §1.** "three findings, including a negative one" →
+"four findings, including two negative/audit results" (or cleaner equivalent
+counting: cross-talk null · drift dominance · health indicator + frontier ·
+recalibration trade-off). §1 gains the pre-specification sentence: the
+temporal-lead expectation was pre-specified, audited, and downgraded under
+the paper's own rules.
+
+**Step 6 — wrap as v1.2.** Re-render PDF (status block → Draft v1.2);
+`python -m scripts.check_manuscript_numbers` + pytest + CI green; push; then
+sync Progress repo README/PLAN and session memory so no external text still
+says unconditional "leading indicator"; then the owner uploads per
+`docs/SUBMISSION.md`.
+
+_Original item prose (A2.1–A2.4) retained below for rationale:_
 
 ### A2.1 The lead-vs-recalibration frontier (core item)
 
