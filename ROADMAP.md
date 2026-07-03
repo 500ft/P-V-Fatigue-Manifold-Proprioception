@@ -57,12 +57,14 @@ RA-L once hardware exists), held as a draft pending an explicit submission decis
 - [x] **Wks 4-5 — Phase F:** cross-talk-drift vs P-V-compliance correlation over
       life; P-V-triggered recalibration vs fixed vs always-on. **DONE (2026-06-24):**
       `pipeline/coupling.py`, `scripts/run_study3.py`, `tests/test_coupling.py`. P-V loop-area
-      is a strong leading indicator of proprioception drift (r=0.885, CI [0.835, 0.958]);
+      is a strong health indicator of proprioception drift (r=0.885, CI [0.835, 0.958]);
       P-V-triggered recalibration meets a 0.159 mm accuracy budget at 60% fewer recalibrations
       than always-on (2 vs 5 per actuator), threshold train-selected and applied to held-out.
+      Wave-A v1.1 audit: no positive temporal lead under that deployed threshold on the 5-stage
+      grid (6/6 held-out actuators nonpositive lead).
       See [`docs/result_spine.md`](docs/result_spine.md).
 - [~] **Wks 6-8 — Paper:** assemble the modeling paper (intro, methods, the
-      pre-registered results, honest limitations) aimed at a **robotics venue**.
+      pre-specified results, honest limitations) aimed at a **robotics venue**.
       **Draft v1 + publication figures + rendered PDF done (2026-06-24/25):**
       [`docs/preprint_v1.md`](docs/preprint_v1.md) / `docs/preprint_v1.pdf` — full manuscript with
       the negative cross-talk result and the one-generator caveat foregrounded in the abstract; the
@@ -92,6 +94,6 @@ trigger-gated on hardware access; must not delay the paper.
 ## Portfolio statement
 
 > First-authored a preprint and validated simulation pipeline modeling
-> pressure-volume hysteresis as a cycle-resolved fatigue leading indicator for
+> pressure-volume hysteresis as a cycle-resolved fatigue health indicator for
 > soft pneumatic actuators, with ground-truth-recovery validation of every
 > estimator.

@@ -2,7 +2,7 @@
 
 Research package for the combined soft-robotics proposal:
 
-**P-V hysteresis as a cycle-resolved fatigue leading indicator, and its coupling to pressure-only proprioception in shared-manifold soft pneumatic grippers.**
+**P-V hysteresis as a cycle-resolved fatigue health indicator, and its coupling to pressure-only proprioception in shared-manifold soft pneumatic grippers.**
 
 ## Current Positioning
 
@@ -10,14 +10,14 @@ The core novelty has been reframed after literature and patent verification:
 
 - Do **not** claim first use of pressure-volume (P-V) hysteresis for fatigue.
 - Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
-- The defensible claim is the first operational, cycle-resolved P-V loop-shape leading indicator with quantified lead time, plus fatigue-triggered recalibration for shared-manifold pressure-only proprioception.
+- The defensible claim is an operational, cycle-resolved P-V loop-shape health indicator plus fatigue-triggered recalibration for shared-manifold pressure-only proprioception. A v1.1 lead-time audit found no positive temporal lead under the deployed threshold on the 5-stage simulation grid.
 
 ## Repository Contents
 
 - `docs/A01_A04_Literature_Review.md` - annotated literature review and verified citation base.
 - `docs/Proposal_A01_A04_Combined.md` - main proposal with research questions, novelty framing, methods, risks, and timeline.
 - `docs/Gate0_Coupling_Simulation.md` - **Gate 0 result**: lumped-RC pre-test of the coupling spine (PASS). The mechanism is confirmed and the experiment is re-scoped around its findings.
-- `docs/Gate0b_Failure_Mode_Literature.md` - **Gate 0b** (literature-resolved, PASS): silicone PneuNets fail gradually with micro-tear precursors → leading indicator is viable.
+- `docs/Gate0b_Failure_Mode_Literature.md` - **Gate 0b** (literature-resolved, PASS): silicone PneuNets fail gradually with micro-tear precursors → a P-V health indicator is viable.
 - `docs/Gate1_Volume_Estimation_Literature.md` - **Gate 1** (design-resolved): acquire P-V loops by volumetric drive + pressure-oscillation observer; flow integration rejected.
 - `docs/Experimental_Protocol.md` - operational test runbook: the gate ladder, study protocols, and the minimum viable paper.
 - `scripts/gate0_lumped_rc.py` - the Gate 0 simulation (writes `data/gate0/`).
@@ -43,7 +43,7 @@ US Patent 10,639,801 confirms cycle-lifetime claims for low-strain PneuNets (>10
 That makes the proposal's boundary:
 
 1. Cycle-resolved P-V feature trajectories, not just before/after curves.
-2. Quantified positive lead time before failure or visible damage.
+2. Quantified trigger timing before accuracy-budget violation, reported honestly whether positive or not.
 3. Coupling between fatigue-induced compliance drift, shared-manifold cross-talk, and pressure-only pose-estimation degradation.
 4. Recalibration triggered by a P-V health signal.
 

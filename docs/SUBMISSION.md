@@ -16,10 +16,9 @@ review; rationale recorded in the manuscript status block and
 
 ## Pre-upload checks (all must hold)
 
-- [ ] `python -m pytest` green (129 tests) at the commit being described.
+- [ ] `python -m pytest` fully green at the commit being described.
 - [ ] Numbers in the abstract match `data/sim/phaseD/study3_results.json` /
-      `study4_results.json` (r = 0.885, CI [0.835, 0.958]; 2 vs 5
-      recalibrations; 6.3% default coupling, 10% at ≈1.7× softer supply).
+      `study4_results.json`; run `python -m scripts.check_manuscript_numbers`.
 - [ ] Figures 1–5 embedded and legible at print size.
 - [ ] Author affiliation + email current; no acknowledgments owed (this is
       solo, unfunded work — if any PI/lab input was used, acknowledge or

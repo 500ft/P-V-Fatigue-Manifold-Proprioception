@@ -5,6 +5,8 @@ from pipeline.coupling import (
     bootstrap_correlation,
     cycle_schedule,
     health_trajectory,
+    lead_time,
+    per_group_correlations,
     pv_loop_area,
     recalibration_schedule,
 )
@@ -73,3 +75,44 @@ def test_cycle_schedule_misaligns_across_rupture_lives():
     short_lived = cycle_schedule(np.array([0.1, 0.3, 0.5, 0.7, 0.9]) * 3000.0, period)
     long_lived = cycle_schedule(np.array([0.1, 0.3, 0.5, 0.7, 0.9]) * 4000.0, period)
     assert short_lived != long_lived
+
+
+def test_lead_time_interpolates_known_crossing_gap():
+    life = np.array([0.1, 0.3, 0.5, 0.7, 0.9])
+    health = np.array([1.0, 1.025, 1.075, 1.2, 1.4])
+    err = np.array([0.02, 0.06, 0.10, 0.20, 0.35])
+    res = lead_time(health, err, tau=0.05, budget_mm=0.15, life_fractions=life)
+    assert res["status"] == "ok"
+    np.testing.assert_allclose(res["trigger_life"], 0.4)
+    np.testing.assert_allclose(res["budget_violation_life"], 0.6)
+    np.testing.assert_allclose(res["lead_life"], 0.2)
+
+
+def test_lead_time_handles_exact_stage_crossing():
+    life = np.array([0.1, 0.3, 0.5])
+    health = np.array([1.0, 1.05, 1.2])
+    err = np.array([0.01, 0.02, 0.15])
+    res = lead_time(health, err, tau=0.05, budget_mm=0.15, life_fractions=life)
+    assert res["status"] == "ok"
+    np.testing.assert_allclose(res["trigger_life"], 0.3)
+    np.testing.assert_allclose(res["budget_violation_life"], 0.5)
+
+
+def test_lead_time_reports_degenerate_statuses():
+    life = np.array([0.1, 0.3, 0.5])
+    assert lead_time([1.0, 1.01, 1.02], [0.0, 0.2, 0.3], 0.05, 0.1, life)["status"] == "never_triggers"
+    assert lead_time([1.0, 1.1, 1.2], [0.0, 0.02, 0.03], 0.05, 0.1, life)["status"] == "never_violates"
+    assert lead_time([1.0, 1.2, 1.3], [0.2, 0.3, 0.4], 0.05, 0.1, life)["status"] == "nonpositive_lead"
+
+
+def test_per_group_correlations_reports_deviant_group():
+    groups = np.repeat([10, 11, 12], 5)
+    x = np.tile(np.arange(5, dtype=float), 3)
+    y = np.concatenate([x[:5], x[:5] * 2.0, -x[:5]])
+    res = per_group_correlations(groups, x, y)
+    assert len(res["values"]) == 3
+    vals = {rec["group"]: rec["r"] for rec in res["values"]}
+    assert vals[10] > 0.99
+    assert vals[11] > 0.99
+    assert vals[12] < -0.99
+    np.testing.assert_allclose(res["median"], vals[10])

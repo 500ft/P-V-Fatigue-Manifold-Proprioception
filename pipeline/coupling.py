@@ -3,13 +3,13 @@
 The Phase E finding is that pressure-only proprioception is dominated by the fatigue
 *compliance-scale drift* (a young calibration's pose error grows ~100x over life). The Phase F
 question is operational: when should you recalibrate? The thesis is that the **observable P-V
-loop** (its hysteresis loop area / shape) is a leading indicator of that drift, so a
+loop** (its hysteresis loop area / shape) is a health indicator of that drift, so a
 P-V-health-triggered recalibration can hold accuracy near an always-on policy at a fraction of
 the recalibration count.
 
 This module provides the *observable* health signal (the P-V loop area from a volumetric
 probe — Gate 1's acquisition method, not the ground-truth compliance multiplier), per-actuator
-health-vs-life trajectories, a bootstrap correlation for the leading-indicator claim, and the
+health-vs-life trajectories, a bootstrap correlation for the health-indicator claim, and the
 recalibration-schedule policies. Threshold selection lives in ``scripts/run_study3.py`` and
 uses training/validation actuators only.
 """
@@ -48,7 +48,7 @@ def health_trajectory(base_sls: SLSParams, rupture_cycles, life_fractions,
 def bootstrap_correlation(x, y, n_boot=1000, seed=0, ci=0.95):
     """Pearson r between ``x`` and ``y`` with a bootstrap confidence interval.
 
-    Used to quantify the leading-indicator claim: P-V health drift vs pose error over life.
+    Used to quantify the health-indicator claim: P-V health drift vs pose error over life.
     """
     x = np.asarray(x, float); y = np.asarray(y, float)
     if x.shape != y.shape or x.ndim != 1 or x.size < 3:
@@ -67,6 +67,78 @@ def bootstrap_correlation(x, y, n_boot=1000, seed=0, ci=0.95):
     lo = float(np.quantile(boot, (1 - ci) / 2))
     hi = float(np.quantile(boot, 1 - (1 - ci) / 2))
     return {"r": point, "ci_low": lo, "ci_high": hi}
+
+
+def _first_crossing(xs, ys, threshold):
+    """Linearly interpolated first ``x`` where ``y`` reaches ``threshold``."""
+    xs = np.asarray(xs, float)
+    ys = np.asarray(ys, float)
+    if xs.shape != ys.shape or xs.ndim != 1 or xs.size < 2:
+        raise ValueError("xs and ys must be matching 1-D arrays with >= 2 points")
+    if ys[0] >= threshold:
+        return float(xs[0])
+    for i in range(1, ys.size):
+        y0, y1 = ys[i - 1], ys[i]
+        if y1 >= threshold:
+            x0, x1 = xs[i - 1], xs[i]
+            if y1 == y0:
+                return float(x1)
+            frac = (threshold - y0) / (y1 - y0)
+            return float(x0 + frac * (x1 - x0))
+    return None
+
+
+def lead_time(health_norm, errors_fixed_cal, tau, budget_mm, life_fractions):
+    """Trigger-vs-budget lead time from one young-calibrated trajectory.
+
+    The trigger crossing is the first life fraction where normalized P-V loop
+    area reaches ``1 + tau`` from the young calibration. The budget crossing is
+    the first life fraction where the young/fixed-calibration pose error reaches
+    ``budget_mm``. Crossings are linearly interpolated between observed life
+    stages; missing or non-positive leads are returned with explicit statuses.
+    """
+    health_norm = np.asarray(health_norm, float)
+    errors_fixed_cal = np.asarray(errors_fixed_cal, float)
+    life_fractions = np.asarray(life_fractions, float)
+    if health_norm.shape != errors_fixed_cal.shape or health_norm.shape != life_fractions.shape:
+        raise ValueError("health, error, and life arrays must have matching shapes")
+    trigger_life = _first_crossing(life_fractions, health_norm, 1.0 + float(tau))
+    budget_life = _first_crossing(life_fractions, errors_fixed_cal, float(budget_mm))
+    if trigger_life is None:
+        return {"trigger_life": None, "budget_violation_life": budget_life,
+                "lead_life": None, "status": "never_triggers"}
+    if budget_life is None:
+        return {"trigger_life": trigger_life, "budget_violation_life": None,
+                "lead_life": None, "status": "never_violates"}
+    lead = float(budget_life - trigger_life)
+    status = "ok" if lead > 0.0 else "nonpositive_lead"
+    return {"trigger_life": trigger_life, "budget_violation_life": budget_life,
+            "lead_life": lead, "status": status}
+
+
+def per_group_correlations(groups, x, y):
+    """Pearson r per group with median/range summary over finite group values."""
+    groups = np.asarray(groups)
+    x = np.asarray(x, float)
+    y = np.asarray(y, float)
+    if groups.shape != x.shape or x.shape != y.shape or x.ndim != 1:
+        raise ValueError("groups, x, and y must be matching 1-D arrays")
+    records = []
+    for group in sorted(set(groups.tolist())):
+        mask = groups == group
+        xg, yg = x[mask], y[mask]
+        if xg.size < 3 or xg.std() < 1e-15 or yg.std() < 1e-15:
+            r = None
+        else:
+            r = float(np.corrcoef(xg, yg)[0, 1])
+        records.append({"group": int(group), "r": r, "n": int(xg.size)})
+    finite = [rec["r"] for rec in records if rec["r"] is not None and np.isfinite(rec["r"])]
+    return {
+        "values": records,
+        "median": float(np.median(finite)) if finite else None,
+        "min": float(np.min(finite)) if finite else None,
+        "max": float(np.max(finite)) if finite else None,
+    }
 
 
 def recalibration_schedule(health, policy, tau=None):

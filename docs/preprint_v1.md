@@ -1,8 +1,8 @@
-# Pressure–Volume Loop Shape as a Fatigue Leading Indicator for Pressure-Only Proprioception in Shared-Manifold Soft Grippers: A Simulation Study
+# Pressure-Volume Loop Shape as a Fatigue Health Indicator for Pressure-Only Proprioception in Shared-Manifold Soft Grippers: A Simulation Study
 
 **Author:** Mergen Ulziibayar · NYU Tandon, Dept. of Mechanical & Aerospace Engineering
 
-**Status:** Draft v1 (2026-06-24). **This is a simulation-only modeling study.** No physical
+**Status:** Draft v1.1 (2026-07-03). **This is a simulation-only modeling study.** No physical
 experiments are reported; every result is synthetic and is labeled as such. Modeling
 assumptions are stated as choices, not as calibrated predictions for a physical actuator.
 
@@ -24,7 +24,7 @@ mechanical upload by the owner (arXiv account + possible first-submission endors
 Soft pneumatic grippers face two coupled deployment problems: silicone chambers fail by cyclic
 fatigue, and recovering gripper pose without added sensors relies on the pressure signals
 already in the control loop. We study, in simulation, whether the in-loop pressure–volume (P-V)
-hysteresis loop can serve as a *leading indicator* of fatigue-driven proprioception degradation
+hysteresis loop can serve as a *health indicator* of fatigue-driven proprioception degradation
 in the practical shared-manifold topology, where chambers share one supply to cut valve count.
 We build a transparent, analytically invertible pipeline: a viscoelastic (standard-linear-solid)
 pneumatic plant producing rate-dependent P-V loops; a canonical fatigue model (Mullins
@@ -43,10 +43,15 @@ corrector improves pose error by ≈0% at physically reasonable parameters. **(2
 pressure-only proprioception error is instead the fatigue **compliance-scale drift**, which is
 topology-independent and causes a young-calibrated estimator's curvature error to grow by
 roughly two orders of magnitude over life. **(3)** The observable P-V loop area is a strong
-leading indicator of that drift (Pearson *r* = 0.885, 95% CI [0.835, 0.958] on held-out
-actuators), and a P-V-health-triggered recalibration policy holds pose error within a stated
-accuracy budget at **60% fewer recalibrations** than an always-on policy (2 vs 5 per actuator),
-with the trigger threshold selected on training actuators only. A sensing-free cycle-count
+health indicator of that drift (Pearson *r* = 0.885, 95% CI [0.835, 0.958] on held-out
+actuators; per-actuator *r* median 0.957, range [0.9570, 0.9574], reported for structure only),
+and a P-V-health-triggered recalibration policy holds pose error within a stated accuracy budget
+at **60% fewer recalibrations** than an always-on policy (2 vs 5 per actuator), with the trigger
+threshold selected on training actuators only. A lead-time audit found **no positive temporal
+lead** under that deployed threshold on the 5-stage grid: the trigger crossing occurred at life
+0.83, while the fixed-calibration budget crossing occurred earlier (median 0.71, range
+0.56-0.71), giving median lead = -0.123 normalized life (6/6 held-out actuators nonpositive).
+A sensing-free cycle-count
 schedule tuned by the same rule fails that budget on held-out actuators (0.21 mm vs the
 0.159 mm budget) at a similar recalibration count — the measured P-V state, not the mere
 passage of cycles, is what transfers across actuators. **Scope caveat (stated up
@@ -78,7 +83,8 @@ We test this coupling in a deliberately transparent simulation, before any hardw
 modeling choices are made for analytic checkability (noise-free pose is recoverable to machine
 precision; isolated supplies give numerically zero cross-talk), and every estimator is validated
 against its own ground truth. The contribution of this paper is therefore the **pipeline, the
-design outputs, and a pre-registered modeling result framed as a prediction** — not an
+design outputs, and a pre-specified modeling result framed as a prediction** (frozen in
+`docs/result_spine.md`, commit `d856455`, before result write-up) — not an
 experimental claim.
 
 ## 2. Related work and prior-art boundary
@@ -91,9 +97,10 @@ FEM-agreement degradation (96%→80%). Hysteresis-loop area as a damage proxy ha
 cross-domain precedent — metals [Haghshenas 2021], flight-control health indicators [Guo 2021],
 SHM/acoustic-emission RUL [Galanopoulos 2023] — grounded in early-warning theory [Scheffer 2009]
 and the prognostics-pipeline / health-indicator-quality criteria of Lei et al. [2018].
-**We therefore do not claim first use of P-V for fatigue.** The boundary is the *cycle-resolved,
-operational leading indicator* with quantified lead behavior, separating irreversible drift from
-reversible Mullins recovery [Lavazza 2023; Liao 2021; Mars & Fatemi 2002].
+**We therefore do not claim first use of P-V for fatigue.** The boundary is the cycle-resolved,
+operational health indicator and triggerable recalibration policy, with quantified trigger
+timing, separating irreversible drift from reversible Mullins recovery [Lavazza 2023; Liao
+2021; Mars & Fatemi 2002].
 
 **Pressure-only proprioception.** Multi-chamber pressure-only sensing exists [L. Wang 2020;
 L. Wang 2023; J. Wang 2025; Joshi & Paik 2023; Zou 2024; Preechayasomboon & Rombokas 2021], but
@@ -198,7 +205,8 @@ stated accuracy budget, then applied unchanged to held-out actuators. We report 
 All structural gates pass: noise-free pose recovery and forward↔inverse curvature round-trips to
 machine precision; isolated-supply off-diagonal coupling at the solver-noise floor (<10⁻⁶) while
 shared coupling is measurable (>10⁻⁴); and the Gate-0 property that DC cross-talk is
-compliance-independent while actuation-band cross-talk drifts with fatigue. (125 unit tests pass.)
+compliance-independent while actuation-band cross-talk drifts with fatigue. The full unit-test
+suite gates these checks.
 
 ### 4.2 Cross-talk is real but second-order (negative result, retained; Fig. 1)
 The proposal predicted that shared-manifold cross-talk drift would be visible to a dynamic
@@ -228,15 +236,25 @@ explains §4.2 and motivates recalibration as the right intervention.
 
 *Figure 2. Young-calibrated static estimator curvature RMSE over normalized life (shared vs isolated supply); error grows ~100x by end of life and is comparable across topologies — the degradation is the topology-independent compliance drift, not cross-talk.*
 
-### 4.4 P-V loop area is a leading indicator (Fig. 3)
+### 4.4 P-V loop area is a health indicator, not a positive-lead trigger on this grid (Fig. 3)
 On held-out actuators, the observable P-V loop-area fractional growth tracks the
 fixed-calibration pose error over life with **Pearson *r* = 0.885, 95% CI [0.835, 0.958]**
-(bootstrap, 2,000 resamples; CI excludes 0). The observable loop shape leads the proprioception
-degradation — the core positive result.
+(bootstrap, 2,000 resamples; CI excludes 0). The same monotone structure also appears within
+actuators: per-actuator *r* has median 0.957 and range [0.9570, 0.9574] across the six held-out
+actuators (5 stages each; reported for structure consistency, not significance).
 
-![P-V loop area leads pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
+The temporal lead audit is negative. Using the deployed train-selected τ\*=0.05 threshold, the
+trigger crossing occurs at life 0.83 for each held-out actuator, while the young/fixed-calibration
+error crosses the 0.159 mm budget earlier: median life 0.71, range 0.56-0.71. Linear
+interpolation between the five life stages gives median lead = -0.123 normalized life, range
+[-0.269, -0.115] (about -972 to -375 cycles across the held-out rupture lives); all 6/6 held-out
+actuators are nonpositive-lead cases. Thus the observable loop area is a strong health correlate
+and useful recalibration trigger, but this 5-stage study does **not** demonstrate positive
+temporal lead.
 
-*Figure 3. Observable P-V loop-area growth (left axis) leads the fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958].*
+![P-V loop area tracks pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
+
+*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958]. The deployed trigger threshold does not provide positive temporal lead on the 5-stage grid.*
 
 ### 4.5 Recalibration trade-off (Fig. 4)
 Against a stated 0.159 mm accuracy budget (selected on training actuators as halfway from the
@@ -294,7 +312,7 @@ unseen actuators, not the absolute accuracy.
   which is exactly what the hardware spot-check must test.
 - **The headline cross-talk hypothesis was not supported.** Cross-talk is monotone in compliance
   (Gate 0) but second-order for pose at realistic parameters. The proposal anticipated this
-  "benign coupling" outcome as a publishable floor; the deliverable is the leading-indicator +
+  "benign coupling" outcome as a publishable floor; the deliverable is the health-indicator +
   recalibration result via the compliance-drift pathway.
 - **Parameter-sensitivity of cross-talk (envelope, Fig. 5).** To make the "second-order" claim a
   characterized regime rather than a single-point assertion, we swept the network parameters that
@@ -320,8 +338,9 @@ unseen actuators, not the absolute accuracy.
 *Figure 5. Cross-talk coupling ratio (neighbor/driven response at the actuation band) vs shared-supply softness, as a multiple of each default parameter. Coupling rises monotonically with supply resistance R_s and is ≈6.3% at the default operating point (marked); it reaches the 10% and 20% "first-order" lines only at R_s ≈1.7× and ≈4.3× softer. Manifold compliance C_m is a weak knob (stays 5.8–6.3% across ×0.25–×32). The negative cross-talk result holds across realistic shared-manifold designs.*
 
 ## 6. Conclusion
-In simulation, the observable P-V loop shape is a quantified leading indicator (*r* ≈ 0.89) of
-fatigue-driven pressure-only proprioception drift in shared-manifold soft grippers, and a
+In simulation, the observable P-V loop shape is a quantified health indicator (*r* ≈ 0.89) of
+fatigue-driven pressure-only proprioception drift in shared-manifold soft grippers, but the
+deployed threshold does not show positive temporal lead on the 5-stage grid. A
 P-V-health-triggered recalibration policy meets an accuracy budget at a fraction of the
 recalibration cost of always-on adaptation, transferring from training to held-out actuators —
 where a sensing-free cycle-count schedule tuned by the same rule does not.
@@ -334,10 +353,11 @@ companion proposal).
 All code, the dataset generator, and the analysis scripts are in the repository. The dataset is
 regenerable from a fixed seed (`python -m scripts.phaseD_dataset`; integrity pinned by the
 manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors), `python -m scripts.run_study3`
-(leading indicator + recalibration), and `python -m scripts.run_study4` (cross-talk
+(health indicator + recalibration), and `python -m scripts.run_study4` (cross-talk
 parameter-sensitivity envelope). Frozen result JSON and
-figures are committed under `data/sim/phaseD/`; the pre-registered claim and target figures are
-in `docs/result_spine.md`. 125 unit tests gate the pipeline.
+figures are committed under `data/sim/phaseD/`; the pre-specified claim and target figures are
+in `docs/result_spine.md` (commit `d856455`, before result write-up). The full unit-test suite
+and manuscript-number check gate the pipeline in CI.
 
 ## References
 

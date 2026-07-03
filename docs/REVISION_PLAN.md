@@ -24,6 +24,13 @@ arXiv upload; Wave B is the RoboSoft-deadline package and does NOT block it._
 
 ## Wave A — before the arXiv upload (~half a day, all from existing data)
 
+**Executed 2026-07-03.** A1/A2 were added from the existing 5-stage data; the
+lead-time audit found no positive temporal lead under the deployed τ\*=0.05
+threshold (6/6 held-out actuators nonpositive), so the manuscript wording was
+downgraded from "leading indicator" to "health indicator" where temporal lead
+was implied. A3/A4/A5 were completed with the v1.1 manuscript/PDF, number-check
+script, and CI workflow.
+
 ### A1. Quantify the lead time (closes the "leading vs correlated" gap) — HIGHEST VALUE
 
 **Why.** §2 promises a "cycle-resolved leading indicator with *quantified lead

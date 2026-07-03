@@ -3,8 +3,8 @@
 The Phase E headline: pressure-only proprioception is dominated by the fatigue compliance-scale
 drift (a young calibration's pose error grows ~100x over life; ``scripts/run_study2.py``). The
 operational question is *when to recalibrate*. The thesis: the observable P-V loop area
-(``pipeline.coupling``) is a leading indicator of that drift, so a P-V-health-triggered
-recalibration holds accuracy near an always-on policy at far fewer recalibrations.
+(``pipeline.coupling``) is a health indicator of that drift, so a P-V-health-triggered
+recalibration can hold accuracy near an always-on policy at far fewer recalibrations.
 
 Four policies, each starting from one calibration at the youngest life stage:
   * fixed       — never recalibrate.
@@ -42,6 +42,8 @@ from pipeline.coupling import (
     bootstrap_correlation,
     cycle_schedule,
     health_trajectory,
+    lead_time,
+    per_group_correlations,
     recalibration_schedule,
 )
 from sim.kinematics import pcc_transform
@@ -120,6 +122,31 @@ def scheduled_metrics(err, cycles, period):
     return float(np.mean(realized_err)), n_recal, realized_err
 
 
+def summarize_leads(records):
+    finite = [r for r in records if r["lead_life"] is not None]
+    leads = [r["lead_life"] for r in finite]
+    trigger = [r["trigger_life"] for r in finite]
+    budget = [r["budget_violation_life"] for r in finite]
+    cycles = [r["lead_cycles"] for r in finite]
+    return {
+        "per_actuator": records,
+        "median_lead_life": float(np.median(leads)) if leads else None,
+        "min_lead_life": float(np.min(leads)) if leads else None,
+        "max_lead_life": float(np.max(leads)) if leads else None,
+        "median_trigger_life": float(np.median(trigger)) if trigger else None,
+        "min_trigger_life": float(np.min(trigger)) if trigger else None,
+        "max_trigger_life": float(np.max(trigger)) if trigger else None,
+        "median_budget_violation_life": float(np.median(budget)) if budget else None,
+        "min_budget_violation_life": float(np.min(budget)) if budget else None,
+        "max_budget_violation_life": float(np.max(budget)) if budget else None,
+        "min_lead_cycles": float(np.min(cycles)) if cycles else None,
+        "max_lead_cycles": float(np.max(cycles)) if cycles else None,
+        "n_excluded": int(len(records) - len(finite)),
+        "status_counts": {s: int(sum(r["status"] == s for r in records))
+                          for s in ("ok", "never_triggers", "never_violates", "nonpositive_lead")},
+    }
+
+
 def main():
     d, m = load()
     train_ids = m["split_by_actuator_identity"]["train_ids"]
@@ -194,14 +221,34 @@ def main():
         "period_sweep_train": period_sweep,
     }
 
-    # --- leading-indicator: P-V health drift vs fixed-calibration pose error (held-out) ---
+    # --- health indicator: P-V health drift vs fixed-calibration pose error (held-out) ---
     hx, ey = [], []
+    corr_groups = []
+    lead_records = []
     for a in test_ids:
+        fixed_err = [err[a][i][0] for i in range(len(LIFE))]
+        lt = lead_time(hn[a], fixed_err, tau_star, budget_mm, LIFE)
+        lead_life = lt["lead_life"]
+        lead_records.append({
+            "actuator_id": int(a),
+            "rupture_cycles": float(acts[a]["rupture_cycles"]),
+            "trigger_life": lt["trigger_life"],
+            "budget_violation_life": lt["budget_violation_life"],
+            "lead_life": lead_life,
+            "lead_cycles": float(lead_life * acts[a]["rupture_cycles"]) if lead_life is not None else None,
+            "status": lt["status"],
+        })
         for i in range(len(LIFE)):
             hx.append(hn[a][i] - 1.0)           # fractional loop-area growth from young
             ey.append(err[a][i][0])             # fixed (young) calibration error at life i
+            corr_groups.append(a)
     results["leading_indicator_corr"] = bootstrap_correlation(np.array(hx), np.array(ey),
                                                               n_boot=2000, seed=7)
+    per_act = per_group_correlations(np.array(corr_groups), np.array(hx), np.array(ey))
+    per_act["values"] = [{"actuator_id": rec["group"], "r": rec["r"], "n": rec["n"]}
+                         for rec in per_act["values"]]
+    results["per_actuator_r"] = per_act
+    results["lead_time_heldout"] = summarize_leads(lead_records)
 
     os.makedirs(DATA, exist_ok=True)
     json.dump(results, open(os.path.join(DATA, "study3_results.json"), "w"), indent=2)
@@ -216,8 +263,18 @@ def main():
         print(f"  {name:9s} pose RMSE {p['mean_pose_rmse_mm']:.2f} mm | "
               f"recal/actuator {p['recal_per_actuator']:.1f} | total {p['total_recalibrations']}")
     lc = results["leading_indicator_corr"]
-    print(f"leading indicator (P-V growth vs fixed-cal error): "
+    print(f"health indicator (P-V growth vs fixed-cal error): "
           f"r={lc['r']:.3f} [{lc['ci_low']:.3f}, {lc['ci_high']:.3f}]")
+    pa = results["per_actuator_r"]
+    lt = results["lead_time_heldout"]
+    print(f"per-actuator r median={pa['median']:.3f} "
+          f"[{pa['min']:.3f}, {pa['max']:.3f}]")
+    if lt["median_lead_life"] is None:
+        print(f"lead time: no positive lead; statuses={lt['status_counts']}")
+    else:
+        print(f"lead time: median={lt['median_lead_life']:.3f} life "
+              f"[{lt['min_lead_life']:.3f}, {lt['max_lead_life']:.3f}], "
+              f"excluded={lt['n_excluded']}")
 
     try:
         import matplotlib
@@ -229,7 +286,7 @@ def main():
         print(f"(matplotlib unavailable, skipped figures: {exc})")
         return
 
-    # Fig 3: leading indicator — health drift & fixed-cal error over life (mean over test acts)
+    # Fig 3: health indicator — health drift & fixed-cal error over life (mean over test acts)
     mean_h = np.mean([hn[a] for a in test_ids], axis=0)
     mean_fixed = np.mean([[err[a][i][0] for i in range(len(LIFE))] for a in test_ids], axis=0)
     fig, ax1 = plt.subplots()
@@ -240,7 +297,7 @@ def main():
     ax2.plot(LIFE, mean_fixed, "s--", color="#D55E00", label="fixed-cal pose error")
     ax2.set_ylabel("fixed-cal pose RMSE [mm]", color="#D55E00")
     ax2.tick_params(axis="y", labelcolor="#D55E00"); ax2.grid(False)
-    plt.title(f"P-V loop area leads pose degradation (r = {results['leading_indicator_corr']['r']:.2f})")
+    plt.title(f"P-V loop area tracks pose degradation (r = {results['leading_indicator_corr']['r']:.2f})")
     fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "study3_fig3_leading_indicator"))
     plt.close(fig)
 

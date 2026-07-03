@@ -377,5 +377,118 @@
     "r": 0.8851822166686626,
     "ci_low": 0.8354811604954189,
     "ci_high": 0.9583525248672088
+  },
+  "per_actuator_r": {
+    "values": [
+      {
+        "actuator_id": 14,
+        "r": 0.9571195407266145,
+        "n": 5
+      },
+      {
+        "actuator_id": 15,
+        "r": 0.95714876504103,
+        "n": 5
+      },
+      {
+        "actuator_id": 16,
+        "r": 0.9573620540290966,
+        "n": 5
+      },
+      {
+        "actuator_id": 17,
+        "r": 0.9570433287063691,
+        "n": 5
+      },
+      {
+        "actuator_id": 18,
+        "r": 0.9574310362408026,
+        "n": 5
+      },
+      {
+        "actuator_id": 19,
+        "r": 0.9571307764337051,
+        "n": 5
+      }
+    ],
+    "median": 0.9571397707373676,
+    "min": 0.9570433287063691,
+    "max": 0.9574310362408026
+  },
+  "lead_time_heldout": {
+    "per_actuator": [
+      {
+        "actuator_id": 14,
+        "rupture_cycles": 3843.3274624768246,
+        "trigger_life": 0.8294897959183755,
+        "budget_violation_life": 0.7057830050303039,
+        "lead_life": -0.12370679088807157,
+        "lead_cycles": -475.44570671500327,
+        "status": "nonpositive_lead"
+      },
+      {
+        "actuator_id": 15,
+        "rupture_cycles": 3351.4300412879275,
+        "trigger_life": 0.8294897959183507,
+        "budget_violation_life": 0.7074429587927734,
+        "lead_life": -0.12204683712557729,
+        "lead_cycles": -409.03143638683446,
+        "status": "nonpositive_lead"
+      },
+      {
+        "actuator_id": 16,
+        "rupture_cycles": 3937.355750848238,
+        "trigger_life": 0.8294897959183545,
+        "budget_violation_life": 0.7134941492288062,
+        "lead_life": -0.11599564668954832,
+        "lead_cycles": -456.71612656645345,
+        "status": "nonpositive_lead"
+      },
+      {
+        "actuator_id": 17,
+        "rupture_cycles": 3612.336563764021,
+        "trigger_life": 0.8294897959183962,
+        "budget_violation_life": 0.5604058372075463,
+        "lead_life": -0.2690839587108499,
+        "lead_cycles": -972.0218227735712,
+        "status": "nonpositive_lead"
+      },
+      {
+        "actuator_id": 18,
+        "rupture_cycles": 3289.11892903647,
+        "trigger_life": 0.8294897959183904,
+        "budget_violation_life": 0.703645232002496,
+        "lead_life": -0.1258445639158945,
+        "lead_cycles": -413.9177372921085,
+        "status": "nonpositive_lead"
+      },
+      {
+        "actuator_id": 19,
+        "rupture_cycles": 3268.760657096936,
+        "trigger_life": 0.8294897959183604,
+        "budget_violation_life": 0.7146412230919359,
+        "lead_life": -0.11484857282642447,
+        "lead_cycles": -375.41249637874853,
+        "status": "nonpositive_lead"
+      }
+    ],
+    "median_lead_life": -0.12287681400682443,
+    "min_lead_life": -0.2690839587108499,
+    "max_lead_life": -0.11484857282642447,
+    "median_trigger_life": 0.8294897959183679,
+    "min_trigger_life": 0.8294897959183507,
+    "max_trigger_life": 0.8294897959183962,
+    "median_budget_violation_life": 0.7066129819115387,
+    "min_budget_violation_life": 0.5604058372075463,
+    "max_budget_violation_life": 0.7146412230919359,
+    "min_lead_cycles": -972.0218227735712,
+    "max_lead_cycles": -375.41249637874853,
+    "n_excluded": 0,
+    "status_counts": {
+      "ok": 0,
+      "never_triggers": 0,
+      "never_violates": 0,
+      "nonpositive_lead": 6
+    }
   }
 }
