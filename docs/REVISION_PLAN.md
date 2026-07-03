@@ -22,6 +22,92 @@ arXiv upload; Wave B is the RoboSoft-deadline package and does NOT block it._
 
 ---
 
+## Wave A.2 — post-audit corrections (~half a session; blocks the upload)
+
+_Added 2026-07-03 after the independent audit of commit `6c538d4`. The Wave A
+execution was verified correct (code, tests, CI, spine left frozen, downgrade
+propagated). The audit found the negative-lead story is told too bleakly and
+one uniformity in the results is reported without being decoded. Three items._
+
+### A2.1 The lead-vs-recalibration frontier (core item)
+
+**Why.** The health signal's full dynamic range over life is only **6.5%
+growth** (hn: 1.0 → 1.065), and `TAU_GRID` steps by 0.05 — so the sweep
+evaluated nothing between "recalibrate every stage" (τ=0) and "fire at life
+0.83" (τ\*=0.05, i.e. 77% of the signal's full scale). Verified from the
+committed data: **τ=0.01 triggers at life 0.36 — positive lead of +0.20 to
++0.35 against every held-out budget crossing — at ~3 recals/actuator (still
+40% fewer than always-on).** The fair statement is a *frontier* (lead is
+purchasable with sensitivity), not "no positive lead."
+
+**How — without touching any deployed number.**
+1. Do **NOT** refine the selection grid. τ\* = 0.05 and every §4.5 number
+   stay exactly as committed (a finer selection grid would shift τ\* to ~0.06
+   with byte-identical policy behavior — pure number churn). The frontier is
+   a **separate, descriptive sweep**.
+2. New frontier computation in `run_study3.py`: for τ ∈ {0.005, 0.01, 0.02,
+   0.03, 0.04, 0.05}, on held-out actuators report: interpolated
+   trigger_life, lead stats (reusing `lead_time`), discrete-policy recal
+   count, realized error, budget met (yes/no). Store as
+   `lead_frontier_heldout` in `study3_results.json`. No selection, no
+   training involvement — it is a characterization of the deployed signal,
+   like study 4 was for cross-talk.
+3. Manuscript §4.4, second paragraph reframed: (a) negative lead at the
+   deployed fewest-recal threshold, with the existing numbers; (b) the
+   frontier — sensitivity buys lead, quantified at 2–3 τ points; (c) why the
+   deployed point sits late: τ\* is 77% of the signal's 6.5% full-scale
+   range. Fig. 3 caption gains the frontier clause. **Title and headline stay
+   "health indicator"** — lead being configuration-dependent is exactly why
+   the unconditional "leading" claim stays retired.
+4. Tests: frontier monotonicity (smaller τ → earlier trigger, ≥ recals);
+   `check_manuscript_numbers.py` asserts the frontier numbers quoted in §4.4.
+5. Honesty guard: if any frontier point that leads also **violates** the
+   budget on held-out, report it as-is — no cherry-picking the τ list.
+
+### A2.2 Decode the per-actuator uniformity
+
+**Why.** `trigger_life` = 0.829 for all six actuators and per-actuator r in
+[0.9570, 0.9574] are not coincidence: **hn is bitwise-identical across
+actuators** (verified — the young-normalization cancels every per-actuator
+parameter; the fatigue state depends only on life fraction). The manuscript
+currently reports the 4-decimal-tight range as if it were evidence; a
+reviewer will decode it and read naivety.
+
+**How.**
+1. Test asserting the property (two different actuator parameter sets →
+   identical hn), documenting it as a known generator property.
+2. §4.4: rewrite the per-actuator sentence — the near-uniform per-actuator r
+   *follows from* the generator producing a single normalized degradation
+   trajectory, adds no independent evidence, and counts toward the
+   single-generator caveat.
+3. §4.5 gains one clause: within this generator the P-V trigger is
+   effectively a normalized-life sensor — which is precisely why it beats
+   the absolute-cycle clock.
+4. §5 falsifiability bullet: per-actuator scatter did not materialize in the
+   health signal (deterministic in life fraction); scatter lives in the error
+   trajectories' scale.
+
+### A2.3 Abstract / §1 consistency
+
+- "three findings, including a negative one" → count honestly: two negative
+  results (cross-talk second-order; no positive lead at the deployed
+  threshold) alongside the drift-dominance and health-indicator findings.
+- §1: one clause claiming the credit that is due — the temporal-lead
+  expectation was pre-specified in the spine, audited, and downgraded when
+  the audit failed it. Pre-specification working as intended.
+
+### A2.4 Wrap
+
+- Re-render PDF as Draft v1.2; `check_manuscript_numbers` + pytest + CI
+  green; push.
+- Update Progress repo (README/PLAN still say "leading indicator") and the
+  session memory in the same round.
+- Explicit non-goals: do NOT retitle back toward "leading indicator"; do NOT
+  touch `result_spine.md`; do NOT refine the *selection* grid.
+- Then the owner uploads per `docs/SUBMISSION.md`.
+
+---
+
 ## Wave A — before the arXiv upload (~half a day, all from existing data)
 
 **Executed 2026-07-03.** A1/A2 were added from the existing 5-stage data; the
