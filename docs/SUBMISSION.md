@@ -20,18 +20,26 @@ assumed.
 
 ## Phase 0 — Endorsement (owner; START FIRST, longest lead time)
 
-1. Create the arXiv account with the @nyu.edu address.
-2. Begin a submission to **cs.RO** immediately — not to finish it, but because
-   the form tells you on the spot whether you need an endorsement. First-time
-   submitters usually do; institutional email does not waive it.
-   **Guard: do NOT upload the current (pre-Phase-1) PDF and do NOT click final
-   submit during this probe** — it exists only to read the endorsement status;
-   abandon the draft after.
-3. If endorsement is required: the form issues an endorsement code. Send it
-   with a 3-sentence note (title + "simulation-only soft-robotics study" +
-   repo link) to a faculty member who has published in cs.RO recently — an
-   NYU Tandon MAE robotics professor is the natural ask. This is the
-   multi-day item; everything else in this runbook fits in an afternoon.
+**Policy update 2026-01-21 (verified 2026-07-06): endorsement is REQUIRED,
+not probable.** arXiv's updated policy makes an institutional email
+insufficient by itself — automatic endorsement now needs an institutional
+email **and** prior authorship on a paper already in the target endorsement
+domain. A first-time submitter with no prior cs-domain arXiv paper must get
+a **personal endorsement from an established cs-domain arXiv author**.
+
+1. Create the arXiv account with the @nyu.edu address (still required — the
+   institutional address remains part of the credibility signal).
+2. Begin a submission to **cs.RO** to obtain the **endorsement code** the
+   form issues. **Guard: do NOT upload a PDF and do NOT click final submit
+   during this step** — it exists only to generate the code; abandon the
+   draft after.
+3. Send the code with a 3-sentence note (title + "simulation-only
+   soft-robotics study" + the `preprint-v1.2` tag URL + attached PDF) to a
+   faculty member who has authored papers in the cs endorsement domain — an
+   NYU Tandon MAE/ECE robotics professor is the natural ask (a
+   fire-science/CUSP contact will not qualify; the endorser must be
+   established in **cs**). This is the multi-day item; everything else in
+   this runbook fits in an afternoon.
 
 ## Phase 1 — Fix the three blockers (repo work, ~1–2 h)
 
