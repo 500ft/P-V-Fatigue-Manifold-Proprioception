@@ -368,7 +368,9 @@ synthetic story (single-actuator micro-tear spot-check, then the N≈10 fatigue 
 companion proposal).
 
 ## 7. Reproducibility
-All code, the dataset generator, and the analysis scripts are in the repository. The dataset is
+All code, the dataset generator, and the analysis scripts are in the public repository
+(`https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception`); the version described here is
+pinned by the annotated tag `preprint-v1.2`. The dataset is
 regenerable from a fixed seed (`python -m scripts.phaseD_dataset`; integrity pinned by the
 manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors), `python -m scripts.run_study3`
 (health indicator + recalibration), and `python -m scripts.run_study4` (cross-talk

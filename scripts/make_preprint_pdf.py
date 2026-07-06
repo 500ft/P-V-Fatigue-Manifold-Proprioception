@@ -24,6 +24,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas as _rl_canvas
 from reportlab.platypus import (HRFlowable, Image, Paragraph, SimpleDocTemplate,
                                 Spacer, Table, TableStyle)
 
@@ -40,9 +41,32 @@ pdfmetrics.registerFont(TTFont("DejaVu-Italic", os.path.join(_FONTDIR, "DejaVuSa
 pdfmetrics.registerFont(TTFont("DejaVu-BoldItalic", os.path.join(_FONTDIR, "DejaVuSans-BoldOblique.ttf")))
 pdfmetrics.registerFontFamily("DejaVu", normal="DejaVu", bold="DejaVu-Bold",
                               italic="DejaVu-Italic", boldItalic="DejaVu-BoldItalic")
+# Embedded monospace for code spans — the reportlab base-14 Courier is NOT
+# embedded in the output, which violates arXiv's all-fonts-embedded requirement.
+pdfmetrics.registerFont(TTFont("DejaVuMono", os.path.join(_FONTDIR, "DejaVuSansMono.ttf")))
+
+class _EmbeddedFontCanvas(_rl_canvas.Canvas):
+    """reportlab asserts its default Helvetica into every page's content stream
+    (``BT /F1 12 Tf ... ET``) even when no Helvetica glyph is ever drawn, which
+    drags the unembedded base-14 font into the page resources — an arXiv
+    auto-hold trigger for PDF-only submissions. Pointing the initial graphics
+    state at the embedded DejaVu face removes the reference entirely."""
+
+    def __init__(self, *args, **kwargs):
+        # The base font is referenced by every page's preamble ('BT %s 12 Tf')
+        # and gets ALLOCATED in the document font dict the moment the canvas is
+        # constructed — rebuilding the preamble later is too late. The canvas
+        # exposes the initial font as a constructor argument, BUT doctemplate
+        # passes initialFontName=None explicitly, so setdefault() is defeated;
+        # a hard override of the None is required.
+        if not kwargs.get("initialFontName"):
+            kwargs["initialFontName"] = "DejaVu"
+        super().__init__(*args, **kwargs)
+
 
 BLUE = HexColor("#1a5276")
 _B = getSampleStyleSheet()["Normal"]
+_B.fontName = "DejaVu"     # kill the Helvetica default anywhere it could inherit through
 TITLE = ParagraphStyle("title", parent=_B, fontName="DejaVu-Bold", fontSize=15, leading=19,
                        alignment=TA_CENTER, spaceAfter=8)
 H1 = ParagraphStyle("h1", parent=_B, fontName="DejaVu-Bold", fontSize=12.5, leading=15,
@@ -65,7 +89,7 @@ def inline(s: str) -> str:
     s = re.sub(r"\[(.+?)\]\((.+?)\)", r"\1", s)                 # links -> text
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<i>\1</i>", s)
-    s = re.sub(r"`(.+?)`", r'<font face="Courier">\1</font>', s)
+    s = re.sub(r"`(.+?)`", r'<font face="DejaVuMono" size="8">\1</font>', s)
     s = s.replace(r"\*", "*").replace(r"\[", "[").replace(r"\]", "]")
     return s
 
@@ -77,6 +101,10 @@ def make_table(rows):
         grid.append([Paragraph(inline(c), style) for c in cells])
     tbl = Table(grid, hAlign="CENTER", repeatRows=1)
     tbl.setStyle(TableStyle([
+        # Table cells carry a cell-style font that _drawCell asserts via
+        # canvas.setFont even for Paragraph content; the default is Helvetica,
+        # which would allocate an unembedded base-14 font into the document.
+        ("FONTNAME", (0, 0), (-1, -1), "DejaVu"),
         ("BACKGROUND", (0, 0), (-1, 0), HexColor("#d6eaf8")),
         ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, HexColor("#f2f3f4")]),
@@ -139,7 +167,8 @@ def build():
 
     SimpleDocTemplate(OUT, pagesize=LETTER, leftMargin=0.9*inch, rightMargin=0.9*inch,
                       topMargin=0.9*inch, bottomMargin=0.9*inch,
-                      title="P-V Loop Shape as a Fatigue Health Indicator (preprint draft)").build(story)
+                      title="P-V Loop Shape as a Fatigue Health Indicator (preprint draft)"
+                      ).build(story, canvasmaker=_EmbeddedFontCanvas)
     print(f"PDF written: {OUT}")
 
 

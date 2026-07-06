@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANUSCRIPT = ROOT / "docs" / "preprint_v1.md"
+ARXIV_ABSTRACT = ROOT / "docs" / "arxiv_abstract.txt"
 STUDY3 = ROOT / "data" / "sim" / "phaseD" / "study3_results.json"
 STUDY4 = ROOT / "data" / "sim" / "phaseD" / "study4_results.json"
 
@@ -107,7 +108,28 @@ def main():
     cm_vals = s4["coupling_vs_multiplier"]["C_m"]
     require(text, f"{100 * min(cm_vals):.1f}–{100 * max(cm_vals):.1f}%")
 
-    print("manuscript numbers match study JSONs")
+    # ── arXiv metadata abstract gates (docs/SUBMISSION.md Phase 1c) ──────────
+    ab = ARXIV_ABSTRACT.read_text(encoding="utf-8").strip()
+    if len(ab) > 1920:
+        raise AssertionError(f"arXiv abstract is {len(ab)} chars; the metadata cap is 1920")
+    if not ab.isascii():
+        bad = sorted({c for c in ab if not c.isascii()})
+        raise AssertionError(f"arXiv abstract must be ASCII-only; found {bad!r}")
+    for token in ("**", "`", "##", "]("):
+        if token in ab:
+            raise AssertionError(f"arXiv abstract carries markdown token {token!r}")
+    # Every load-bearing number quoted in the metadata abstract, from the JSONs.
+    require(ab, f"r = {corr['r']:.3f}, 95% CI [{corr['ci_low']:.3f}, {corr['ci_high']:.3f}]")
+    require(ab, f"median lead {lead['median_lead_life']:.3f} normalized life")
+    require(ab, f"{lead['status_counts']['nonpositive_lead']}/6 actuators nonpositive")
+    require(ab, f"median +{f001['lead_life_median']:.3f}")
+    front_savings = 1.0 - f001["recal_per_actuator"] / policies["always"]["recal_per_actuator"]
+    require(ab, f"{front_savings:.0%} fewer recalibrations")
+    require(ab, f"{savings:.0%} fewer recalibrations")
+    require(ab, f"({policies['triggered']['recal_per_actuator']:.0f} vs "
+                f"{policies['always']['recal_per_actuator']:.0f} per actuator)")
+
+    print("manuscript numbers match study JSONs (incl. arXiv abstract gates)")
 
 
 if __name__ == "__main__":

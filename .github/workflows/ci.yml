@@ -15,8 +15,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt pytest reportlab
+          python -m pip install -r requirements.txt pytest reportlab pypdf
       - name: Run tests
         run: python -m pytest
       - name: Check manuscript numbers
         run: python -m scripts.check_manuscript_numbers
+      - name: arXiv PDF pre-flight (fonts embedded, no encryption/JS)
+        run: python -m scripts.check_pdf_arxiv
