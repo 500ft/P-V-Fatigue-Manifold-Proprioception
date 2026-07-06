@@ -141,9 +141,20 @@ Prepare `docs/arxiv_metadata.md` with the exact strings:
 
 ## Standing pre-upload checks (unchanged, all currently green except B1–B3)
 
-- [x] `python -m pytest` fully green at the described commit (137, in CI).
-- [x] `python -m scripts.check_manuscript_numbers` green (in CI).
+- [x] `python -m pytest` fully green at the described commit (in CI).
+- [x] `python -m scripts.check_manuscript_numbers` green (in CI, now incl.
+      the four abstract gates).
 - [x] Figures 1–5 embedded and legible.
 - [x] Author affiliation + email current; solo unfunded work, no
       acknowledgments owed.
-- [ ] B1 fonts · B2 repo pin · B3 abstract — Phase 1 above.
+- [x] **B1 fonts — CLEARED 2026-07-06**: all five faces embedded
+      (DejaVuSans family + DejaVuSansMono); `check_pdf_arxiv.py` gates it
+      in CI. Three Helvetica/Courier sources found and killed (code-span
+      Courier, canvas initialFontName, Table cell-style FONTNAME).
+- [x] **B2 repo pin — CLEARED 2026-07-06**: §7 names the repo and pins tag
+      `preprint-v1.2`.
+- [x] **B3 abstract — CLEARED 2026-07-06**: `docs/arxiv_abstract.txt` at
+      1,898 chars, ASCII, markdown-free, numbers JSON-asserted.
+
+**Remaining before upload: Phase 0 (endorsement — owner) and the tag push
+after CI green. Then Phase 3.**
