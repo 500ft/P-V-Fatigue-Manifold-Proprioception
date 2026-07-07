@@ -405,3 +405,92 @@ _Revised 2026-07-03 after owner review: A1 raw per-actuator schema + explicit
 crossing definitions; A2 modesty constraint; A3 git-provable wording only;
 A4 added (test-count drift + number-check script + CI — the repo had none);
 B2 hard-gated on an active deadline; execute-from-main note added._
+
+---
+
+## Wave A.3 — presentation hygiene before professor outreach / arXiv (owner review 2026-07-07)
+
+_The manuscript's novelty framing is already correct (sim-only up front,
+"health indicator" title, no first-P-V-for-fatigue claim, negative lead
+admitted, cross-talk null retained). The remaining work is presentation
+hygiene: the outward-facing artifact must not read like an internal note, and
+the older working docs must not overclaim relative to the downgraded v1.2._
+
+### Governing principle (do not violate)
+
+**Banners, not rewrites, for historical docs.** The proposal, report, and
+early drafts were written *before* the v1.2 downgrade and genuinely predicted a
+"leading indicator" with "positive lead time." That prediction, made and then
+honestly downgraded under the project's own pre-registration, is the core of
+the paper's credibility. Rewriting those bodies to say "health indicator" would
+be revisionist and would erase the audit trail. **`docs/result_spine.md` stays
+FROZEN** (it says "Edit only with a dated note"; its "leading indicator"
+language is the pre-specified target that was downgraded — it MUST remain as
+the record). Historical docs get a one-line SUPERSEDED banner pointing at the
+preprint; their bodies are left intact.
+
+### A3.1 — Remove the internal status block from the manuscript (the only PDF edit)
+
+- **Keep** the `**Status:** ... simulation-only modeling study ...` paragraph —
+  that is honest framing arXiv wants.
+- **Delete** the entire `**Venue & status (GO decision taken 2026-07-02).**`
+  paragraph — "delegated portfolio review", "an unshipped finished preprint
+  loses value", "remaining action is the mechanical upload by the owner" are
+  internal project-management notes that make the paper look like a memo. All of
+  that already lives in `docs/SUBMISSION.md`.
+- Re-render PDF; `check_pdf_arxiv` + `check_manuscript_numbers` + pytest + CI
+  green; this supersedes the `preprint-v1.2` tag → cut `preprint-v1.3` on the
+  new CI-green commit (arXiv v1 will carry v1.3; update §7 pin + SUBMISSION.md).
+
+### A3.2 — Canonical one-sentence novelty claim (single source, quoted everywhere)
+
+- Add a short `docs/NOVELTY.md` with exactly one sentence, owner-approved:
+  > "This paper studies, in simulation, whether observable pressure-volume
+  > loop-area drift can serve as a health signal for recalibrating pressure-only
+  > proprioception in fatiguing shared-manifold soft pneumatic grippers."
+- Point the README "Current Positioning" and the SUBMISSION metadata pack at it
+  so there is one wording, not five. (Do NOT restate it inside the PDF — the
+  abstract already carries the framing.)
+
+### A3.3 — SUPERSEDED banners on the overclaiming working docs
+
+One-line banner at the very top of each, body untouched:
+> `> SUPERSEDED (2026-07-07): forward-looking working doc predating preprint`
+> `> v1.3. Its "leading indicator"/"positive lead time" framing was a`
+> `> pre-specified hypothesis; the simulation study found no positive lead at`
+> `> the deployed threshold and reframed the contribution as a health`
+> `> indicator. Authoritative current version: docs/preprint_v1.md.`
+
+Apply to: `Proposal_A01_A04_Combined.md`, `report.md`, `paper_drafts.md`,
+`Experimental_Protocol.md`. NOT to `result_spine.md` (frozen pre-registration),
+NOT to the literature/gate docs (their "leading indicator" usages are
+descriptions of prior art / viability, not claims about this study's result —
+verify each before deciding, but default is leave).
+
+### A3.4 — README front-door pass
+
+- README already reframed to "health indicator" — good. Add the SUPERSEDED
+  status to the `Proposal_A01_A04_Combined.md` bullet in the Repository Contents
+  list so a browser lands correctly. Add a one-line "Start here: docs/preprint_v1.md
+  (arXiv-ready v1.3)" pointer near the top.
+
+### A3.5 — Professor-outreach framing note (not a claim about results)
+
+- Add a short `docs/OUTREACH.md`: how to introduce the work to faculty — lead
+  with "simulation preprint, reproducible pipeline, looking for a hardware
+  validation collaboration", NOT "finished robotics result". Include the
+  endorsement ask (per SUBMISSION.md Phase 0) since the natural endorser and a
+  natural hardware-collaboration contact may be the same robotics professor.
+  Reuse the canonical NOVELTY sentence.
+
+### A3.6 — Wrap
+
+- Re-render, all gates + CI green, tag `preprint-v1.3`, push tags.
+- Sync Progress repo README/PLAN if any external text still cites v1.2.
+
+### Non-goals (explicit)
+
+- Do NOT rewrite the body of any historical doc to hide the original prediction.
+- Do NOT edit `result_spine.md`.
+- Do NOT add venue/submission prose back into the PDF.
+- Do NOT change any result number (this wave is presentation only).
