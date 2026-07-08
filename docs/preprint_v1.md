@@ -2,20 +2,11 @@
 
 **Author:** Mergen Ulziibayar · NYU Tandon, Dept. of Mechanical & Aerospace Engineering
 
-**Status:** Draft v1.2 (2026-07-03). **This is a simulation-only modeling study.** No physical
+**Status:** Draft v1.3 (2026-07-08). **This is a simulation-only modeling study.** No physical
 experiments are reported; every result is synthetic and is labeled as such. Modeling
-assumptions are stated as choices, not as calibrated predictions for a physical actuator.
-
-**Venue & status (GO decision taken 2026-07-02).** The submission hold is lifted: **GO for
-arXiv-first posting** (`cs.RO`, cross-list `eess.SY`), decided 2026-07-02 under the owner's
-delegated portfolio review. Rationale: the summer deliverable was defined as a *public* arXiv
-preprint; the manuscript is complete, verified against the study JSONs, and written for exactly
-this scope (sim-only honesty and the single-generator caveat are foregrounded); an unshipped
-finished preprint loses value every week while carrying no upside. Peer-review submission is a
-separate, later decision: **IEEE RoboSoft** at its next deadline cycle for the sim/method
-contribution; **RA-L** only once a physical bench campaign exists. The remaining action is the
-mechanical upload by the owner (arXiv account + possible first-submission endorsement) — see
-`docs/SUBMISSION.md` for the checklist.
+assumptions are stated as choices, not as calibrated predictions for a physical actuator. The
+natural next step is a physical bench campaign; the authors welcome hardware-validation
+collaboration.
 
 ---
 
@@ -370,7 +361,7 @@ companion proposal).
 ## 7. Reproducibility
 All code, the dataset generator, and the analysis scripts are in the public repository
 (`https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception`); the version described here is
-pinned by the annotated tag `preprint-v1.2`. The dataset is
+pinned by the annotated tag `preprint-v1.3`. The dataset is
 regenerable from a fixed seed (`python -m scripts.phaseD_dataset`; integrity pinned by the
 manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors), `python -m scripts.run_study3`
 (health indicator + recalibration), and `python -m scripts.run_study4` (cross-talk

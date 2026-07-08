@@ -34,7 +34,7 @@ a **personal endorsement from an established cs-domain arXiv author**.
    during this step** — it exists only to generate the code; abandon the
    draft after.
 3. Send the code with a 3-sentence note (title + "simulation-only
-   soft-robotics study" + the `preprint-v1.2` tag URL + attached PDF) to a
+   soft-robotics study" + the `preprint-v1.3` tag URL + attached PDF) to a
    faculty member who has authored papers in the cs endorsement domain — an
    NYU Tandon MAE/ECE robotics professor is the natural ask (a
    fire-science/CUSP contact will not qualify; the endorser must be
@@ -68,11 +68,11 @@ a **personal endorsement from an established cs-domain arXiv author**.
 
 - §7 first sentence names the repo explicitly:
   `https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception`, and states
-  the pinned version as the annotated tag **`preprint-v1.2`**.
+  the pinned version as the annotated tag **`preprint-v1.3`**.
 - Referencing the *tag name* (not a commit hash) avoids the chicken-and-egg
   of the final render changing the hash. **Exact order (never tag ahead of
   CI):** edit §7 → re-render → run all checks locally → commit → push branch
-  → **wait for CI green on that commit** → `git tag -a preprint-v1.2 -m
+  → **wait for CI green on that commit** → `git tag -a preprint-v1.3 -m
   "arXiv v1 source state"` on the green commit → `git push --tags` → open
   the GitHub tag URL and confirm it resolves.
 - Gate: the tag exists on GitHub, resolves in a browser, and points at a
@@ -101,7 +101,7 @@ a **personal endorsement from an established cs-domain arXiv author**.
 ### 1d. Wrap Phase 1
 
 - Re-render; `pytest` + `check_manuscript_numbers` + `check_pdf_arxiv` + CI
-  green; commit; tag `preprint-v1.2`; push with tags.
+  green; commit; tag `preprint-v1.3`; push with tags.
 
 ## Phase 2 — Metadata pack (so the form is a paste job)
 
@@ -114,7 +114,7 @@ Prepare `docs/arxiv_metadata.md` with the exact strings:
 - **Primary category:** cs.RO. **Cross-list:** eess.SY.
 - **Comments field:** "11 pages, 5 figures. Simulation-only study; code and
   frozen results at https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception
-  (tag preprint-v1.2)".
+  (tag preprint-v1.3)".
 - **License (DECIDED for v1.2):** select **"arXiv.org perpetual,
   non-exclusive license 1.0"**. Rationale: it grants arXiv distribution
   rights while limiting third-party downstream reuse — the least surprising
@@ -160,7 +160,7 @@ Prepare `docs/arxiv_metadata.md` with the exact strings:
       in CI. Three Helvetica/Courier sources found and killed (code-span
       Courier, canvas initialFontName, Table cell-style FONTNAME).
 - [x] **B2 repo pin — CLEARED 2026-07-06**: §7 names the repo and pins tag
-      `preprint-v1.2`.
+      `preprint-v1.3`.
 - [x] **B3 abstract — CLEARED 2026-07-06**: `docs/arxiv_abstract.txt` at
       1,898 chars, ASCII, markdown-free, numbers JSON-asserted.
 
