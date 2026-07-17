@@ -12,6 +12,12 @@ The core novelty has been reframed after literature and patent verification:
 - Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
 - The defensible claim is an operational, cycle-resolved P-V loop-shape health indicator plus fatigue-triggered recalibration for shared-manifold pressure-only proprioception. A v1.1 lead-time audit found no positive temporal lead under the deployed threshold on the 5-stage simulation grid.
 
+**Current release:** simulation-only manuscript v1.3, frozen at
+[`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3).
+The PDF passes the repository's number and arXiv pre-flight checks. Public
+citation is pending either an arXiv identifier or the preregistered Zenodo
+fallback on 2026-08-02.
+
 ## Repository Contents
 
 - `docs/A01_A04_Literature_Review.md` - annotated literature review and verified citation base.
@@ -49,47 +55,34 @@ That makes the proposal's boundary:
 
 ## Status
 
-Metadata cleanup completed on 2026-06-18:
+- **Manuscript v1.3 complete and tagged.** The checked PDF is
+  [`docs/preprint_v1.pdf`](docs/preprint_v1.pdf); the exact release bytes have
+  SHA-256 `6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d`.
+- **Simulation result complete.** The study uses 2,000 traces split by actuator
+  identity. P-V loop area correlates with compliance drift (`r = 0.885`, held-out
+  95% CI `[0.835, 0.958]`), while the deployed threshold has no positive temporal
+  lead; the manuscript reports that negative result directly.
+- **Recalibration result complete.** The P-V-triggered policy meets the registered
+  error budget with 2 recalibrations per actuator versus 5 for always-on; the
+  equally tuned cycle-count baseline fails on held-out actuators.
+- **Scope:** all results are synthetic and from one generative model. No physical
+  actuator validation is claimed.
+- **Publication blocker:** cs.RO endorsement is owner/external. The arXiv runbook
+  remains active, but the packet is no longer dependent on the reply: reserve a
+  Zenodo DOI now and publish v1.3 there on August 2 if no arXiv ID exists. See
+  [`docs/ZENODO_FALLBACK.md`](docs/ZENODO_FALLBACK.md).
 
-- Cleared all previous `[verify]` markers in the literature review.
-- Corrected Guo et al. 2021 DOI to `10.1016/j.measurement.2021.110076`.
-- Corrected the pneumatic RC-model citation to Stanley et al. 2021, DOI `10.1115/1.4049009`.
-- Updated Lindenroth et al. from arXiv-only to the published IEEE/ASME Transactions on Mechatronics version.
+## Reproduce and verify
 
-## Next Work
+```bash
+python -m pytest
+python -m scripts.check_manuscript_numbers
+python -m scripts.check_pdf_arxiv
+python -m scripts.check_publication_fallback
+```
 
-- **Gate 0 (coupling simulation): DONE — PASS.** The fatigue→compliance→cross-talk spine
-  is confirmed in a lumped-RC model and is robust across 400 randomized parameter sets
-  (100 % monotone). Key finding: the coupling is **dynamic** (DC gain is
-  compliance-independent), so the experiment must probe at the actuation band (~1–5 Hz)
-  with history-dependent features. See `docs/Gate0_Coupling_Simulation.md`.
-- **Gate 0b: DONE — PASS (literature-resolved).** Silicone PneuNets fail *gradually* with
-  micro-tear precursors (Libby 2022: FEM agreement 96 %→80 %; Torzini 2024: 0.2–0.4 mm
-  hump-base tears before rupture). Leading indicator is viable; target compliance/loop-area
-  drift. One spot-check folded into rig bring-up. See `docs/Gate0b_Failure_Mode_Literature.md`.
-- **Gate 1: DONE — design-resolved.** Acquire P-V loops by volumetric (syringe/stepper)
-  drive; deployable in-loop volume via pressure-oscillation observer (~0.6 % RMS, Joshi &
-  Paik 2023); naive flow integration rejected. See `docs/Gate1_Volume_Estimation_Literature.md`.
-- **Gate 2 (next, ~1 day, \$0):** audit actual lab equipment (mocap? rig? syringe pump?)
-  and replace the \$320 estimate with an audited BOM.
-- Then: Week-3 hardware coupling gate, entered with the mechanism, failure mode, and volume
-  method all pre-confirmed.
-- **Remote simulation Phase A: DONE — PASS.** The SLS plant produces rate-dependent
-  P-V loops and reduces to the Gate 0 model.
-- **Remote simulation Phase B: DONE — PASS (synthetic consistency only).** The canonical
-  actuator injects 16 % no-rest compliance/loop-area drift, a 30 % permanent Mullins
-  floor with 24 h recovery time constant, curvature acceleration onset at 70 % life,
-  and late leak growth to 20x conductance. Leakage is observed by a separate closed-valve
-  pressure-decay probe; it is not observable in imposed-volume P-V loops.
-- **Remote simulation Phase C: DONE — PASS (synthetic validation only).** Causal P-V
-  features, Mullins recovery normalization, HI metrics, matched-FA 3σ/CUSUM detectors,
-  and four degradation models were tested across the registered 144-condition grid.
-  The matched segmented model recovers the quadratic onset ceiling, but fails strongly
-  on logistic-onset variants — the intended inverse-crime/generalization result.
-- **Next remote simulation work: Phase D.** Add PCC kinematics, realistic sensor effects,
-  and the ~2000-trace shared-manifold versus isolated-supply dataset. Phase C metrics
-  arrive pre-validated and are applied, not re-validated, in Phase D.
-- Expand the proposal into submission-ready Intro/Related Work after Gate 2.
+Hardware work remains trigger-gated on matched actuator/lab access and a frozen
+physical protocol; it is not required for the citable simulation release.
 
 ## License
 

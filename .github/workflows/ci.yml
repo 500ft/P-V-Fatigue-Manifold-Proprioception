@@ -22,3 +22,5 @@ jobs:
         run: python -m scripts.check_manuscript_numbers
       - name: arXiv PDF pre-flight (fonts embedded, no encryption/JS)
         run: python -m scripts.check_pdf_arxiv
+      - name: Check citable-release fallback metadata and PDF bytes
+        run: python -m scripts.check_publication_fallback

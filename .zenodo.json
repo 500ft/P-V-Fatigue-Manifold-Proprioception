@@ -1,0 +1,29 @@
+{
+  "title": "Pressure-Volume Loop Shape as a Fatigue Health Indicator for Pressure-Only Proprioception in Shared-Manifold Soft Grippers: A Simulation Study",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "Simulation-only study of cycle-resolved pressure-volume loop shape as a fatigue health indicator and trigger for pressure-only proprioception recalibration in shared-manifold soft pneumatic grippers.",
+  "creators": [
+    {
+      "name": "Ulziibayar, Mergen",
+      "affiliation": "NYU Tandon School of Engineering, Department of Mechanical and Aerospace Engineering"
+    }
+  ],
+  "version": "1.3",
+  "license": "cc-by-4.0",
+  "keywords": [
+    "soft robotics",
+    "pneumatic actuators",
+    "fatigue health indicator",
+    "pressure-volume hysteresis",
+    "proprioception",
+    "shared manifold"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

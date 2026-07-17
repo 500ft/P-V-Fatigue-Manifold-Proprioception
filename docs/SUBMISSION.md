@@ -1,4 +1,4 @@
-# arXiv Submission Runbook — preprint v1.2
+# Citable Release Runbook — preprint v1.3
 
 **Decision: GO for arXiv-first posting, taken 2026-07-02** (delegated portfolio
 review; rationale recorded in the manuscript status block and
@@ -40,6 +40,14 @@ a **personal endorsement from an established cs-domain arXiv author**.
    fire-science/CUSP contact will not qualify; the endorser must be
    established in **cs**). This is the multi-day item; everything else in
    this runbook fits in an afternoon.
+
+### Phase 0B — independent Zenodo fallback
+
+Create a Zenodo draft and reserve a DOI now. If no arXiv identifier exists by
+**2026-08-02**, publish the exact `preprint-v1.3` PDF and metadata described in
+[`ZENODO_FALLBACK.md`](ZENODO_FALLBACK.md). This is a preregistered fallback,
+not a replacement for the endorsement attempt. If arXiv lands later, add it as
+a related identifier and retain the Zenodo version history.
 
 ## Phase 1 — Fix the three blockers (repo work, ~1–2 h)
 
@@ -164,5 +172,6 @@ Prepare `docs/arxiv_metadata.md` with the exact strings:
 - [x] **B3 abstract — CLEARED 2026-07-06**: `docs/arxiv_abstract.txt` at
       1,898 chars, ASCII, markdown-free, numbers JSON-asserted.
 
-**Remaining before upload: Phase 0 (endorsement — owner) and the tag push
-after CI green. Then Phase 3.**
+**Remaining:** Phase 0 endorsement and Phase 3 are owner/external. The
+`preprint-v1.3` tag already exists. Reserve the Zenodo DOI now; the August 2
+fallback makes the citable release independent of external replies.
