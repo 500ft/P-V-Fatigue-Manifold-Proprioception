@@ -1,8 +1,28 @@
 # P-V Fatigue Manifold Proprioception
 
-Research package for the combined soft-robotics proposal:
+P-V Fatigue Manifold Proprioception is a Python simulation and research package
+that tests whether intermittent pressure-volume (P-V) loops can schedule
+recalibration when soft-actuator motion is estimated from pressure alone.
 
-**P-V hysteresis as a cycle-resolved fatigue health indicator, and its coupling to pressure-only proprioception in shared-manifold soft pneumatic grippers.**
+Soft pneumatic actuators drift as they fatigue, but constant recalibration adds
+time and instrumentation. This project compares P-V-triggered, cycle-count, and
+always-on policies on synthetic shared-manifold grippers, with reproducible
+studies and checked manuscript outputs.
+
+![P-V recalibration trade-off](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
+
+### Key capabilities
+
+- Simulates fatigue, recovery, leak growth, and shared-manifold cross-talk.
+- Evaluates recalibration policies on held-out synthetic actuators.
+- Regenerates study data, figures, and the simulation-only manuscript.
+- Checks reported numbers and publication files against committed results.
+
+**For:** soft-robotics researchers and students studying pneumatic-actuator
+health monitoring, proprioception, and recalibration.
+
+**Start here:** run `python -m scripts.run_study3`, then verify the repository
+with the commands in [Reproduce and verify](#reproduce-and-verify).
 
 ## Current Positioning
 
@@ -10,13 +30,22 @@ The core novelty has been reframed after literature and patent verification:
 
 - Do **not** claim first use of pressure-volume (P-V) hysteresis for fatigue.
 - Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
-- The defensible claim is an operational, cycle-resolved P-V loop-shape health indicator plus fatigue-triggered recalibration for shared-manifold pressure-only proprioception. A v1.1 lead-time audit found no positive temporal lead under the deployed threshold on the 5-stage simulation grid.
+- The defensible v1 claim is a simulation-derived P-V recalibration signal evaluated against always-on and cycle-count policies. The five-stage study is life-stage-resolved, not evidence of cycle-by-cycle trigger timing.
+- Shared-manifold cross-talk is retained as a negative secondary result: it is second-order within the tested simulated parameter envelope, not a general statement about all physical manifolds.
+- The pose estimator is pressure-only during normal operation; the health signal comes from a separate intermittent volumetric P-V probe.
 
 **Current release:** simulation-only manuscript v1.3, frozen at
 [`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3).
 The PDF passes the repository's number and arXiv pre-flight checks. Public
-citation is pending either an arXiv identifier or the preregistered Zenodo
-fallback on 2026-08-02.
+citation still requires the owner to publish the preregistered Zenodo fallback or
+record an arXiv identifier. The registered fallback date was 2026-08-02.
+
+**RoboSoft-v2 development:** the new paper centers the conditional recalibration
+decision rather than rediscovering P-V fatigue sensitivity. Start with the
+[`novelty/evidence audit`](docs/reviews/novelty-evidence-audit-2026-08-03.md),
+[`claim spine`](docs/specs/robosoft-v2/claim-spine.md), and
+[`adaptive scope`](docs/specs/robosoft-v2/scope.md). The v1.3 PDF and publication
+metadata remain unchanged.
 
 ## Repository Contents
 
@@ -48,7 +77,7 @@ US Patent 10,639,801 confirms cycle-lifetime claims for low-strain PneuNets (>10
 
 That makes the proposal's boundary:
 
-1. Cycle-resolved P-V feature trajectories, not just before/after curves.
+1. Life-stage-resolved P-V feature trajectories and explicit trigger-policy evaluation, not merely before/after comparison.
 2. Quantified trigger timing before accuracy-budget violation, reported honestly whether positive or not.
 3. Coupling between fatigue-induced compliance drift, shared-manifold cross-talk, and pressure-only pose-estimation degradation.
 4. Recalibration triggered by a P-V health signal.
@@ -59,9 +88,11 @@ That makes the proposal's boundary:
   [`docs/preprint_v1.pdf`](docs/preprint_v1.pdf); the exact release bytes have
   SHA-256 `6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d`.
 - **Simulation result complete.** The study uses 2,000 traces split by actuator
-  identity. P-V loop area correlates with compliance drift (`r = 0.885`, held-out
-  95% CI `[0.835, 0.958]`), while the deployed threshold has no positive temporal
-  lead; the manuscript reports that negative result directly.
+  identity. The frozen v1 paper reports pooled `r = 0.885` and a point-level
+  bootstrap interval `[0.835, 0.958]`; v2 will replace that interval with
+  actuator-cluster resampling and leave-one-actuator-out sensitivity. The deployed
+  threshold has no positive temporal lead, and the manuscript reports that negative
+  result directly.
 - **Recalibration result complete.** The P-V-triggered policy meets the registered
   error budget with 2 recalibrations per actuator versus 5 for always-on; the
   equally tuned cycle-count baseline fails on held-out actuators.
