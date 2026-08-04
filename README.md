@@ -6,8 +6,8 @@ recalibration when soft-actuator motion is estimated from pressure alone.
 
 Soft pneumatic actuators drift as they fatigue, but constant recalibration adds
 time and instrumentation. This project compares P-V-triggered, cycle-count, and
-always-on policies on synthetic shared-manifold grippers, with reproducible
-studies and checked manuscript outputs.
+always-on policies on synthetic shared-manifold grippers. Its scripts regenerate
+the study data, figures, and manuscript files.
 
 ![P-V recalibration trade-off](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
@@ -16,21 +16,21 @@ studies and checked manuscript outputs.
 - Simulates fatigue, recovery, leak growth, and shared-manifold cross-talk.
 - Evaluates recalibration policies on held-out synthetic actuators.
 - Regenerates study data, figures, and the simulation-only manuscript.
-- Checks reported numbers and publication files against committed results.
+- Compares manuscript numbers and publication files with committed result files.
 
 **For:** soft-robotics researchers and students studying pneumatic-actuator
 health monitoring, proprioception, and recalibration.
 
-**Start here:** run `python -m scripts.run_study3`, then verify the repository
-with the commands in [Reproduce and verify](#reproduce-and-verify).
+**Start here:** run `python -m scripts.run_study3`, then run the repository
+checks in [Reproduce the results](#reproduce-the-results).
 
-## Current Positioning
+## Current Scope
 
-The core novelty has been reframed after literature and patent verification:
+The literature and patent review set the following scope:
 
-- Do **not** claim first use of pressure-volume (P-V) hysteresis for fatigue.
+- Previous work already uses pressure-volume (P-V) hysteresis for fatigue assessment.
 - Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
-- The defensible v1 claim is a simulation-derived P-V recalibration signal evaluated against always-on and cycle-count policies. The five-stage study is life-stage-resolved, not evidence of cycle-by-cycle trigger timing.
+- Version 1 evaluates a simulation-derived P-V recalibration signal against always-on and cycle-count policies. The five-stage study resolves life stages rather than cycle-by-cycle trigger timing.
 - Shared-manifold cross-talk is retained as a negative secondary result: it is second-order within the tested simulated parameter envelope, not a general statement about all physical manifolds.
 - The pose estimator is pressure-only during normal operation; the health signal comes from a separate intermittent volumetric P-V probe.
 
@@ -42,16 +42,16 @@ record an arXiv identifier. The registered fallback date was 2026-08-02.
 
 **RoboSoft-v2 development:** the new paper centers the conditional recalibration
 decision rather than rediscovering P-V fatigue sensitivity. Start with the
-[`novelty/evidence audit`](docs/reviews/novelty-evidence-audit-2026-08-03.md),
-[`claim spine`](docs/specs/robosoft-v2/claim-spine.md), and
+[`prior-art review`](docs/reviews/novelty-evidence-audit-2026-08-03.md),
+[`paper scope`](docs/specs/robosoft-v2/claim-spine.md), and
 [`adaptive scope`](docs/specs/robosoft-v2/scope.md). The v1.3 PDF and publication
 metadata remain unchanged.
 
 ## Repository Contents
 
-- `docs/A01_A04_Literature_Review.md` - annotated literature review and verified citation base.
+- `docs/A01_A04_Literature_Review.md` - annotated literature review and citation base.
 - `docs/Proposal_A01_A04_Combined.md` - main proposal with research questions, novelty framing, methods, risks, and timeline.
-- `docs/Gate0_Coupling_Simulation.md` - **Gate 0 result**: lumped-RC pre-test of the coupling spine (PASS). The mechanism is confirmed and the experiment is re-scoped around its findings.
+- `docs/Gate0_Coupling_Simulation.md` - **Gate 0 result**: lumped-RC pre-test of the coupling spine (PASS), with the experiment re-scoped around its output.
 - `docs/Gate0b_Failure_Mode_Literature.md` - **Gate 0b** (literature-resolved, PASS): silicone PneuNets fail gradually with micro-tear precursors → a P-V health indicator is viable.
 - `docs/Gate1_Volume_Estimation_Literature.md` - **Gate 1** (design-resolved): acquire P-V loops by volumetric drive + pressure-oscillation observer; flow integration rejected.
 - `docs/Experimental_Protocol.md` - operational test runbook: the gate ladder, study protocols, and the minimum viable paper.
@@ -73,12 +73,12 @@ metadata remain unchanged.
 
 ## Key Prior-Art Boundary
 
-US Patent 10,639,801 confirms cycle-lifetime claims for low-strain PneuNets (>10,000, >200,000, and >1,000,000 cycles without failure). The Google Patents text source also states that fatigue was assessed using before/after P-V hysteresis curves at 2 Hz over 10^4, 2 x 10^5, and 10^6 complete-actuation cycles.
+US Patent 10,639,801 reports cycle lifetimes for low-strain PneuNets (>10,000, >200,000, and >1,000,000 cycles without failure). The Google Patents text source also states that fatigue was assessed using before/after P-V hysteresis curves at 2 Hz over 10^4, 2 x 10^5, and 10^6 complete-actuation cycles.
 
 That makes the proposal's boundary:
 
 1. Life-stage-resolved P-V feature trajectories and explicit trigger-policy evaluation, not merely before/after comparison.
-2. Quantified trigger timing before accuracy-budget violation, reported honestly whether positive or not.
+2. Quantified trigger timing before accuracy-budget violation at each tested threshold.
 3. Coupling between fatigue-induced compliance drift, shared-manifold cross-talk, and pressure-only pose-estimation degradation.
 4. Recalibration triggered by a P-V health signal.
 
@@ -91,19 +91,18 @@ That makes the proposal's boundary:
   identity. The frozen v1 paper reports pooled `r = 0.885` and a point-level
   bootstrap interval `[0.835, 0.958]`; v2 will replace that interval with
   actuator-cluster resampling and leave-one-actuator-out sensitivity. The deployed
-  threshold has no positive temporal lead, and the manuscript reports that negative
-  result directly.
+  threshold has zero temporal lead.
 - **Recalibration result complete.** The P-V-triggered policy meets the registered
   error budget with 2 recalibrations per actuator versus 5 for always-on; the
   equally tuned cycle-count baseline fails on held-out actuators.
-- **Scope:** all results are synthetic and from one generative model. No physical
-  actuator validation is claimed.
-- **Publication blocker:** cs.RO endorsement is owner/external. The arXiv runbook
+- **Scope:** all results are synthetic and come from one generative model. Physical
+  actuator testing has not been performed.
+- **Publication status:** cs.RO endorsement is owner/external. The arXiv runbook
   remains active, but the packet is no longer dependent on the reply: reserve a
   Zenodo DOI now and publish v1.3 there on August 2 if no arXiv ID exists. See
   [`docs/ZENODO_FALLBACK.md`](docs/ZENODO_FALLBACK.md).
 
-## Reproduce and verify
+## Reproduce the results
 
 ```bash
 python -m pytest
