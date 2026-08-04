@@ -1,108 +1,79 @@
 # P-V Fatigue Manifold Proprioception
 
-P-V Fatigue Manifold Proprioception is a Python simulation and research package
-that tests whether intermittent pressure-volume (P-V) loops can schedule
-recalibration when soft-actuator motion is estimated from pressure alone.
+[![CI](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/actions/workflows/ci.yml/badge.svg)](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/actions/workflows/ci.yml)
+[![Preprint v1.3](https://img.shields.io/badge/preprint-v1.3-276c6b)](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
-Soft pneumatic actuators drift as they fatigue, but constant recalibration adds
-time and instrumentation. This project compares P-V-triggered, cycle-count, and
-always-on policies on synthetic shared-manifold grippers. Its scripts regenerate
-the study data, figures, and manuscript files.
+A Python simulation study of pressure-volume loop features as recalibration
+signals for pressure-only proprioception in soft pneumatic actuators.
 
-![P-V recalibration trade-off](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
+**[Results](#results) · [Quick start](#quick-start) · [Research scope](#research-scope) · [Documentation](#documentation) · [Citation](#citation)**
 
-### Key capabilities
+![Recalibration trade-off on held-out synthetic actuators](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-- Simulates fatigue, recovery, leak growth, and shared-manifold cross-talk.
-- Evaluates recalibration policies on held-out synthetic actuators.
-- Regenerates study data, figures, and the simulation-only manuscript.
-- Compares manuscript numbers and publication files with committed result files.
+*Held-out pose error versus lifetime recalibration count for fixed,
+cycle-scheduled, P-V-triggered, and always-on policies.*
 
-**For:** soft-robotics researchers and students studying pneumatic-actuator
-health monitoring, proprioception, and recalibration.
+## Overview
 
-**Start here:** run `python -m scripts.run_study3`, then run the repository
-checks in [Reproduce the results](#reproduce-the-results).
+Soft pneumatic actuators drift as they fatigue. Recalibrating continuously can
+control that drift, but it adds sensing and operating cost. This repository
+tests whether an intermittent P-V probe can schedule recalibration only when the
+actuator needs it.
 
-## Current Scope
+| | |
+| --- | --- |
+| **Study type** | Simulation with held-out synthetic actuators |
+| **Main comparison** | P-V-triggered, cycle-count, fixed, and always-on policies |
+| **Current release** | Simulation-only preprint v1.3 |
+| **Physical testing** | Not yet performed |
+| **Outputs** | Study data, figures, manuscript, and publication checks |
 
-The literature and patent review set the following scope:
+## How it works
 
-- Previous work already uses pressure-volume (P-V) hysteresis for fatigue assessment.
-- Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
-- Version 1 evaluates a simulation-derived P-V recalibration signal against always-on and cycle-count policies. The five-stage study resolves life stages rather than cycle-by-cycle trigger timing.
-- Shared-manifold cross-talk is retained as a negative secondary result: it is second-order within the tested simulated parameter envelope, not a general statement about all physical manifolds.
-- The pose estimator is pressure-only during normal operation; the health signal comes from a separate intermittent volumetric P-V probe.
+```mermaid
+flowchart LR
+    A[Fatiguing pneumatic actuator] --> B[Pressure-only pose estimate]
+    A --> C[Intermittent volumetric P-V probe]
+    C --> D[P-V health features]
+    D --> E{Trigger threshold reached?}
+    E -- No --> B
+    E -- Yes --> F[Recalibrate pose model]
+    F --> B
+```
 
-**Current release:** simulation-only manuscript v1.3, frozen at
-[`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3).
-The PDF passes the repository's number and arXiv pre-flight checks. Public
-citation still requires the owner to publish the preregistered Zenodo fallback or
-record an arXiv identifier. The registered fallback date was 2026-08-02.
+The pose estimator remains pressure-only during normal operation. The health
+signal comes from a separate intermittent P-V loop, so the study evaluates a
+recalibration policy rather than continuous volume sensing.
 
-**RoboSoft-v2 development:** the new paper centers the conditional recalibration
-decision rather than rediscovering P-V fatigue sensitivity. Start with the
-[`prior-art review`](docs/reviews/novelty-evidence-audit-2026-08-03.md),
-[`paper scope`](docs/specs/robosoft-v2/claim-spine.md), and
-[`adaptive scope`](docs/specs/robosoft-v2/scope.md). The v1.3 PDF and publication
-metadata remain unchanged.
+## Results
 
-## Repository Contents
+| Result | Current output |
+| --- | --- |
+| Dataset | 2,000 synthetic traces split by actuator identity |
+| P-V association | Pooled `r = 0.885`; the v1 point-level bootstrap interval is `[0.835, 0.958]` |
+| Recalibration policy | 2 recalibrations per actuator for the P-V policy versus 5 for always-on |
+| Cycle-count baseline | Misses the registered error budget on held-out actuators at equal tuning |
+| Trigger lead | The deployed threshold has zero positive temporal lead |
+| Shared-manifold cross-talk | Second-order within the tested simulation envelope |
 
-- `docs/A01_A04_Literature_Review.md` - annotated literature review and citation base.
-- `docs/Proposal_A01_A04_Combined.md` - main proposal with research questions, novelty framing, methods, risks, and timeline.
-- `docs/Gate0_Coupling_Simulation.md` - **Gate 0 result**: lumped-RC pre-test of the coupling spine (PASS), with the experiment re-scoped around its output.
-- `docs/Gate0b_Failure_Mode_Literature.md` - **Gate 0b** (literature-resolved, PASS): silicone PneuNets fail gradually with micro-tear precursors → a P-V health indicator is viable.
-- `docs/Gate1_Volume_Estimation_Literature.md` - **Gate 1** (design-resolved): acquire P-V loops by volumetric drive + pressure-oscillation observer; flow integration rejected.
-- `docs/Experimental_Protocol.md` - operational test runbook: the gate ladder, study protocols, and the minimum viable paper.
-- `scripts/gate0_lumped_rc.py` - the Gate 0 simulation (writes `data/gate0/`).
-- `sim/fatigue.py` - **Phase B model**: synthetic Mullins/recovery, irreversible
-  compliance drift, acceleration onset, and late leak growth.
-- `scripts/phaseB_fatigue_demo.py` - Phase B consistency demo (writes
-  `data/sim/phaseB/`), including the independent pressure-decay leak observable.
-- `docs/Draft1_A01_A04_Combined.pdf` - earlier draft PDF.
-- `docs/paper_drafts.md` - draft paper/proposal text history.
-- `docs/report.md` - research topic report.
-- `docs/all_timespan_professor_review.md` - review notes across candidate topics.
-- `data/outline.yaml` - structured topic outline.
-- `data/fields.yaml` - research schema fields.
-- `data/results/` - per-topic research JSON outputs.
-- `scripts/generate_report.py` - report-generation script.
-- `scripts/make_draft1_pdf.py` - draft PDF generation script.
-- `references/patents/US10639801B2-low-strain-pneumatic-networks.pdf` - downloaded Google Patents PDF for the nearest patent prior art.
+The v2 analysis plan replaces point-level resampling with actuator-cluster
+resampling and leave-one-actuator-out sensitivity. Results currently come from
+one generative model and should not be read as physical actuator performance.
 
-## Key Prior-Art Boundary
+## Quick start
 
-US Patent 10,639,801 reports cycle lifetimes for low-strain PneuNets (>10,000, >200,000, and >1,000,000 cycles without failure). The Google Patents text source also states that fatigue was assessed using before/after P-V hysteresis curves at 2 Hz over 10^4, 2 x 10^5, and 10^6 complete-actuation cycles.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip install pytest reportlab pypdf
+python -m scripts.run_study3
+```
 
-That makes the proposal's boundary:
+Study 3 writes its generated data and figures under `data/sim/phaseD/`.
 
-1. Life-stage-resolved P-V feature trajectories and explicit trigger-policy evaluation, not merely before/after comparison.
-2. Quantified trigger timing before accuracy-budget violation at each tested threshold.
-3. Coupling between fatigue-induced compliance drift, shared-manifold cross-talk, and pressure-only pose-estimation degradation.
-4. Recalibration triggered by a P-V health signal.
-
-## Status
-
-- **Manuscript v1.3 complete and tagged.** The checked PDF is
-  [`docs/preprint_v1.pdf`](docs/preprint_v1.pdf); the exact release bytes have
-  SHA-256 `6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d`.
-- **Simulation result complete.** The study uses 2,000 traces split by actuator
-  identity. The frozen v1 paper reports pooled `r = 0.885` and a point-level
-  bootstrap interval `[0.835, 0.958]`; v2 will replace that interval with
-  actuator-cluster resampling and leave-one-actuator-out sensitivity. The deployed
-  threshold has zero temporal lead.
-- **Recalibration result complete.** The P-V-triggered policy meets the registered
-  error budget with 2 recalibrations per actuator versus 5 for always-on; the
-  equally tuned cycle-count baseline fails on held-out actuators.
-- **Scope:** all results are synthetic and come from one generative model. Physical
-  actuator testing has not been performed.
-- **Publication status:** cs.RO endorsement is owner/external. The arXiv runbook
-  remains active, but the packet is no longer dependent on the reply: reserve a
-  Zenodo DOI now and publish v1.3 there on August 2 if no arXiv ID exists. See
-  [`docs/ZENODO_FALLBACK.md`](docs/ZENODO_FALLBACK.md).
-
-## Reproduce the results
+## Reproduce the release
 
 ```bash
 python -m pytest
@@ -111,17 +82,62 @@ python -m scripts.check_pdf_arxiv
 python -m scripts.check_publication_fallback
 ```
 
-Hardware work remains trigger-gated on matched actuator/lab access and a frozen
-physical protocol; it is not required for the citable simulation release.
+The checks compare manuscript values with committed study outputs, inspect the
+PDF for arXiv constraints, and check the release metadata and file digest.
+
+## Research scope
+
+Previous work already uses before/after P-V hysteresis to assess pneumatic
+actuator fatigue. This project instead evaluates:
+
+1. life-stage P-V feature trajectories;
+2. threshold-based recalibration scheduling;
+3. pressure-only pose-estimation drift under fatigue; and
+4. shared-manifold cross-talk inside the tested simulation envelope.
+
+The frozen v1.3 manuscript is [`docs/preprint_v1.pdf`](docs/preprint_v1.pdf).
+Ongoing paper revisions are tracked in
+[`docs/REVISION_PLAN.md`](docs/REVISION_PLAN.md) without changing the tagged
+release.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [`docs/preprint_v1.md`](docs/preprint_v1.md) | Source for the simulation-only manuscript |
+| [`docs/Experimental_Protocol.md`](docs/Experimental_Protocol.md) | Study gates, protocols, and operating sequence |
+| [`docs/Simulation_Plan.md`](docs/Simulation_Plan.md) | Simulation phases and planned outputs |
+| [`docs/A01_A04_Literature_Review.md`](docs/A01_A04_Literature_Review.md) | Prior work and citation notes |
+| [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Release and submission runbook |
+| [`ROADMAP.md`](ROADMAP.md) | Project milestones and remaining work |
+
+## Repository map
+
+```text
+sim/        pneumatic plant, sensing, kinematics, and fatigue models
+pipeline/   feature extraction, health indices, and recalibration logic
+scripts/    study runners, figure generation, and publication checks
+tests/      model, pipeline, and release regression tests
+data/       committed study inputs, outputs, and figures
+docs/       manuscript, protocol, literature review, and release notes
+```
+
+## Citation
+
+Use [`CITATION.cff`](CITATION.cff) or the metadata attached to the
+[`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3)
+release. The citation file points to the frozen manuscript version rather than
+the changing development branch.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, generated-artifact rules,
+and the checks required before a change is submitted.
 
 ## License
 
-This repository is dual-licensed:
-
-- **Source code** (e.g. `sim/`, `scripts/`, `tests/`) is licensed under the
-  **MIT License** — see [`LICENSE`](LICENSE).
-- **The manuscript, documentation, and figures** (notably `docs/`) are licensed
-  under **Creative Commons Attribution 4.0 International (CC BY 4.0)** — see
-  [`LICENSE-docs`](LICENSE-docs).
+- Source code is available under the [MIT License](LICENSE).
+- Manuscript text, documentation, and figures are available under
+  [CC BY 4.0](LICENSE-docs).
 
 Copyright (c) 2026 Mergen Ulziibayar.
