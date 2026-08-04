@@ -4,13 +4,6 @@ Research package for the combined soft-robotics proposal:
 
 **P-V hysteresis as a cycle-resolved fatigue health indicator, and its coupling to pressure-only proprioception in shared-manifold soft pneumatic grippers.**
 
-## Current Positioning
-
-The core novelty has been reframed after literature and patent verification:
-
-- Do **not** claim first use of pressure-volume (P-V) hysteresis for fatigue.
-- Mosadegh et al. 2014 and US10639801B2 already establish before/after P-V hysteresis fatigue assessment.
-- The defensible claim is an operational, cycle-resolved P-V loop-shape health indicator plus fatigue-triggered recalibration for shared-manifold pressure-only proprioception. A v1.1 lead-time audit found no positive temporal lead under the deployed threshold on the 5-stage simulation grid.
 
 **Current release:** simulation-only manuscript v1.3, frozen at
 [`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3).
