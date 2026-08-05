@@ -7,59 +7,37 @@
 A Python simulation study of pressure-volume loop features as recalibration
 signals for pressure-only proprioception in soft pneumatic actuators.
 
-**[Results](#results) · [Quick start](#quick-start) · [Research scope](#research-scope) · [Documentation](#documentation) · [Citation](#citation)**
+**[Overview](#overview) · [Quick start](#quick-start) · [Reproduction](#reproduction) · [Documentation](#documentation) · [Citation](#citation)**
 
 ![Recalibration trade-off on held-out synthetic actuators](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*Held-out pose error versus lifetime recalibration count for fixed,
-cycle-scheduled, P-V-triggered, and always-on policies.*
+*A representative Study 3 output. See [results](docs/results.md) for the numerical
+interpretation and [data and figure provenance](docs/data-and-figures.md#study-3-recalibration-policy)
+for its complete generation path.*
 
 ## Overview
 
-Soft pneumatic actuators drift as they fatigue. Recalibrating continuously can
-control that drift, but it adds sensing and operating cost. This repository
-tests whether an intermittent P-V probe can schedule recalibration only when the
-actuator needs it.
+Soft pneumatic actuators drift as they fatigue. This repository tests whether an
+intermittent P-V probe can schedule recalibration while the normal pose estimator
+continues to use pressure alone.
 
 | | |
 | --- | --- |
-| **Study type** | Simulation with held-out synthetic actuators |
-| **Main comparison** | P-V-triggered, cycle-count, fixed, and always-on policies |
-| **Current release** | Simulation-only preprint v1.3 |
-| **Physical testing** | Not yet performed |
-| **Outputs** | Study data, figures, manuscript, and publication checks |
-
-## How it works
+| **Study type** | Simulation with held-out synthetic actuator identities |
+| **Main comparison** | P-V-triggered, cycle-scheduled, fixed, and always-on recalibration |
+| **Model layers** | Pneumatic network, viscoelastic wall, fatigue law, PCC kinematics, and sensors |
+| **Primary artifact** | Simulation-only preprint v1.3 |
+| **Physical testing** | Not included |
 
 ```mermaid
 flowchart LR
-    A[Fatiguing pneumatic actuator] --> B[Pressure-only pose estimate]
-    A --> C[Intermittent volumetric P-V probe]
-    C --> D[P-V health features]
-    D --> E{Trigger threshold reached?}
-    E -- No --> B
-    E -- Yes --> F[Recalibrate pose model]
-    F --> B
+    A[Synthetic actuator cohort] --> B[Dynamic pneumatic traces]
+    B --> C[Pressure-only pose estimator]
+    B --> D[Intermittent P-V health probe]
+    D --> E[Recalibration policy]
+    C --> F[Pose-error evaluation]
+    E --> F
 ```
-
-The pose estimator remains pressure-only during normal operation. The health
-signal comes from a separate intermittent P-V loop, so the study evaluates a
-recalibration policy rather than continuous volume sensing.
-
-## Results
-
-| Result | Current output |
-| --- | --- |
-| Dataset | 2,000 synthetic traces split by actuator identity |
-| P-V association | Pooled `r = 0.885`; the v1 point-level bootstrap interval is `[0.835, 0.958]` |
-| Recalibration policy | 2 recalibrations per actuator for the P-V policy versus 5 for always-on |
-| Cycle-count baseline | Misses the registered error budget on held-out actuators at equal tuning |
-| Trigger lead | The deployed threshold has zero positive temporal lead |
-| Shared-manifold cross-talk | Second-order within the tested simulation envelope |
-
-The v2 analysis plan replaces point-level resampling with actuator-cluster
-resampling and leave-one-actuator-out sensitivity. Results currently come from
-one generative model and should not be read as physical actuator performance.
 
 ## Quick start
 
@@ -71,9 +49,21 @@ python -m pip install pytest reportlab pypdf
 python -m scripts.run_study3
 ```
 
-Study 3 writes its generated data and figures under `data/sim/phaseD/`.
+Study 3 reads the committed Phase D dataset and writes its JSON and figures under
+`data/sim/phaseD/`.
 
-## Reproduce the release
+## Reproduction
+
+Generate the complete Phase D synthetic dataset before rerunning its studies:
+
+```bash
+python -m scripts.phaseD_dataset
+python -m scripts.run_study2
+python -m scripts.run_study3
+python -m scripts.run_study4
+```
+
+Run the release checks:
 
 ```bash
 python -m pytest
@@ -82,62 +72,43 @@ python -m scripts.check_pdf_arxiv
 python -m scripts.check_publication_fallback
 ```
 
-The checks compare manuscript values with committed study outputs, inspect the
-PDF for arXiv constraints, and check the release metadata and file digest.
-
-## Research scope
-
-Previous work already uses before/after P-V hysteresis to assess pneumatic
-actuator fatigue. This project instead evaluates:
-
-1. life-stage P-V feature trajectories;
-2. threshold-based recalibration scheduling;
-3. pressure-only pose-estimation drift under fatigue; and
-4. shared-manifold cross-talk inside the tested simulation envelope.
-
-The frozen v1.3 manuscript is [`docs/preprint_v1.pdf`](docs/preprint_v1.pdf).
-Ongoing paper revisions are tracked in
-[`docs/REVISION_PLAN.md`](docs/REVISION_PLAN.md) without changing the tagged
-release.
+The numerical findings and their boundaries are in [`docs/results.md`](docs/results.md).
+Every computational figure is grouped by generator, input, command, and evidence
+type in [`docs/data-and-figures.md`](docs/data-and-figures.md). The corresponding
+machine-readable registry is [`docs/figure-manifest.json`](docs/figure-manifest.json).
 
 ## Documentation
 
 | Document | Purpose |
 | --- | --- |
-| [`docs/preprint_v1.md`](docs/preprint_v1.md) | Source for the simulation-only manuscript |
-| [`docs/Experimental_Protocol.md`](docs/Experimental_Protocol.md) | Study gates, protocols, and operating sequence |
+| [`docs/results.md`](docs/results.md) | Result summary and links to detailed study outputs |
+| [`docs/data-and-figures.md`](docs/data-and-figures.md) | Dataset and plot generation lineage |
+| [`docs/preprint_v1.md`](docs/preprint_v1.md) | Manuscript source |
+| [`docs/Experimental_Protocol.md`](docs/Experimental_Protocol.md) | Study gates and operating protocol |
 | [`docs/Simulation_Plan.md`](docs/Simulation_Plan.md) | Simulation phases and planned outputs |
 | [`docs/A01_A04_Literature_Review.md`](docs/A01_A04_Literature_Review.md) | Prior work and citation notes |
 | [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Release and submission runbook |
-| [`ROADMAP.md`](ROADMAP.md) | Project milestones and remaining work |
+| [`ROADMAP.md`](ROADMAP.md) | Project milestones |
 
 ## Repository map
 
 ```text
 sim/        pneumatic plant, sensing, kinematics, and fatigue models
 pipeline/   feature extraction, health indices, and recalibration logic
-scripts/    study runners, figure generation, and publication checks
+scripts/    dataset, study, figure, and publication runners
 tests/      model, pipeline, and release regression tests
-data/       committed study inputs, outputs, and figures
-docs/       manuscript, protocol, literature review, and release notes
+data/       committed simulation inputs, outputs, and figures
+docs/       results, provenance, manuscript, protocol, and literature
 ```
 
 ## Citation
 
 Use [`CITATION.cff`](CITATION.cff) or the metadata attached to the
 [`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3)
-release. The citation file points to the frozen manuscript version rather than
-the changing development branch.
+release.
 
-## Contributing
+## Contributing and license
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, generated-artifact rules,
-and the checks required before a change is submitted.
-
-## License
-
-- Source code is available under the [MIT License](LICENSE).
-- Manuscript text, documentation, and figures are available under
-  [CC BY 4.0](LICENSE-docs).
-
-Copyright (c) 2026 Mergen Ulziibayar.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Source code is available under the
+[MIT License](LICENSE); manuscript text, documentation, and figures are available
+under [CC BY 4.0](LICENSE-docs).
