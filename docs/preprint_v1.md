@@ -34,8 +34,9 @@ corrector improves pose error by ≈0% at physically reasonable parameters. **(2
 pressure-only proprioception error is instead the fatigue **compliance-scale drift**, which is
 topology-independent and causes a young-calibrated estimator's curvature error to grow by
 roughly two orders of magnitude over life. **(3)** The observable P-V loop area is a strong
-health indicator of that drift (Pearson *r* = 0.885, 95% CI [0.835, 0.958] on held-out
-actuators), but a lead-time audit found **no positive temporal
+health indicator of that drift (Pearson *r* = 0.885; 95% CI [0.853, 0.950] by an exhaustive
+actuator-cluster bootstrap on six held-out actuators, widening to [0.576, 0.973] under
+delete-one-actuator resampling), but a lead-time audit found **no positive temporal
 lead** under that deployed threshold on the 5-stage grid: the trigger crossing occurred at life
 0.83, while the fixed-calibration budget crossing occurred earlier (median 0.71, range
 0.56-0.71), giving median lead = -0.123 normalized life (6/6 held-out actuators nonpositive).
@@ -232,8 +233,16 @@ explains §4.2 and motivates recalibration as the right intervention.
 
 ### 4.4 P-V loop area is a health indicator, not a positive-lead trigger on this grid (Fig. 3)
 On held-out actuators, the observable P-V loop-area fractional growth tracks the
-fixed-calibration pose error over life with **Pearson *r* = 0.885, 95% CI [0.835, 0.958]**
-(bootstrap, 2,000 resamples; CI excludes 0). The same monotone structure appears within
+fixed-calibration pose error over life with **Pearson *r* = 0.885**. The 30 points are
+6 actuators x 5 life stages, i.e. repeated measures on six clusters, so the interval is
+computed with the actuator as the resampling unit: an exhaustive nonparametric cluster
+bootstrap over all 6^6 = 46,656 actuator resamples gives **95% CI [0.853, 0.950]**, and a
+delete-one-actuator jackknife on Fisher *z* — the more conservative reading, with six
+effective observations — gives **[0.576, 0.973]**. Both exclude 0. For comparison, the
+point-level bootstrap used in v1 (2,000 resamples of the 30 points treated as independent)
+gives [0.835, 0.958]; it is *not* anti-conservative here, because the clusters are nearly
+homogeneous, but it overstates the effective sample size and is superseded. All intervals are
+reproduced by `scripts/run_study3_cluster_ci.py`. The same monotone structure appears within
 actuators: per-actuator *r* has median 0.957 and range [0.9570, 0.9574] across the six held-out
 actuators (5 stages each). That tight range is not independent evidence from six distinct
 health trajectories: in this generator, young-normalization makes the P-V health trajectory
@@ -261,7 +270,11 @@ configuration-dependent and is not a title-level claim.
 
 ![P-V loop area tracks pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
 
-*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; bootstrap r = 0.885, 95% CI [0.835, 0.958]. The deployed threshold does not provide positive temporal lead, but lower thresholds define a lead-vs-recalibration frontier.*
+*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; r = 0.885, 95% CI [0.853, 0.950] (actuator-cluster bootstrap). The deployed threshold does not provide positive temporal lead, but lower thresholds define a lead-vs-recalibration frontier.*
+
+![Cluster-aware intervals for the health-indicator claim](../data/sim/phaseD/study3_fig3b_correlation_cluster_ci.png)
+
+*Figure 3b. (a) Per-actuator scatter behind the pooled correlation. Because young-normalization makes the health trajectory actuator-invariant (§4.4), the six actuators share the same five x positions and differ only in pose error; the pooled fit is shown dashed. (b) The same estimate r = 0.885 under three resampling units: point-level (as in v1), exhaustive actuator-cluster bootstrap, and delete-one-actuator jackknife on Fisher z. The interval width varies roughly fourfold with the choice of resampling unit while the estimate does not. The within-actuator correlation (actuator offsets removed) is a different estimand and is marked as such.*
 
 ### 4.5 Recalibration trade-off (Fig. 4)
 Against a stated 0.159 mm accuracy budget (selected on training actuators as halfway from the
@@ -280,7 +293,14 @@ loop-area growth for the trigger, *T*\* = 2,700 cycles for the clock (train erro
 | always-on | 0.02 mm | 5 | yes |
 
 Two comparisons matter. Against always-on, the trigger holds pose error near the always-on band
-at **60% fewer recalibrations** (2 vs 5 per actuator). Against the clock — the comparison that
+at **60% fewer recalibrations** (2 vs 5 per actuator). This ratio is quoted without a
+confidence interval by design: every held-out actuator produces the same counts under both
+policies (2 and 5), a direct consequence of the actuator-invariant indicator (§4.4) crossing
+any threshold at the same life fraction. The saving is therefore a deterministic property of
+the 5-stage life grid at τ\*, not an estimate with between-actuator sampling variability, and
+an interval on it would be degenerate ([60.0%, 60.0%]). Only the sensing-free clock baseline
+varies across actuators (1.50 recalibrations, 95% cluster CI [1.17, 1.83]). Against the clock —
+the comparison that
 isolates what the *P-V measurement itself* buys — the clock, tuned within budget on training
 actuators, **violates the budget on held-out actuators** (0.21 mm > 0.159 mm) at a similar
 recalibration count, because a global cycle period misaligns with per-actuator degradation
@@ -293,6 +313,10 @@ unseen actuators, not the absolute accuracy.
 ![Recalibration trade-off](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
 *Figure 4. Recalibration trade-off on held-out actuators — pose error vs recalibrations per actuator for fixed, cycle-count clock, P-V-triggered, and always-on policies. The triggered policy meets the accuracy budget at 60% fewer recalibrations than always-on; the sensing-free clock, tuned within budget on training actuators by the same rule, fails the budget on transfer.*
+
+![Recalibration trade-off and lead frontier with cluster intervals](../data/sim/phaseD/study3_fig4b_recal_cluster_ci.png)
+
+*Figure 4b. (a) The same four policies with 95% actuator-cluster bootstrap intervals on both axes. Only the fixed-clock baseline has non-zero between-actuator spread in recalibration count; the triggered and always-on counts are identical on every held-out actuator, which is why the 60% saving carries no interval (§4.5). (b) Lead-time frontier with cluster intervals: the deployed τ\* = 0.05 sits below zero lead for 6/6 actuators, while τ = 0.01 gives +0.32 normalized life of lead at 3 recalibrations and remains within the accuracy budget.*
 
 ## 5. Discussion and limitations
 

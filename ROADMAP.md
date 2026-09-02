@@ -57,7 +57,9 @@ RA-L once hardware exists), held as a draft pending an explicit submission decis
 - [x] **Wks 4-5 — Phase F:** cross-talk-drift vs P-V-compliance correlation over
       life; P-V-triggered recalibration vs fixed vs always-on. **DONE (2026-06-24):**
       `pipeline/coupling.py`, `scripts/run_study3.py`, `tests/test_coupling.py`. P-V loop-area
-      is a strong health indicator of proprioception drift (r=0.885, CI [0.835, 0.958]);
+      is a strong health indicator of proprioception drift (r=0.885, actuator-cluster CI
+      [0.853, 0.950]; [0.576, 0.973] leave-one-actuator-out -- see
+      `scripts/run_study3_cluster_ci.py`);
       P-V-triggered recalibration meets a 0.159 mm accuracy budget at 60% fewer recalibrations
       than always-on (2 vs 5 per actuator), threshold train-selected and applied to held-out.
       Wave-A v1.1 audit: no positive temporal lead under that deployed threshold on the 5-stage

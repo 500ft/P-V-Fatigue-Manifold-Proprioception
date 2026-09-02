@@ -11,7 +11,16 @@ ROOT = Path(__file__).resolve().parents[1]
 MANUSCRIPT = ROOT / "docs" / "preprint_v1.md"
 ARXIV_ABSTRACT = ROOT / "docs" / "arxiv_abstract.txt"
 STUDY3 = ROOT / "data" / "sim" / "phaseD" / "study3_results.json"
+STUDY3_CLUSTER = ROOT / "data" / "sim" / "phaseD" / "study3_cluster_ci_results.json"
 STUDY4 = ROOT / "data" / "sim" / "phaseD" / "study4_results.json"
+
+# Documents that also quote the load-bearing correlation interval. Previously only the
+# manuscript was gated, which let the secondary docs drift; see docs/reviewer_backlog.md.
+SECONDARY_DOCS = (
+    ROOT / "docs" / "results.md",
+    ROOT / "docs" / "result_spine.md",
+    ROOT / "ROADMAP.md",
+)
 
 
 def load_json(path: Path):
@@ -45,7 +54,15 @@ def main():
     s4 = load_json(STUDY4)
 
     corr = s3["leading_indicator_corr"]
-    require(text, f"Pearson *r* = {corr['r']:.3f}, 95% CI [{corr['ci_low']:.3f}, {corr['ci_high']:.3f}]")
+    cl = load_json(STUDY3_CLUSTER)["correlation"]
+    cb, lz = cl["actuator_cluster_bootstrap"], cl["leave_one_actuator_out_fisher_z"]
+    # The reported interval is now cluster-based; the point-level interval is retained in the
+    # text only as the superseded v1 value, so both are gated against their sources.
+    require(text, f"Pearson *r* = {cl['r']:.3f}")
+    require(text, f"95% CI [{cb['ci_low']:.3f}, {cb['ci_high']:.3f}]")
+    require(text, f"[{lz['ci_low']:.3f}, {lz['ci_high']:.3f}]")
+    require(text, f"[{corr['ci_low']:.3f}, {corr['ci_high']:.3f}]")
+    require(text, f"{cb['n_resamples']:,} actuator resamples")
 
     per = s3["per_actuator_r"]
     require(text, f"per-actuator *r* has median {per['median']:.3f} and range [{per['min']:.4f}, {per['max']:.4f}]")
@@ -119,7 +136,9 @@ def main():
         if token in ab:
             raise AssertionError(f"arXiv abstract carries markdown token {token!r}")
     # Every load-bearing number quoted in the metadata abstract, from the JSONs.
-    require(ab, f"r = {corr['r']:.3f}, 95% CI [{corr['ci_low']:.3f}, {corr['ci_high']:.3f}]")
+    # arXiv caps the metadata abstract at 1920 chars, so it carries only the headline
+    # cluster interval; the manuscript and secondary docs carry both intervals.
+    require(ab, f"r = {cl['r']:.3f}, 95% CI [{cb['ci_low']:.3f}, {cb['ci_high']:.3f}]")
     require(ab, f"median lead {lead['median_lead_life']:.3f} normalized life")
     require(ab, f"{lead['status_counts']['nonpositive_lead']}/6 actuators nonpositive")
     require(ab, f"median +{f001['lead_life_median']:.3f}")
@@ -129,7 +148,17 @@ def main():
     require(ab, f"({policies['triggered']['recal_per_actuator']:.0f} vs "
                 f"{policies['always']['recal_per_actuator']:.0f} per actuator)")
 
-    print("manuscript numbers match study JSONs (incl. arXiv abstract gates)")
+    # Cross-document gate: every doc that quotes the correlation interval must quote the
+    # cluster interval, so a future edit cannot leave one of them behind.
+    for doc in SECONDARY_DOCS:
+        body = doc.read_text(encoding="utf-8")
+        if "0.885" not in body:
+            continue
+        require(body, f"[{cb['ci_low']:.3f}, {cb['ci_high']:.3f}]")
+        require(body, f"[{lz['ci_low']:.3f}, {lz['ci_high']:.3f}]")
+        print(f"  {doc.relative_to(ROOT)}: cluster interval present")
+
+    print("manuscript numbers match study JSONs (incl. arXiv abstract and secondary docs)")
 
 
 if __name__ == "__main__":

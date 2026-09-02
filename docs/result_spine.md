@@ -97,7 +97,10 @@ train actuators only and applied unchanged to held-out test actuators; error **a
 recalibration count reported together.
 
 - **Leading indicator — strong, robust.** P-V loop-area fractional growth vs fixed-calibration
-  pose error over life: **r = 0.885, 95% CI [0.835, 0.958]** (excludes 0). The observable P-V
+  pose error over life: **r = 0.885, 95% CI [0.853, 0.950]** (exhaustive actuator-cluster
+  bootstrap; [0.576, 0.973] under delete-one-actuator resampling; both exclude 0). The
+  point-level interval [0.835, 0.958] reported in v1 treated 30 repeated measures on 6
+  actuators as independent and is superseded. The observable P-V
   loop tracks the proprioception degradation — this is the core publishable result (Fig 3).
 - **Recalibration trade-off (held-out actuators, Fig 4).** Against a stated 0.159 mm accuracy
   budget (selected on train actuators as halfway from always-on toward never-recalibrate):
@@ -108,7 +111,9 @@ recalibration count reported together.
   | **P-V-triggered (tau\*=0.05)** | **0.06 mm** | **2** |
   | always-on       | 0.02 mm | 5 |
 
-  P-V-triggered holds near always-on accuracy at **60% fewer recalibrations** (2 vs 5), ~7x
+  P-V-triggered holds near always-on accuracy at **60% fewer recalibrations** (2 vs 5 --
+  identical on every held-out actuator, so this ratio is deterministic given the life grid
+  and carries no confidence interval), ~7x
   better than fixed.
 - **Honest caveat.** Absolute pose errors are sub-mm even under fixed calibration at these
   sensor-noise levels, so the *operational* value of triggered recalibration grows with tighter
