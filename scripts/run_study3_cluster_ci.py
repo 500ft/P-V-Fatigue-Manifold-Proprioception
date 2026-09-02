@@ -627,12 +627,13 @@ def _figures(results, per_act_xy, test_ids):
     axB.axhline(0, color="black", lw=0.9)
     axB.axvline(tau_star, color=pal[1], lw=1.2, ls="--")
     best = min(FR, key=lambda p: abs(p["tau"] - 0.01))
-    axB.annotate(
+    axB.text(
+        0.97, 0.97,
         f"\u03c4 = {best['tau']}: mean lead {best['mean_lead_life']:+.3f} life\n"
-        f"[{best['lead_ci_low']:.3f}, {best['lead_ci_high']:.3f}], "
+        f"95% CI [{best['lead_ci_low']:.3f}, {best['lead_ci_high']:.3f}]\n"
         f"{best['recal_per_actuator']:.0f} recalibrations, within budget",
-        (best["tau"], best["mean_lead_life"]), textcoords="offset points", xytext=(11, 10),
-        fontsize=S_LAB - 0.5, color=pal[0], ha="left",
+        transform=axB.transAxes, fontsize=S_LAB - 0.5, color=pal[0],
+        ha="right", va="top", linespacing=1.4,
     )
     axB.text(taus.max() * 0.976, -0.255,
              f"deployed \u03c4* = {tau_star}: lead {FR[-1]['mean_lead_life']:+.3f} life,\n"
