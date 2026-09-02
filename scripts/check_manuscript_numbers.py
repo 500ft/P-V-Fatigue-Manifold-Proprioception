@@ -148,6 +148,14 @@ def main():
     require(ab, f"({policies['triggered']['recal_per_actuator']:.0f} vs "
                 f"{policies['always']['recal_per_actuator']:.0f} per actuator)")
 
+    # Figure 4b plots actuator MEANS while section 4.4 quotes medians. Gate both against
+    # their sources so the two passages cannot drift into looking like one contradictory claim.
+    fr01 = next(p for p in load_json(STUDY3_CLUSTER)["lead_frontier_with_cluster_ci"]
+                if abs(p["tau"] - 0.01) < 1e-12)
+    require(text, f"mean lead is +{fr01['mean_lead_life']:.3f} normalized life")
+    require(text, f"[{fr01['lead_ci_low']:.3f}, {fr01['lead_ci_high']:.3f}]")
+    require(text, f"median of +{f001['lead_life_median']:.3f}")
+
     # Cross-document gate: every doc that quotes the correlation interval must quote the
     # cluster interval, so a future edit cannot leave one of them behind.
     for doc in SECONDARY_DOCS:

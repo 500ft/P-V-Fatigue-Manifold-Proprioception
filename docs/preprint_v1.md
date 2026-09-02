@@ -316,7 +316,7 @@ unseen actuators, not the absolute accuracy.
 
 ![Recalibration trade-off and lead frontier with cluster intervals](../data/sim/phaseD/study3_fig4b_recal_cluster_ci.png)
 
-*Figure 4b. (a) The same four policies with 95% actuator-cluster bootstrap intervals on both axes. Only the fixed-clock baseline has non-zero between-actuator spread in recalibration count; the triggered and always-on counts are identical on every held-out actuator, which is why the 60% saving carries no interval (§4.5). (b) Lead-time frontier with cluster intervals: the deployed τ\* = 0.05 sits below zero lead for 6/6 actuators, while τ = 0.01 gives +0.32 normalized life of lead at 3 recalibrations and remains within the accuracy budget.*
+*Figure 4b. (a) The same four policies with 95% actuator-cluster bootstrap intervals on both axes. Only the fixed-clock baseline has non-zero between-actuator spread in recalibration count; the triggered and always-on counts are identical on every held-out actuator, which is why the 60% saving carries no interval (§4.5). (b) Lead-time frontier with cluster intervals. Both axes are actuator **means**, so the lead plotted here is the mean over held-out actuators, not the median quoted in §4.4: at τ = 0.01 the mean lead is +0.323 normalized life (95% cluster CI [0.273, 0.351]) against a median of +0.346, the difference coming from actuator 17 at +0.199. The deployed τ\* = 0.05 sits below zero lead for 6/6 actuators; τ = 0.01 keeps 3 recalibrations per actuator and stays within the accuracy budget at 0.029 mm.*
 
 ## 5. Discussion and limitations
 

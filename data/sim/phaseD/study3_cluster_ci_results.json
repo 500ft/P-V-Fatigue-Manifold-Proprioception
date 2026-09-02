@@ -3,7 +3,7 @@
     "note": "Re-estimates study 3's uncertainty with the actuator as the resampling unit. Estimates and pipeline are unchanged.",
     "evidence_type": "simulation",
     "boundary": "synthetic actuator cohort; no physical measurement",
-    "dataset_sha256": "93fcceec424fe678e0801605f9d033ad0be48f4d0f0db3647988ae27e0bb0fab",
+    "dataset_sha256": "8e1c91cb00c8e33ace9000e685a0e1877531149d2366a9178128e4cfff746b41",
     "dataset_sha256_note": "Hash of the dataset.npz present when this ran, read from data/sim/phaseD/manifest.json. dataset.npz is gitignored and regenerated locally; the recorded hash is environment-dependent even at the same seed, so it may differ from the pin in a committed manifest while every downstream study result still reproduces exactly. Compare per-array values, not the hash.",
     "dataset_seed": 20260623,
     "train_actuators": [
