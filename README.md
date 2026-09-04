@@ -32,13 +32,20 @@ continues to use pressure alone.
 
 ```mermaid
 flowchart LR
-    A[Synthetic actuator cohort] --> B[Dynamic pneumatic traces]
-    B --> C[Pressure-only pose estimator]
-    B --> D[Intermittent P-V health probe]
-    D --> E[Recalibration policy]
-    C --> F[Pose-error evaluation]
+    classDef input    fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#1f2933,font-weight:bold;
+    classDef process  fill:#b2dfdb,stroke:#00796b,stroke-width:2px,color:#1f2933;
+    classDef core     fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#1f2933,font-weight:bold;
+    classDef result   fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px,color:#1f2933;
+
+    A[/Synthetic actuator cohort/]:::input --> B[Dynamic pneumatic traces]:::process
+    B --> C[Pressure-only pose estimator]:::process
+    B --> D{{Intermittent P-V health probe}}:::core
+    D --> E[Recalibration policy]:::process
+    C --> F(Pose-error evaluation):::result
     E --> F
 ```
+
+*Shapes: parallelogram = input · rectangle = process · hexagon = core method · rounded = result.*
 
 ## Results
 
