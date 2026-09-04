@@ -7,7 +7,9 @@
       "evidence_type": "simulation",
       "generator": "scripts/gate0_lumped_rc.py",
       "command": "python -m scripts.gate0_lumped_rc",
-      "inputs": ["sim/plant.py"],
+      "inputs": [
+        "sim/plant.py"
+      ],
       "outputs": [
         "data/gate0/fig_crosstalk_vs_compliance.png",
         "data/gate0/fig_crosstalk_vs_freq.png",
@@ -20,7 +22,9 @@
       "evidence_type": "simulation",
       "generator": "scripts/phaseA_plant_demo.py",
       "command": "python -m scripts.phaseA_plant_demo",
-      "inputs": ["sim/plant.py"],
+      "inputs": [
+        "sim/plant.py"
+      ],
       "outputs": [
         "data/sim/phaseA/fig_gate0_consistency.png",
         "data/sim/phaseA/fig_loop_area_vs_freq.png",
@@ -33,7 +37,10 @@
       "evidence_type": "simulation",
       "generator": "scripts/phaseB_fatigue_demo.py",
       "command": "python -m scripts.phaseB_fatigue_demo",
-      "inputs": ["sim/fatigue.py", "sim/plant.py"],
+      "inputs": [
+        "sim/fatigue.py",
+        "sim/plant.py"
+      ],
       "outputs": [
         "data/sim/phaseB/fig_fatigue_trajectory.png",
         "data/sim/phaseB/fig_leak_sensitivity.png",
@@ -49,7 +56,10 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study1.py",
       "command": "python -m scripts.run_study1",
-      "inputs": ["sim/fatigue.py", "pipeline/validation.py"],
+      "inputs": [
+        "sim/fatigue.py",
+        "pipeline/validation.py"
+      ],
       "outputs": [
         "data/sim/study1/fig_detector_comparison.png",
         "data/sim/study1/fig_hi_fusion_comparison.png",
@@ -63,8 +73,11 @@
       "id": "study-2-proprioception-drift",
       "evidence_type": "simulation",
       "generator": "scripts/run_study2.py",
-      "command": "python -m scripts.run_study2",
-      "inputs": ["data/sim/phaseD/dataset.npz", "data/sim/phaseD/manifest.json"],
+      "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study2",
+      "inputs": [
+        "data/sim/phaseD/dataset.npz",
+        "data/sim/phaseD/manifest.json"
+      ],
       "outputs": [
         "data/sim/phaseD/study2_fig1_drift.png",
         "data/sim/phaseD/study2_fig1_drift.pdf",
@@ -77,8 +90,11 @@
       "id": "study-3-recalibration-policy",
       "evidence_type": "simulation",
       "generator": "scripts/run_study3.py",
-      "command": "python -m scripts.run_study3",
-      "inputs": ["data/sim/phaseD/dataset.npz", "data/sim/phaseD/manifest.json"],
+      "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study3",
+      "inputs": [
+        "data/sim/phaseD/dataset.npz",
+        "data/sim/phaseD/manifest.json"
+      ],
       "outputs": [
         "data/sim/phaseD/study3_fig3_leading_indicator.png",
         "data/sim/phaseD/study3_fig3_leading_indicator.pdf",
@@ -88,11 +104,31 @@
       "boundary": "Policy evaluation is simulation-only"
     },
     {
+      "id": "study-3-cluster-ci",
+      "evidence_type": "simulation",
+      "generator": "scripts/run_study3_cluster_ci.py",
+      "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study3_cluster_ci",
+      "inputs": [
+        "data/sim/phaseD/dataset.npz",
+        "data/sim/phaseD/manifest.json"
+      ],
+      "outputs": [
+        "data/sim/phaseD/study3_fig3b_correlation_cluster_ci.png",
+        "data/sim/phaseD/study3_fig3b_correlation_cluster_ci.pdf",
+        "data/sim/phaseD/study3_fig4b_recal_cluster_ci.png",
+        "data/sim/phaseD/study3_fig4b_recal_cluster_ci.pdf"
+      ],
+      "boundary": "Re-estimates study 3's uncertainty with the actuator as the resampling unit; estimates and pipeline unchanged. Simulation-only, synthetic cohort."
+    },
+    {
       "id": "study-4-network-sensitivity",
       "evidence_type": "simulation",
       "generator": "scripts/run_study4.py",
       "command": "python -m scripts.run_study4",
-      "inputs": ["sim/network.py", "sim/fatigue.py"],
+      "inputs": [
+        "sim/network.py",
+        "sim/fatigue.py"
+      ],
       "outputs": [
         "data/sim/phaseD/study4_fig_crosstalk_sensitivity.png",
         "data/sim/phaseD/study4_fig_crosstalk_sensitivity.pdf"

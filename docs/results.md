@@ -22,8 +22,8 @@ static and dynamic correctors under shared and isolated supply topologies.
 | Result | Committed output |
 | --- | --- |
 | Dataset | 2,000 synthetic traces split by actuator identity |
-| P-V association | Pooled `r = 0.885`; point-level bootstrap interval `[0.835, 0.958]` |
-| P-V policy | 2 recalibrations per actuator versus 5 for always-on |
+| P-V association | Pooled `r = 0.885`; actuator-cluster bootstrap `[0.853, 0.950]`, leave-one-actuator-out `[0.576, 0.973]`; point-level `[0.835, 0.958]` (superseded) |
+| P-V policy | 2 recalibrations per actuator versus 5 for always-on (identical on every held-out actuator, so the 60% saving has no sampling interval) |
 | Cycle-count baseline | Misses the registered held-out error budget at its train-selected period |
 | Deployed threshold lead | No positive temporal lead at `tau = 0.05` |
 
