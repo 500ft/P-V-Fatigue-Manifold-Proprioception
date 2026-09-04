@@ -114,8 +114,7 @@ Preprint posting is **pending**: arXiv submission awaits endorsement, and no
 arXiv identifier or DOI exists yet (runbook:
 [`docs/SUBMISSION.md`](docs/SUBMISSION.md), fallback:
 [`docs/ZENODO_FALLBACK.md`](docs/ZENODO_FALLBACK.md)). Physical validation has
-not started; every claim is scoped to the synthetic generator. Milestones are
-tracked in [`ROADMAP.md`](ROADMAP.md).
+not started; every claim is scoped to the synthetic generator.
 
 ## Documentation
 
@@ -125,10 +124,8 @@ tracked in [`ROADMAP.md`](ROADMAP.md).
 | [`docs/data-and-figures.md`](docs/data-and-figures.md) | Dataset and plot generation lineage |
 | [`docs/preprint_v1.md`](docs/preprint_v1.md) | Manuscript source |
 | [`docs/Experimental_Protocol.md`](docs/Experimental_Protocol.md) | Study gates and operating protocol |
-| [`docs/Simulation_Plan.md`](docs/Simulation_Plan.md) | Simulation phases and planned outputs |
 | [`docs/A01_A04_Literature_Review.md`](docs/A01_A04_Literature_Review.md) | Prior work and citation notes |
 | [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Release and submission runbook |
-| [`ROADMAP.md`](ROADMAP.md) | Project milestones |
 
 ## Repository map
 
