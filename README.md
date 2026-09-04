@@ -4,14 +4,15 @@
 [![Preprint v1.3](https://img.shields.io/badge/preprint-v1.3-276c6b)](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
-A Python simulation study of pressure-volume loop features as recalibration
-signals for pressure-only proprioception in soft pneumatic actuators.
+**A Python simulation study of pressure-volume loop features as recalibration
+signals for pressure-only proprioception in soft pneumatic actuators.**
 
-**[Overview](#overview) · [Quick start](#quick-start) · [Reproduction](#reproduction) · [Documentation](#documentation) · [Citation](#citation)**
+**[Overview](#overview) · [Results](#results) · [Quick start](#quick-start) · [Reproduction](#reproduction) · [Status](#status) · [Documentation](#documentation) · [Citation](#citation)**
 
 ![Recalibration trade-off on held-out synthetic actuators](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*A representative Study 3 output. See [results](docs/results.md) for the numerical
+*A representative Study 3 output (simulation, held-out synthetic actuators — no
+physical measurement). See [results](docs/results.md) for the numerical
 interpretation and [data and figure provenance](docs/data-and-figures.md#study-3-recalibration-policy)
 for its complete generation path.*
 
@@ -39,6 +40,22 @@ flowchart LR
     E --> F
 ```
 
+## Results
+
+Evidence state for every number below: **simulation** on held-out synthetic
+actuators; there is no physical testing in this repository. Each value is stored
+in a committed study JSON under `data/sim/` and asserted against the manuscript
+by `scripts/check_manuscript_numbers.py`.
+
+| Finding (Study 3, held-out synthetic actuators) | Committed value |
+| --- | --- |
+| P-V loop area as a fatigue health indicator | pooled `r = 0.885`, actuator-cluster bootstrap `[0.853, 0.950]` |
+| P-V-triggered recalibration vs. always-on | meets the registered error budget with 2 recalibrations per actuator vs. 5 |
+| Temporal lead at the deployed threshold `tau = 0.05` | none (negative finding); lower thresholds buy lead at higher recalibration cost |
+
+The boundaries of these claims, including the negative findings, are in
+[`docs/results.md`](docs/results.md).
+
 ## Quick start
 
 ```bash
@@ -46,10 +63,14 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m pip install pytest reportlab pypdf
+python -m scripts.phaseD_dataset
 python -m scripts.run_study3
 ```
 
-Study 3 reads the committed Phase D dataset and writes its JSON and figures under
+The Phase D dataset arrays are intentionally not committed:
+`scripts.phaseD_dataset` regenerates them deterministically in about a minute,
+and the committed [`data/sim/phaseD/manifest.json`](data/sim/phaseD/manifest.json)
+pins the expected SHA-256. Study 3 then writes its JSON and figures under
 `data/sim/phaseD/`.
 
 ## Reproduction
@@ -76,6 +97,18 @@ The numerical findings and their boundaries are in [`docs/results.md`](docs/resu
 Every computational figure is grouped by generator, input, command, and evidence
 type in [`docs/data-and-figures.md`](docs/data-and-figures.md). The corresponding
 machine-readable registry is [`docs/figure-manifest.json`](docs/figure-manifest.json).
+
+## Status
+
+Studies 1–4 are complete, and manuscript v1.3 is frozen and tagged as
+[`preprint-v1.3`](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/releases/tag/preprint-v1.3),
+with CI gating the tests, the manuscript-number checks, and the release PDF.
+Preprint posting is **pending**: arXiv submission awaits endorsement, and no
+arXiv identifier or DOI exists yet (runbook:
+[`docs/SUBMISSION.md`](docs/SUBMISSION.md), fallback:
+[`docs/ZENODO_FALLBACK.md`](docs/ZENODO_FALLBACK.md)). Physical validation has
+not started; every claim is scoped to the synthetic generator. Milestones are
+tracked in [`ROADMAP.md`](ROADMAP.md).
 
 ## Documentation
 
