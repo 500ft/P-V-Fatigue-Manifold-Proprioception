@@ -15,11 +15,10 @@ STUDY3_CLUSTER = ROOT / "data" / "sim" / "phaseD" / "study3_cluster_ci_results.j
 STUDY4 = ROOT / "data" / "sim" / "phaseD" / "study4_results.json"
 
 # Documents that also quote the load-bearing correlation interval. Previously only the
-# manuscript was gated, which let the secondary docs drift; see docs/reviewer_backlog.md.
+# manuscript was gated, which let the secondary docs drift.
 SECONDARY_DOCS = (
     ROOT / "docs" / "results.md",
     ROOT / "docs" / "result_spine.md",
-    ROOT / "ROADMAP.md",
 )
 
 
