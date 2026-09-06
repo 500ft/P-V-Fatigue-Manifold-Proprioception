@@ -1,0 +1,21 @@
+{
+  "recorded_on_local": "2026-09-06",
+  "base_commit": "88d24358bc385dc66c2c0a9ab3c295b059d13427",
+  "branch": "sprint/evidence-integrity-20260905",
+  "status": "uncommitted selected-source candidate; not public preregistration",
+  "scope": "Selected implementation/protocol bytes frozen before developer counterexample outputs; hashes do not establish independent evidence",
+  "files": {
+    "scripts/check_publication_fallback.py": "10078c43161244b36667d4ab422b15b9c4df99e500b8874169c105a6e49e3920",
+    "tests/test_publication_readiness.py": "df8b060bac884ee7bab13cb6ec72d26ec879ac037db3134624354879324d6047",
+    "README.md": "0ce59dab76f283cf0468a37a9d400b638d73de8900a0ff1b3d1148c0e4b60d7c",
+    "docs/results.md": "7706ef8b5b18ea87e0e057c68cbbcfbb08067b545221b9db8d516ab200d0f391",
+    "docs/data-and-figures.md": "36d542f282a1b285c0e227b048937a0129dc0171ff0f9fc0677602adff626fe0",
+    "docs/preprint_v1_4_candidate.md": "d700684b2a08c4b9117a1aa2fbc7a0f0ef7085948e7a3cab971591041da51977",
+    "docs/corrections/v1.3-methods-2026-09-05.md": "76e7faadc77b4decff5b3f7becba6412298c2f3ad1f92a291057fef053e91b79",
+    "docs/publication-readiness.json": "6b58769bdb6b696da120f813ccb9bdbe636fe232177f208e2e4c25424a70b533",
+    "docs/preprint_v1.pdf": "6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d",
+    "docs/specs/v2-integrity-core/design.md": "df61d7c74b7c18529e4384b5fd9bddf2bca6805ab160cf03827557e711aea710",
+    "evidence/sprint-2026-09-05/evaluation-plan.md": "34bb6bb2363e362a4f9baa43acdb36afc2ea2f1357505ba0e1ce19ad2da2d7d5",
+    "evidence/sprint-2026-09-05/evaluate_candidate.py": "d67eff5f3b32161e251373a4451add2aec937971d1422b32d18d0b557d4e116f"
+  }
+}
