@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "reviewed_on": "2026-09-06",
+  "historical_release": "preprint-v1.3",
+  "historical_pdf_sha256": "6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d",
+  "correction_notice": "docs/corrections/v1.3-methods-2026-09-05.md",
+  "correction_notice_sha256": "76e7faadc77b4decff5b3f7becba6412298c2f3ad1f92a291057fef053e91b79",
+  "candidate_manuscript": "docs/preprint_v1_4_candidate.md",
+  "candidate_manuscript_sha256": "d700684b2a08c4b9117a1aa2fbc7a0f0ef7085948e7a3cab971591041da51977",
+  "corrected_pdf": null,
+  "author_approval": null,
+  "reserved_doi": null,
+  "published_identifier": null,
+  "blockers": [
+    "Reconcile separate uncommitted owner drafts.",
+    "Render and review a separately versioned corrected PDF and matching metadata.",
+    "Owner decides posting; historical v1.3 checker cannot authorize any release."
+  ]
+}

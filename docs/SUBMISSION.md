@@ -1,5 +1,12 @@
 # Citable Release Runbook — preprint v1.3
 
+> **Current decision: HOLD, reviewed 2026-09-06.** The historical GO and fallback
+> instructions below are superseded by the
+> [methods correction](corrections/v1.3-methods-2026-09-05.md).
+> Do not submit the archived v1.3 PDF. Corrected text, rendered PDF, matching
+> metadata and artifact-bound author review must precede any new posting.
+> The historical instructions are retained for provenance, not execution.
+
 **Decision: GO for arXiv-first posting, taken 2026-07-02** (delegated portfolio
 review; rationale recorded in the manuscript status block and
 `Progress/P-V-Fatigue-Manifold-Proprioception/PLAN.md`). Peer-review submission

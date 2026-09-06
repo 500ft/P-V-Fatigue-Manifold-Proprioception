@@ -1,5 +1,12 @@
 # Citable-Release Fallback — Zenodo
 
+> **Superseded operational instruction, 2026-09-05; reviewed 2026-09-06.**
+> Do not execute the archived August 2 deposit instruction below. A methods
+> correction blocks new posting of v1.3 even when its checksum passes.
+> [Correction and explicit rebaseline](corrections/v1.3-methods-2026-09-05.md).
+> A separately reviewed corrected PDF and metadata are required; no new date
+> or account action is authorized. The remainder preserves historical planning.
+
 Decision registered: 2026-07-17
 Fallback decision date: 2026-08-02
 
