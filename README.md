@@ -1,7 +1,5 @@
 # P-V Fatigue Manifold Proprioception
 
-CAD development is now broken into [individual work orders](docs/CAD_PLAN.md) and a [CAD task ledger](docs/CAD_TASKS.csv). These are planned models, fixtures and release drawings—not completed CAD or hardware evidence.
-
 > **Publication hold (reviewed 2026-09-06):** archived v1.3 contains a methods
 > overstatement. Read the [correction](docs/corrections/v1.3-methods-2026-09-05.md)
 > and [unreviewed corrected manuscript](docs/preprint_v1_4_candidate.md).
