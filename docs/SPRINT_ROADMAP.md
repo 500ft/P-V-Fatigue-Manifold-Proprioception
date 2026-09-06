@@ -1,5 +1,9 @@
 # P-V-Fatigue-Manifold-Proprioception — Six-day evidence-integrity sprint
 
+## Separate CAD phase — added 2026-09-06
+
+Individual mechanical work orders now live in [CAD_PLAN.md](CAD_PLAN.md), with their own authoritative [CAD_TASKS.csv](CAD_TASKS.csv). They are additional, unexecuted work outside this original 30-hour integrity sprint. Existing physical-readiness and publication gates remain open until their actual evidence arrives.
+
 Prepared: 2026-09-05. Budget: 30 focused hours; optional Day 7 adds at most 4 hours for owner review only. Days are effort groupings, not unattended calendar commitments. Status lives only in [SPRINT_TASKS.csv](SPRINT_TASKS.csv).
 
 ## A. Outcome and baseline identity

@@ -1,5 +1,7 @@
 # Prospective integrity core — proposed, 2026-09-05
 
+The optional physical-pilot CAD branch is decomposed in [CAD_PLAN.md](../../CAD_PLAN.md) and [CAD_TASKS.csv](../../CAD_TASKS.csv). It does not become a prerequisite for this simulation core or adopt the older hardware protocol's stronger health/early-warning claims. Owner reconciliation and actual equipment access precede pilot geometry release.
+
 This is a development design, not a frozen preregistration. Do not backdate it or
 describe any v2 result as accomplished. The separate original checkout contains
 uncommitted owner drafts; author reconciliation precedes a pushed specification
