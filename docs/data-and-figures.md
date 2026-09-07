@@ -95,6 +95,13 @@ python -m scripts.phaseD_dataset
 - **Inputs:** the Phase D dataset and manifest.
 - **Method:** static ridge calibration, train-selected P-V and clock thresholds,
   and evaluation on held-out actuator identities.
+- **Separate health-signal lineage:** `scripts/run_study3.py` calls
+  `pipeline/coupling.py::health_trajectory`, which computes analytic SLS loop
+  area after `fatigue_state` with zero rest. It does not integrate the noisy,
+  quantized, decimated Phase D volume observations. Do not infer Study 3
+  health-probe noise or variable-rest robustness from the dataset sensor model.
+- **Endpoint:** macro-average of stage-level pose RMSE, then across actuators;
+  not maximum or continuously bounded error. Event counts include initialization.
 - **Outputs:** the leading-indicator and recalibration-trade-off figures plus
   `study3_results.json`.
 

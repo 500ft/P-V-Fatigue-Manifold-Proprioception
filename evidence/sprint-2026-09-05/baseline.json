@@ -1,0 +1,58 @@
+{
+  "recorded_on": "2026-09-05",
+  "stage": "baseline",
+  "repo": "P-V-Fatigue-Manifold-Proprioception",
+  "canonical_checkout": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception",
+  "original_checkout": "/Users/redhose/P-V-Fatigue-Manifold-Proprioception",
+  "identity": {
+    "command": "git rev-parse HEAD; git branch --show-current; git status --short; python --version; node --version",
+    "chunk_id": "5fd467",
+    "wall_time_seconds": 0.000001667,
+    "exit_code": 0,
+    "original_token_count": 25,
+    "output": "88d24358bc385dc66c2c0a9ab3c295b059d13427\nsprint/evidence-integrity-20260905\nPython 3.11.8\nv22.21.0\n"
+  },
+  "checks": [
+    {
+      "repo": "P-V-Fatigue-Manifold-Proprioception",
+      "cwd": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception",
+      "command": "python -c 'import sys, types; sys.modules[\"readline\"] = types.ModuleType(\"readline\"); import pytest; raise SystemExit(pytest.main([\"-q\"]))'",
+      "chunk_id": "aea2e5",
+      "wall_time_seconds": 0.000001375,
+      "session_id": 80296,
+      "original_token_count": 44,
+      "output": "........................................................................ [ 52%]\n.................................................................        [100%]\n137 passed in 5.00s\n",
+      "exit_code": 0
+    },
+    {
+      "repo": "P-V-Fatigue-Manifold-Proprioception",
+      "cwd": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception",
+      "command": "python -m scripts.check_manuscript_numbers",
+      "chunk_id": "180ff5",
+      "wall_time_seconds": 0.000001625,
+      "exit_code": 0,
+      "original_token_count": 43,
+      "output": "  docs/results.md: cluster interval present\n  docs/result_spine.md: cluster interval present\nmanuscript numbers match study JSONs (incl. arXiv abstract and secondary docs)\n"
+    },
+    {
+      "repo": "P-V-Fatigue-Manifold-Proprioception",
+      "cwd": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception",
+      "command": "python -m scripts.check_pdf_arxiv",
+      "chunk_id": "53a109",
+      "wall_time_seconds": 0.049359791,
+      "exit_code": 0,
+      "original_token_count": 125,
+      "output": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception/docs/preprint_v1.pdf: 10 pages, 5 font records\n  AAAAAA+DejaVuSans                    /TrueType  embedded\n  AAAAAA+DejaVuSans-Bold               /TrueType  embedded\n  AAAAAA+DejaVuSans-BoldOblique        /TrueType  embedded\n  AAAAAA+DejaVuSans-Oblique            /TrueType  embedded\n  AAAAAA+DejaVuSansMono                /TrueType  embedded\n\nOK: all fonts embedded as outlines; not encrypted; no JavaScript.\n"
+    },
+    {
+      "repo": "P-V-Fatigue-Manifold-Proprioception",
+      "cwd": "/Users/redhose/Developer/research-sprints/2026-09-05/P-V-Fatigue-Manifold-Proprioception",
+      "command": "python -m scripts.check_publication_fallback",
+      "chunk_id": "5c830d",
+      "wall_time_seconds": 0.000001667,
+      "exit_code": 0,
+      "original_token_count": 27,
+      "output": "Publication fallback: PASS\nPDF SHA-256: 6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d\n"
+    }
+  ]
+}
