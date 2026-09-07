@@ -1,5 +1,7 @@
 # P-V-Fatigue-Manifold-Proprioception — revised CAD work orders
 
+For the plain-language list of physical parts and assemblies, see [CAD_ITEMS.md](CAD_ITEMS.md). It maps to the existing work orders without adding tasks, estimates or completion status.
+
 Amended 2026-09-06 after source review. Planning only: no CAD, fixture, fabrication or calibration result exists from this amendment.
 
 **MERGE BLOCKED — owner decision pending.** The earlier public-planning cleanup has not been explicitly reversed. This draft PR keeps ledgers on its unmerged branch for review; it does not authorize them on main. See [CAD_REVIEW_DISPOSITION.md](CAD_REVIEW_DISPOSITION.md). Removing details from the current tree does not erase previous public commits.
