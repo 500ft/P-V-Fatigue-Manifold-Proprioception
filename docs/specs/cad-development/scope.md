@@ -1,6 +1,6 @@
 # P-V-Fatigue-Manifold-Proprioception — amended CAD scope
 
-2026-09-06. Owner placement decision pending: these ledgers are draft branch material, not approved for main. [Work orders](../../CAD_PLAN.md); [sole CAD status ledger](../../CAD_TASKS.csv).
+2026-09-06 (America/New_York). Owner explicitly authorized merging this PR's current documents to main; the earlier placement hold is resolved for this change. Hardware/disclosure entry gates and parked tasks are unchanged. [Work orders](../../CAD_PLAN.md); [sole CAD status ledger](../../CAD_TASKS.csv).
 
 ## Must-have for the prioritized CAD package
 

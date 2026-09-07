@@ -1,10 +1,10 @@
 # CAD review disposition — 2026-09-06
 
-## Merge policy: pending owner decision
+## Merge policy: owner authorized these PRs to main
 
-The reviewer supplied two blocking policy questions. The prior cleanup is verified in Git history for P-V, Drone, RoboRacer and Enclosure. This amendment does not silently reverse it. All five CAD PRs are draft; no merge is authorized until Owner records whether main admits planning ledgers or only reviewer-facing engineering contracts.
+On 2026-09-06 (America/New_York), the owner requested: "commit these to main for the respective repo." This explicitly authorizes merging the current PR documents and their prerequisite integrity changes to main, resolving the earlier placement hold for these changes. The earlier cleanup is retained in history; this is a recorded exception/decision, not a blanket authorization to publish future private planning or technical material.
 
-Current conservative disposition: keep task ledgers on the unmerged planning branch and remove the newly added README promotion. If Owner selects contracts-only, extract parameter/interface/inspection/verification contracts into a clean main-targeted change and keep task statuses outside main. Reconcile the prerequisite integrity PRs too; their sprint ledgers remain byte-preserved here, so merging those unchanged would reintroduce the same policy problem. No private repository was created and a public branch is not private storage.
+The PR is retargeted to main with its prerequisite integrity work included. Original sprint and CAD task ledgers remain unchanged: permission to merge does not mean any CAD, fabrication, calibration, disclosure review or experiment is completed. No withheld technical detail is restored. This decision authorizes normal checked PR merges, not a force-push, safety-gate bypass, purchase, hardware operation or paper/data publication.
 
 ## Accepted engineering amendments
 

@@ -30,4 +30,4 @@ If an existing specimen/mold cannot be reused, stop and rescope rather than trea
 
 ## Policy and scope
 
-This list is part of the existing draft CAD PR; the recorded main-branch planning-placement decision remains unresolved. No withheld details are restored, no model task is marked done and no hardware/fabrication/disclosure gate is closed by adding this list.
+The owner authorized merging this inventory and the current PR documents to main on 2026-09-06 (America/New_York). No withheld details are restored, no model task is marked done and no hardware/fabrication/disclosure gate is closed by this placement decision.
