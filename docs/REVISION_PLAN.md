@@ -1,4 +1,17 @@
-# Revision Plan — preprint v1.1 (pre-arXiv) and v2 (RoboSoft package)
+# Revision Plan — frozen preprint v1.3 and v2 (RoboSoft package)
+
+> **2026-08-03 update:** `preprint-v1.3` and its Zenodo payload remain frozen.
+> The original Wave-B sequence below is retained as history, but the canonical v2
+> claim boundary and execution scope now live in:
+>
+> - `docs/reviews/novelty-evidence-audit-2026-08-03.md`
+> - `docs/specs/robosoft-v2/claim-spine.md`
+> - `docs/specs/robosoft-v2/scope.md`
+> - `docs/specs/robosoft-v2/manuscript-outline.md`
+>
+> The new ordering fixes actuator-cluster inference and causal specificity before
+> densifying the life grid. More traces from the same generator are not treated as
+> stronger independent evidence.
 
 _Written 2026-07-02, after the internal review that added the clock baseline,
 the contact-F1 fix, and the §5 falsifiability bullet. This plan sequences the
