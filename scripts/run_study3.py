@@ -237,6 +237,57 @@ def main():
     selected = max(ok, key=lambda s: s["tau"]) if ok else sweep[0]   # fewest recals within budget
     tau_star = selected["tau"]
 
+    # --- what the budget-only rule costs in lead time (TRAIN actuators only) ---------
+    # The rule above maximizes tau within the accuracy budget, which minimizes
+    # recalibrations but is indifferent to WHEN the threshold fires. A threshold that
+    # trips after the budget is already violated schedules a recalibration that was
+    # needed earlier, so it cannot support a prognostic claim however few times it
+    # fires. This block measures lead for every tau on the grid and records what a
+    # lead-aware rule would have selected instead.
+    #
+    # Reported, NOT deployed: tau_star is unchanged, so every downstream number in this
+    # study is unaffected. Changing the operating point alters what the paper
+    # recommends and is a decision for the author, not a side effect of an audit.
+    # Lead is evaluated on TRAIN actuators only -- selecting on held-out lead would be
+    # leakage, which is the whole reason the identity split exists.
+    for s in sweep:
+        leads = []
+        for a in train_ids:
+            fixed = [err[a][i][0] for i in range(len(LIFE))]
+            lt = lead_time(hn[a], fixed, s["tau"], budget_mm, LIFE)
+            leads.append(lt["lead_life"])
+        usable = [v for v in leads if v is not None]
+        s["train_lead_life_mean"] = float(np.mean(usable)) if usable else None
+        s["train_lead_positive_count"] = int(sum(1 for v in usable if v > 0))
+        s["train_lead_n_actuators"] = len(train_ids)
+
+    warns = [s for s in ok if (s.get("train_lead_life_mean") or 0.0) > 0]
+    lead_aware = max(warns, key=lambda s: s["tau"]) if warns else None
+    tau_selection_alternatives = {
+        "deployed_rule": {
+            "name": "fewest recalibrations within the accuracy budget",
+            "tau": tau_star,
+            "train_recal": selected["train_recal"],
+            "train_error_mm": selected["train_error_mm"],
+            "train_lead_life_mean": selected.get("train_lead_life_mean"),
+            "train_lead_positive_count": selected.get("train_lead_positive_count"),
+        },
+        "lead_aware_rule": ({
+            "name": "fewest recalibrations AMONG thresholds that warn before the budget "
+                    "is violated on training actuators",
+            "tau": lead_aware["tau"],
+            "train_recal": lead_aware["train_recal"],
+            "train_error_mm": lead_aware["train_error_mm"],
+            "train_lead_life_mean": lead_aware["train_lead_life_mean"],
+            "train_lead_positive_count": lead_aware["train_lead_positive_count"],
+        } if lead_aware is not None else None),
+        "note": "The deployed rule is unchanged and produced every other number in this "
+                "file. If the two rules disagree, the budget-only rule is buying fewer "
+                "recalibrations with negative lead -- i.e. it is not warning in advance. "
+                "Switching is a design decision; see docs/reviewer_backlog.md.",
+        "rules_agree": (lead_aware is not None and lead_aware["tau"] == tau_star),
+    }
+
     # --- clock-baseline period selection on TRAIN actuators, same budget rule ---
     period_sweep = []
     for period in PERIOD_GRID:
@@ -276,6 +327,7 @@ def main():
             "always": agg("always"),
         },
         "threshold_sweep_train": sweep,
+        "tau_selection_alternatives": tau_selection_alternatives,
         "period_sweep_train": period_sweep,
     }
 
