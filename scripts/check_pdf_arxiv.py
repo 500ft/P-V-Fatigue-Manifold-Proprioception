@@ -84,7 +84,9 @@ def main() -> int:
     if "/JavaScript" in names:
         failures.append("PDF carries embedded JavaScript (/Names /JavaScript)")
     open_action = _resolve(root.get("/OpenAction"))
-    if open_action and str(_resolve(open_action).get("/S", "")) == "/JavaScript":
+    # LaTeX/hyperref commonly stores a page destination as an ArrayObject.
+    # Only action dictionaries can carry an /S /JavaScript entry.
+    if hasattr(open_action, "get") and str(open_action.get("/S", "")) == "/JavaScript":
         failures.append("PDF carries a JavaScript OpenAction")
 
     records: list[tuple[str, str, bool]] = []
