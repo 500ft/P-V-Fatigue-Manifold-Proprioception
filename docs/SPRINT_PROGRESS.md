@@ -1,5 +1,28 @@
 # Sprint progress — P-V-Fatigue-Manifold-Proprioception
 
+## 2026-09-08 — PV-D01: optimization-safe historical integrity gate
+
+Completed one bounded P1 follow-up: the historical publication checker no longer
+uses removable `assert` statements. Before correction, 11 independently mutated
+payload fields/bytes falsely produced integrity PASS under `python -O`; normal
+execution caught them. Explicit runtime checks now reject these inputs in both
+modes, and malformed inputs report integrity FAIL with exit 1. This fixes the
+archive-integrity verdict, not publication approval.
+
+[Task evidence and reproducible commands](../evidence/task-2026-09-08/README.md)
+record the clean base `3dba7aeb664c93bfc6c1a74d7c3462ea1cc96738`, interpreter
+selection, original red test results, final 177 passing tests and unchanged PDF
+SHA. Manuscript-number, PDF and historical-integrity checks pass. No configured
+standalone typecheck/lint/build was omitted or invented. Historical sprint rows
+and their 30-hour allocation are unchanged; PV-D01 is a separate 2-hour estimate.
+
+Branch `task/priority-one-20260908`; work prepared for a 500ft-authored commit and
+PR. The commit/PR provides final identity; this entry does not assert publication,
+push or merge in advance. Owner task PV-08 remains blocked. No v2 research run or
+CAD pilot was started. Next check: `python -O -m scripts.check_publication_fallback
+--for-publication` (expected exit 2); next project task is author reconciliation
+and review of `docs/preprint_v1_4_candidate.md`.
+
 ## 2026-09-06 — Main-branch placement authorized
 
 Owner explicitly requested these PRs be merged to their respective main branches. This supersedes earlier placement-blocked/draft-only entries for the current changes. The combined main-targeted PR retains prerequisite integrity work, unchanged task ledgers and all actual hardware/disclosure gates. No CAD or experiment is marked complete. Merge completion and resulting main commit are verified by GitHub rather than asserted in advance here.
