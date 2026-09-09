@@ -1,5 +1,20 @@
 # Sprint progress — P-V-Fatigue-Manifold-Proprioception
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
+## 2026-09-09 — PV-D02 figure manifest becomes a gate
+
+[7 tests](../tests/test_figure_manifest.py) now hold `docs/figure-manifest.json` and the tree to each
+other in both directions, declare the results JSON behind each figure, and declare the uncommitted
+phase-D dataset as a generated input with the command that produces it. Four negative controls fail as
+required; 184 tests pass. No figure or number changes; PV-08 remains the gate.
+[Verification](../evidence/task-2026-09-09/README.md). Branch `task/priority-two-20260909`.
+
 ## 2026-09-08 — PV-D01: optimization-safe historical integrity gate
 
 Completed one bounded P1 follow-up: the historical publication checker no longer

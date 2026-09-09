@@ -15,7 +15,8 @@
         "data/gate0/fig_crosstalk_vs_freq.png",
         "data/gate0/fig_dc_independence.png"
       ],
-      "boundary": "Lumped pneumatic-network model; no physical measurements"
+      "boundary": "Lumped pneumatic-network model; no physical measurements",
+      "numeric": "data/gate0/gate0_results.json"
     },
     {
       "id": "phase-a-plant",
@@ -30,7 +31,8 @@
         "data/sim/phaseA/fig_loop_area_vs_freq.png",
         "data/sim/phaseA/fig_pv_loops.png"
       ],
-      "boundary": "Synthetic standard-linear-solid plant"
+      "boundary": "Synthetic standard-linear-solid plant",
+      "numeric": "data/sim/phaseA/phaseA_results.json"
     },
     {
       "id": "phase-b-fatigue",
@@ -49,7 +51,8 @@
         "data/sim/phaseB/fig_pv_loops_over_life.png",
         "data/sim/phaseB/fig_rest_recovery.png"
       ],
-      "boundary": "Assumed fatigue and recovery laws"
+      "boundary": "Assumed fatigue and recovery laws",
+      "numeric": "data/sim/phaseB/phaseB_results.json"
     },
     {
       "id": "study-1-health-indicators",
@@ -67,7 +70,8 @@
         "data/sim/study1/fig_onset_generalization_gap.png",
         "data/sim/study1/fig_recovery_validation.png"
       ],
-      "boundary": "Synthetic validation cohort and corruptions"
+      "boundary": "Synthetic validation cohort and corruptions",
+      "numeric": "data/sim/study1/study1_results.json"
     },
     {
       "id": "study-2-proprioception-drift",
@@ -84,7 +88,8 @@
         "data/sim/phaseD/study2_fig2_static_vs_dynamic.png",
         "data/sim/phaseD/study2_fig2_static_vs_dynamic.pdf"
       ],
-      "boundary": "Held-out identities come from the same synthetic generator"
+      "boundary": "Held-out identities come from the same synthetic generator",
+      "numeric": "data/sim/phaseD/study2_results.json"
     },
     {
       "id": "study-3-recalibration-policy",
@@ -101,7 +106,8 @@
         "data/sim/phaseD/study3_fig4_recal_tradeoff.png",
         "data/sim/phaseD/study3_fig4_recal_tradeoff.pdf"
       ],
-      "boundary": "Policy evaluation is simulation-only"
+      "boundary": "Policy evaluation is simulation-only",
+      "numeric": "data/sim/phaseD/study3_results.json"
     },
     {
       "id": "study-3-cluster-ci",
@@ -118,7 +124,8 @@
         "data/sim/phaseD/study3_fig4b_recal_cluster_ci.png",
         "data/sim/phaseD/study3_fig4b_recal_cluster_ci.pdf"
       ],
-      "boundary": "Re-estimates study 3's uncertainty with the actuator as the resampling unit; estimates and pipeline unchanged. Simulation-only, synthetic cohort."
+      "boundary": "Re-estimates study 3's uncertainty with the actuator as the resampling unit; estimates and pipeline unchanged. Simulation-only, synthetic cohort.",
+      "numeric": "data/sim/phaseD/study3_cluster_ci_results.json"
     },
     {
       "id": "study-4-network-sensitivity",
@@ -133,7 +140,20 @@
         "data/sim/phaseD/study4_fig_crosstalk_sensitivity.png",
         "data/sim/phaseD/study4_fig_crosstalk_sensitivity.pdf"
       ],
-      "boundary": "Sensitivity sweep of assumed network parameters"
+      "boundary": "Sensitivity sweep of assumed network parameters",
+      "numeric": "data/sim/phaseD/study4_results.json"
     }
-  ]
+  ],
+  "generated_inputs": {
+    "data/sim/phaseD/dataset.npz": {
+      "command": "python -m scripts.phaseD_dataset",
+      "not_committed_because": "the npz bytes and their sha256 vary with the numpy/zip stack even when every array is bit-identical (audit 2026-09-02); data/sim/phaseD/manifest.json records the sha the committed results were produced from. Compare per-array, not per-file.",
+      "consumers": [
+        "study-2-proprioception-drift",
+        "study-3-recalibration-policy",
+        "study-3-cluster-ci"
+      ]
+    }
+  },
+  "checks": "tests/test_figure_manifest.py validates this file against the tree on every CI run."
 }

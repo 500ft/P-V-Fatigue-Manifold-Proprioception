@@ -1,5 +1,12 @@
 # P-V-Fatigue-Manifold-Proprioception — partial handoff, local software ready for review
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
 Prepared 2026-09-05; resumed and checked 2026-09-06. Budget: six workload days,
 30 focused hours per repository; estimates are not recorded time spent.
 
@@ -13,6 +20,10 @@ outreach or spending occurred. Original checkout/user changes were preserved.
 
 [Roadmap](SPRINT_ROADMAP.md) · [Authoritative ledger](SPRINT_TASKS.csv) ·
 [Progress](SPRINT_PROGRESS.md) · [Selected candidate hashes](../evidence/sprint-2026-09-05/candidate.json).
+
+## Latest follow-up — 2026-09-09
+
+[PV-D02](../evidence/task-2026-09-09/README.md): the figure manifest is now tested against the tree in both directions (184 tests pass). Hygiene only; the author-review gate PV-08 is unchanged.
 
 ## Completed deliverables and evidence
 

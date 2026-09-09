@@ -1,0 +1,11 @@
+{
+  "review_base": "b0b23185983d452cf7e0f87352b71d05941cba3d",
+  "kind": "original implementation, developer counterexamples",
+  "result": {
+    "chunk_id": "7255ea",
+    "wall_time_seconds": 0.111448583,
+    "exit_code": 0,
+    "original_token_count": 38,
+    "output": "ORIGINAL INCORRECTLY ACCEPTED: undeclared_local_input\nORIGINAL INCORRECTLY ACCEPTED: missing_generator\nORIGINAL INCORRECTLY ACCEPTED: missing_consumer\n"
+  }
+}
