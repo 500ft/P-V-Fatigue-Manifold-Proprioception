@@ -1,5 +1,12 @@
 # Sprint progress — P-V-Fatigue-Manifold-Proprioception
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
 ## 2026-09-09 — PV-D02 figure manifest becomes a gate
 
 [7 tests](../tests/test_figure_manifest.py) now hold `docs/figure-manifest.json` and the tree to each

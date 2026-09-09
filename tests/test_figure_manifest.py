@@ -24,10 +24,11 @@ def manifest():
 
 @pytest.fixture(scope="module")
 def tracked():
-    out = subprocess.run(["git", "ls-files", *FIGURE_ROOTS], cwd=ROOT, capture_output=True, text=True)
-    if out.returncode != 0:  # not a git checkout: fall back to the filesystem
-        return {str(p.relative_to(ROOT)) for r in FIGURE_ROOTS for p in (ROOT / r).rglob("*") if p.is_file()}
-    return set(out.stdout.split())
+    # Inputs also live outside FIGURE_ROOTS. A filesystem fallback cannot prove
+    # the commitment requirement and would silently accept local-only inputs.
+    out = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, text=True)
+    assert out.returncode == 0, "manifest commitment checks require a Git checkout"
+    return set(filter(None, out.stdout.split("\0")))
 
 
 def modules_in(command: str):
@@ -65,7 +66,8 @@ def test_every_declared_output_is_committed(manifest, tracked):
 
 def test_every_committed_figure_is_declared(manifest, tracked):
     declared = {o for f in manifest["figures"] for o in f["outputs"]}
-    undeclared = sorted(t for t in tracked if t.endswith(FIGURE_SUFFIXES) and t not in declared)
+    undeclared = sorted(t for t in tracked if t.startswith(tuple(r + "/" for r in FIGURE_ROOTS))
+                        and t.endswith(FIGURE_SUFFIXES) and t not in declared)
     assert not undeclared, f"committed figures with no manifest entry (unauditable): {undeclared}"
 
 
@@ -76,13 +78,15 @@ def test_numeric_sources_exist_and_parse(manifest):
         json.loads(p.read_text())
 
 
-def test_inputs_are_committed_or_declared_generated(manifest):
+def test_inputs_are_committed_or_declared_generated(manifest, tracked):
     gen = manifest.get("generated_inputs", {})
     for f in manifest["figures"]:
         for i in f["inputs"]:
-            if (ROOT / i).is_file():
+            if i not in gen:
+                assert i in tracked, f"{f['id']}: input {i} is neither tracked nor declared under generated_inputs"
+                assert (ROOT / i).is_file(), f"{f['id']}: committed input {i} is missing from disk"
                 continue
-            assert i in gen, f"{f['id']}: input {i} is neither in the tree nor declared under generated_inputs"
+            # A previous local regeneration must not disable provenance checks.
             assert gen[i]["command"] in f["command"], (
                 f"{f['id']}: consumes generated input {i} but its command does not run {gen[i]['command']!r} first")
             assert f["id"] in gen[i]["consumers"], f"{f['id']}: not listed as a consumer of {i}"

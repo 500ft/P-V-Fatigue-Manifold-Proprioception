@@ -1,4 +1,11 @@
 
+
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
 # PV-D02 verification — 2026-09-09
 
 Base: head of `task/priority-one-20260908` (PR #8). Deliverables: [`tests/test_figure_manifest.py`](../../tests/test_figure_manifest.py)

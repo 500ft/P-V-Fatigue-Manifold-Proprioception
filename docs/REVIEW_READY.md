@@ -1,5 +1,12 @@
 # P-V-Fatigue-Manifold-Proprioception — partial handoff, local software ready for review
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
 Prepared 2026-09-05; resumed and checked 2026-09-06. Budget: six workload days,
 30 focused hours per repository; estimates are not recorded time spent.
 
