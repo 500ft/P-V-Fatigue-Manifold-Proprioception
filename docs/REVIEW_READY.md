@@ -14,6 +14,10 @@ outreach or spending occurred. Original checkout/user changes were preserved.
 [Roadmap](SPRINT_ROADMAP.md) · [Authoritative ledger](SPRINT_TASKS.csv) ·
 [Progress](SPRINT_PROGRESS.md) · [Selected candidate hashes](../evidence/sprint-2026-09-05/candidate.json).
 
+## Latest follow-up — 2026-09-09
+
+[PV-D02](../evidence/task-2026-09-09/README.md): the figure manifest is now tested against the tree in both directions (184 tests pass). Hygiene only; the author-review gate PV-08 is unchanged.
+
 ## Completed deliverables and evidence
 
 Archived PDF remains unchanged. Active text now identifies the analytic, zero-rest health probe and macro-averaged stage RMSE. The new readiness gate cannot clear archived v1.3 through a metadata flag.
