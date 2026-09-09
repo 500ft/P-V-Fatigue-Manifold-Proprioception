@@ -1,5 +1,11 @@
 # Sprint progress — P-V-Fatigue-Manifold-Proprioception
 
+## Day-3 work — 2026-09-09
+
+Both reviewed PR layers merged into main; new work starts from `d8b1e7eaef817394e169e16dabcc97c1efee3e88` on `task/day-three-20260909`. Number-checker regression: two intentionally altered candidate values passed the original checker (2 failed tests). After extending the same numeric requirements to the correction candidate, 193 tests and both manuscript numeric checks pass. The corrected text uses the deliberately narrower train-derived budget wording. No manuscript/PDF/result bytes or readiness approval fields changed.
+
+The [evidence record](../evidence/task-day3-2026-09-09/README.md) contains checks and limits. Work is locally verified and not yet recorded here as pushed/merged. Current edits belong to this task; original checkouts were preserved. Next: finish verification, commit the bounded change and open the new PR; preserve all stated external gates.
+
 ## Review amendment — 2026-09-09
 
 Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
