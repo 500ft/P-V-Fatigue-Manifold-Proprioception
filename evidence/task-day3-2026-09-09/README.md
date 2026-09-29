@@ -7,7 +7,7 @@ Branch: `task/day-three-20260909`. Scope: Prepare artifact-bound author review, 
 
 Number-checker regression: two intentionally altered candidate values passed the original checker (2 failed tests). After extending the same numeric requirements to the correction candidate, 193 tests and both manuscript numeric checks pass. The corrected text uses the deliberately narrower train-derived budget wording. No manuscript/PDF/result bytes or readiness approval fields changed.
 
-See [plan](../../docs/DAY3_PLAN.md) and [primary deliverable](../../docs/AUTHOR_REVIEW_DAY3.md). Status is maintained only in [SPRINT_TASKS.csv](../../docs/SPRINT_TASKS.csv); original research/CAD gates remain unchanged. Delivery is a new PR, not an automatic merge or scientific release.
+See [plan](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/DAY3_PLAN.md) and [primary deliverable](../../docs/AUTHOR_REVIEW_DAY3.md). Status is maintained only in [SPRINT_TASKS.csv](../../docs/SPRINT_TASKS.csv); original research/CAD gates remain unchanged. Delivery is a new PR, not an automatic merge or scientific release.
 
 ## Verification and reproducibility
 

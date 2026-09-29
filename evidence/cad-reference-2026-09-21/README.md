@@ -1,7 +1,7 @@
 # CAD tooling reference — verification, 2026-09-21
 
 The owner added [`docs/CAD_PLANNING_ADDENDUM_2026-09-21.txt`](../../docs/CAD_PLANNING_ADDENDUM_2026-09-21.txt)
-and a pointer to it from the [week plan](../../docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt). This records what
+and a pointer to it from the [week plan](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt). This records what
 was checked before accepting it, and the one integration gap that was fixed.
 
 ## Claims checked
