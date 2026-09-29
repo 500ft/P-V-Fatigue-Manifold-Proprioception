@@ -17,10 +17,10 @@ pressure–volume probes and pressure-only pose estimation.**
 [Quick start](#quick-start) · [Documentation](#documentation) ·
 [Author review](docs/AUTHOR_REVIEW_DAY3.md)
 
-![Conceptual overview of the simulation and recalibration decision](docs/media/project-overview.svg)
+![Illustration of a bending pneumatic actuator and pressure-volume hysteresis](docs/media/hero.jpg)
 
-*Conceptual research map, not hardware or an experimental result. The Study 3
-health probe is analytic and separate from the noisy pose-observation channel.*
+*AI-generated concept illustration, not hardware or an experimental result. The
+Study 3 health probe is analytic and separate from the noisy pose-observation channel.*
 
 ## About
 
