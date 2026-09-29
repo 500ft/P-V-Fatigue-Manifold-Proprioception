@@ -84,7 +84,7 @@ A; Studies D/E are owner- and funding-gated. The RoboSoft candidate, PV-08 and t
 
 ## 2026-09-15 — Day-4 executed under the reviewed plan (PR #18); T1 partial
 
-[DAY4_PLAN.md](DAY4_PLAN.md) (PR #18, superseding #17) was executed in order T0 → T2 → T3 → T1.
+[DAY4_PLAN.md](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/DAY4_PLAN.md) (PR #18, superseding #17) was executed in order T0 → T2 → T3 → T1.
 The render instruction is corrected (PV-D04a), the review index carries an accurately scoped
 entry for PR #16 and CONTRIBUTING a simplicity-review step (PV-D04b), and an **unapproved** v1.4
 preview was rendered into the ignored `build/day4/`, gated and inspected page by page (PV-D04c,
@@ -115,7 +115,7 @@ Each omitted or incomplete recommendation is accounted for separately in the cur
 
 ## Day-3 work — 2026-09-09
 
-Delivery update: the preparation was committed as 500ft and pushed; [day-3 PR](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/pull/10) is open against main. Initial implementation source: `3b2bfb52cc4476c7cbb6cbd90aea0c075118d400` (later review/documentation commits are visible in the PR). This supersedes the pre-push stopping state below. Original day-1/day-2 PRs are merged; this new PR is not merged. Resume from the named unresolved project gates in [DAY3_PLAN.md](DAY3_PLAN.md), not from the already completed push step.
+Delivery update: the preparation was committed as 500ft and pushed; [day-3 PR](https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception/pull/10) is open against main. Initial implementation source: `3b2bfb52cc4476c7cbb6cbd90aea0c075118d400` (later review/documentation commits are visible in the PR). This supersedes the pre-push stopping state below. Original day-1/day-2 PRs are merged; this new PR is not merged. Resume from the named unresolved project gates in [DAY3_PLAN.md](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/DAY3_PLAN.md), not from the already completed push step.
 
 Both reviewed PR layers merged into main; new work starts from `d8b1e7eaef817394e169e16dabcc97c1efee3e88` on `task/day-three-20260909`. Number-checker regression: two intentionally altered candidate values passed the original checker (2 failed tests). After extending the same numeric requirements to the correction candidate, 193 tests and both manuscript numeric checks pass. The corrected text uses the deliberately narrower train-derived budget wording. No manuscript/PDF/result bytes or readiness approval fields changed.
 

@@ -1,6 +1,6 @@
 # Day-4 execution evidence — 2026-09-15
 
-Plan: [docs/DAY4_PLAN.md](../../docs/DAY4_PLAN.md), accepted as PR #18 (head `8f499da`, merged `e05a044`); PR #17 superseded.
+Plan: [docs/DAY4_PLAN.md](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/DAY4_PLAN.md), accepted as PR #18 (head `8f499da`, merged `e05a044`); PR #17 superseded.
 Base: `e05a04433c227184b561f18cbe2c480206ca456a`. Branch `task/day-four-20260914`. Order T0 → T2 → T3 → T1.
 Environment: Python 3.11.8; numpy 2.4.6, scipy 1.17.1, matplotlib 3.11.2, reportlab 5.0.1, pypdf 6.18.1; `MPLBACKEND=Agg`; repo root as cwd.
 Decisions: D1 **unknown** (no author statement; see the search-scope note under T0), D2 include T1, D3 defer, D4 unscheduled.

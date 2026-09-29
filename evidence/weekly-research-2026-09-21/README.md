@@ -4,9 +4,9 @@ Branch `research/weekly-r0-r1-20260921`, **stacked on the open PR #22 head `1525
 directs when #22 is unmerged (origin/main was `c8bbaf4`). This PR therefore contains PR #22's commits; it
 must merge after #22, or be rebased if #22 changes.
 
-Plan: [`docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt`](../../docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt).
+Plan: [`docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt`](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt).
 Critique of that plan, with the evidence behind each point:
-[`docs/reviews/weekly-plan-critique-2026-09-19.md`](../../docs/reviews/weekly-plan-critique-2026-09-19.md).
+[`docs/reviews/weekly-plan-critique-2026-09-19.md`](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/reviews/weekly-plan-critique-2026-09-19.md).
 
 ## R0 — baseline, provenance, immutability lock
 

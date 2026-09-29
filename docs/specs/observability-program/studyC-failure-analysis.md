@@ -1,6 +1,6 @@
 # Study C failure map — analysis definitions (R1)
 
-Written 2026-09-19 as task R1 of the [week plan](../../WEEKLY_RESEARCH_PLAN_2026-09-21.txt). This is a
+Written 2026-09-19 as task R1 of the [week plan](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt). This is a
 **post-hoc descriptive analysis of the committed Study C result**, not a new evaluation. Study C's verdict
 remains **C-FAIL** and is not revisited here. Generator: `scripts/analyze_studyC_failure.py`.
 
