@@ -35,6 +35,10 @@ does not replace the authoritative protocol or task ledger.
 
 ## Visual provenance
 
+The README lead image, [`media/hero.jpg`](media/hero.jpg), is an AI-generated
+illustration of a pneumatic actuator and a stylized P-V loop. It is not a
+photograph of project hardware or a plot of study data.
+
 [`media/project-overview.svg`](media/project-overview.svg) is an original,
 editable conceptual diagram created for the repository presentation. It contains
 no measured values, synthetic plots or purported hardware photographs.
