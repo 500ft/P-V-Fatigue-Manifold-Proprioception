@@ -80,9 +80,9 @@ _B.fontName = "DejaVu"     # kill the Helvetica default anywhere it could inheri
 TITLE = ParagraphStyle("title", parent=_B, fontName="DejaVu-Bold", fontSize=15, leading=19,
                        alignment=TA_CENTER, spaceAfter=8)
 H1 = ParagraphStyle("h1", parent=_B, fontName="DejaVu-Bold", fontSize=12.5, leading=15,
-                    spaceBefore=12, spaceAfter=4, textColor=BLUE)
+                    spaceBefore=12, spaceAfter=4, textColor=BLUE, keepWithNext=True)
 H2 = ParagraphStyle("h2", parent=_B, fontName="DejaVu-Bold", fontSize=10.5, leading=13,
-                    spaceBefore=7, spaceAfter=3)
+                    spaceBefore=7, spaceAfter=3, keepWithNext=True)
 BODY = ParagraphStyle("body", parent=_B, fontName="DejaVu", fontSize=9.3, leading=13,
                       alignment=TA_JUSTIFY, spaceAfter=5)
 BULLET = ParagraphStyle("bullet", parent=BODY, leftIndent=16, firstLineIndent=-9, spaceAfter=2)

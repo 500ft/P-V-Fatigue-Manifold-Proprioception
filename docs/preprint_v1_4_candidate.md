@@ -2,9 +2,11 @@
 
 **Author:** Mergen Ulziibayar · NYU Tandon, Dept. of Mechanical & Aerospace Engineering
 
-**Status:** Unreviewed v1.4 correction candidate (2026-09-05); not released or submitted.
-See [methods correction](corrections/v1.3-methods-2026-09-05.md). Numerical results
-remain those of archived v1.3; no new simulation or experiment is claimed. **This is a simulation-only modeling study.** No physical
+**Status:** Unreviewed v1.4 correction candidate, updated 2026-09-29; not released or submitted.
+This revision retains the [methods correction](corrections/v1.3-methods-2026-09-05.md)
+and the archived results in §§4.1–4.5. Section 4.6 incorporates the subsequently completed
+observability studies and their corrections from the repository's canonical results;
+this manuscript update does not rerun them. **This is a simulation-only modeling study.** No physical
 experiments are reported; every result is synthetic and is labeled as such. Modeling
 assumptions are stated as choices, not as calibrated predictions for a physical actuator. The
 natural next step is a physical bench campaign; the authors welcome hardware-validation
@@ -53,6 +55,12 @@ unseen actuators" tests robustness to that generator, not real device-to-device 
 absolute pose errors remain sub-millimeter throughout, so the operational value of triggered
 recalibration grows with tighter accuracy requirements.
 
+Subsequent simulations with dispersed degradation laws narrow this interpretation:
+normalized-life estimation fails the declared unseen-unit transfer criterion, and corrected
+profile likelihoods do not establish post-onset life precision. These later studies examine a
+different endpoint from pose recalibration; they limit any interpretation of the original
+policy result as a transferable life sensor.
+
 ---
 
 ## 1. Introduction
@@ -81,6 +89,11 @@ design outputs, and a pre-specified modeling result framed as a prediction** (fr
 experimental claim. The pre-specified temporal-lead expectation was audited explicitly and
 downgraded when the deployed threshold failed to show positive lead, which is the intended role
 of the frozen spine.
+
+The later observability program asks whether the same interpretation survives variation in
+the degradation law itself. We report its completed results separately in §4.6 so that the
+original pose-recalibration experiment and the subsequent normalized-life estimation task
+retain their distinct endpoints, cohorts and decision rules.
 
 ## 2. Related work and prior-art boundary
 
@@ -136,8 +149,8 @@ and reduces to the linear cross-talk model in the quasi-static limit. *(Validate
 A canonical, deterministic life law injects: Mullins softening with a 30% permanent floor and
 24-h recovery time constant; irreversible compliance drift; curvature-acceleration onset at 70%
 life; and late leak growth (to 20× conductance) observed by a separate closed-valve
-pressure-decay probe. Degradation enters the plant as a rising compliance multiplier (softer
-*k₁*) and loss multiplier (larger *k₂*). *(Validated: Phase B PASS, synthetic consistency.)*
+pressure-decay probe. Degradation enters the plant as a rising compliance multiplier
+(softer *k₁*) and loss multiplier (larger *k₂*). *(Validated: Phase B PASS, synthetic consistency.)*
 
 ### 3.3 P-V health features (Phase C)
 Causal P-V features, Mullins-recovery normalization, health-index metrics, and matched
@@ -198,6 +211,28 @@ calibration exceeds τ). The threshold τ is selected on **training actuators on
 stated accuracy budget, then applied unchanged to held-out actuators. We report estimation error
 **and** recalibration count together, so a "savings" cannot hide degraded accuracy.
 
+### 3.10 Subsequent observability studies: a distinct evaluation
+Studies A–C use a dispersed synthetic cohort to examine between-unit health-signal variation,
+local information about normalized life, and transfer of a life estimator, respectively.
+Their inputs, parameter provenance and imposed acceptance criteria are recorded in the
+[parameter register](PARAMETER_PROVENANCE.md); they are modeling choices rather than
+hardware-calibrated quantities. Rupture life is assigned by the generator, not inferred from
+a common measured damage threshold.
+
+Study B's corrected profile analysis compares an aged snapshot alone with a stacked design
+that also observes a young baseline under shared nuisance parameters. The baseline's
+normalized-life coordinate is treated as known: a known cycle count alone would not supply
+that information without knowledge of rupture life. Study C instead schedules probes by
+cycle count and fits a ridge estimator to baseline-normalized probe features, their lagged
+values and the clock, with tuning confined to training units. The probe vector includes P-V
+loop and stiffness features as well as pressure-decay features; it is not a demonstrated
+pressure-only acquisition system. This distinction leaves the pressure-only *pose corrector*
+in §3.8 intact while making the health-probe sensing requirement explicit.
+
+Study C's channel-muting analysis is post-hoc and retains the fitted weights. The subsequent
+dispersion sweep is a sensitivity audit within the same model family. Neither is an
+independent confirmation cohort or a new recalibration-policy evaluation.
+
 ## 4. Results
 
 ### 4.1 Validation gates
@@ -214,8 +249,8 @@ manifold. **This does not occur.** With all chamber commands available as featur
 per-actuator calibration, the dynamic (lagged-input) corrector improves curvature RMSE over the
 static ridge by **≈0% under either topology** (shared: 0.244 vs 0.244 1/m; isolated: 0.295 vs
 0.295 1/m; pose ≈0.84 vs 0.84 mm and 1.02 vs 1.02 mm). The cross-talk is genuine in the network
-dynamics (§4.1) but is a small perturbation (≈4% of the focal curvature at these physically
-reasonable parameters) that does not materially degrade pose estimation. We retain this as a
+dynamics (§4.1) but is a small perturbation (≈4% of the focal curvature at the selected
+model parameters) that does not materially degrade pose estimation. We retain this as a
 negative result and did not tune network parameters to manufacture the predicted effect; §5
 characterizes the envelope over which it holds by sweeping the supply softness.
 
@@ -236,7 +271,7 @@ explains §4.2 and motivates recalibration as the right intervention.
 *Figure 2. Young-calibrated static estimator curvature RMSE over normalized life (shared vs isolated supply); error grows ~100x by end of life and is comparable across topologies — the degradation is the topology-independent compliance drift, not cross-talk.*
 
 ### 4.4 P-V loop area is a health indicator, not a positive-lead trigger on this grid (Fig. 3)
-On held-out actuators, the observable P-V loop-area fractional growth tracks the
+On held-out actuators, the idealized P-V loop-area fractional growth tracks the
 fixed-calibration pose error over life with **Pearson *r* = 0.885**. The 30 points are
 6 actuators x 5 life stages, i.e. repeated measures on six clusters, so the interval is
 computed with the actuator as the resampling unit: an exhaustive nonparametric cluster
@@ -308,11 +343,12 @@ the 5-stage life grid at τ\*, not an estimate with between-actuator sampling va
 an interval on it would be degenerate ([60.0%, 60.0%]). Only the sensing-free clock baseline
 varies across actuators (1.50 recalibrations, 95% cluster CI [1.17, 1.83]). Against the clock —
 the comparison that
-isolates what the *P-V measurement itself* buys — the clock, tuned within budget on training
+isolates what the *model-derived P-V signal* buys in this experiment — the clock, tuned within budget on training
 actuators, **violates the budget on held-out actuators** (0.21 mm > 0.159 mm) at a similar
 recalibration count, because a global cycle period misaligns with per-actuator degradation
 state whenever rupture life varies across devices (here drawn from 3,000–4,000 cycles), while
-the trigger is effectively a normalized-life sensor in this generator and transfers safely.
+the trigger is effectively a normalized-life sensor in this generator and meets the reported
+mean budget on its held-out identities.
 Absolute errors are sub-mm in all
 policies (see §5), so the demonstrated value is the error-vs-cost trade-off and its transfer to
 unseen actuators, not the absolute accuracy.
@@ -325,13 +361,68 @@ unseen actuators, not the absolute accuracy.
 
 *Figure 4b. (a) The same four policies with 95% actuator-cluster bootstrap intervals on both axes. Only the fixed-clock baseline has non-zero between-actuator spread in recalibration count; the triggered and always-on counts are identical on every held-out actuator, which is why the 60% saving carries no interval (§4.5). (b) Lead-time frontier with cluster intervals. Both axes are actuator **means**, so the lead plotted here is the mean over held-out actuators, not the median quoted in §4.4: at τ = 0.01 the mean lead is +0.323 normalized life (95% cluster CI [0.273, 0.351]) against a median of +0.346, the difference coming from actuator 17 at +0.199. The deployed τ\* = 0.05 sits below zero lead for 6/6 actuators; τ = 0.01 keeps 3 recalibrations per actuator and stays within the accuracy budget at 0.029 mm.*
 
+### 4.6 Completed observability follow-ups and limits on transfer
+
+**Study A: variation depends on the degradation law.** Dispersion of degradation-law
+parameters breaks the young-normalized trajectory invariance seen in the original generator.
+The original rule nevertheless returned A-FAIL because its trigger-timing requirement did
+not pass. An owner amendment removed that requirement from the cohort-admissibility gate,
+yielding A-PASS under the amended rule. This is a changed criterion, not an improved result;
+both verdicts and the ablations remain in the [Study A result](../data/sim/studyA/studyA_results.json).
+It establishes a nondegenerate synthetic cohort for a transfer test, not successful transfer.
+
+**Study B: post-onset precision is not established.** The corrected analysis uses the stated
+stacked observation design, scale-stable covariance whitening and log-space optimization of
+positive nuisance parameters. Undefined decay features are treated as infeasible rather
+than passed to the optimizer. In the canonical post-onset case, the resulting profile has
+a broad, nearly flat region whose terminations coincide with nuisance bounds. Widening the
+nuisance box removes the upper threshold crossing. The stored `identifiable` label therefore
+describes crossings under a particular box, not demonstrated structural uniqueness or a
+stable precision estimate. Both previously reported resolution figures are withdrawn;
+the [corrected profile result](../data/sim/studyB/studyB_structural.json) is the canonical
+record of the profiles, bound sensitivity and null resolution field.
+
+The known-coordinate young baseline helps localization within that specified synthetic
+design but does not establish a deployable baseline procedure. The pre-onset profiles retain
+unresolved optimizer statuses. The canonical-unit profile uses one noise realization, so its
+point-estimate error is not an estimate of bias. The likelihood threshold has not been
+coverage-calibrated here, and the profile endpoints must not be interpreted as a validated
+confidence interval. Strong joint collinearity remains a local diagnostic; numerically
+singular subsets have a status rather than a reportable index magnitude. The retained
+[Fisher-map result](../data/sim/studyB/studyB_results.json) does not override these limits.
+
+**Study C: the life estimator fails the declared transfer test.** The estimator does not
+satisfy the joint requirements on held-out life-estimation error and improvement over the
+clock baseline. The verdict remains C-FAIL; per-unit errors, uncertainty summaries and the
+adversarial search are in the [Study C result](../data/sim/studyC/studyC_results.json).
+The [post-hoc failure analysis](../data/sim/studyC/studyC_failure_analysis.json) associates
+error more strongly with mismatch to the training cohort's rupture-life clock than with
+post-onset probe coverage. Muting the clock worsens aggregate performance while helping the
+worst unit. Coverage and clock mismatch are correlated by the fixed-cycle schedule, so this
+diagnostic cannot isolate their causal effects or show that denser probing would solve transfer.
+
+**Dispersion sensitivity: no tested setting clears the joint rule.** In the
+[dispersion audit](../data/sim/dispersion_audit/dispersion_audit.json), lower lifetime
+dispersion improves absolute life-estimation accuracy but also makes the clock baseline
+harder to beat. At the original stress-case dispersion, relative improvement over the clock
+is more common but absolute accuracy is insufficient. The failure persists across the
+tested settings for different reasons; this does not establish impossibility at untested
+settings or for other estimators. The audit also shows that units reach their assigned
+rupture at different degradation states, an imposed modeling choice rather than evidence
+of a shared physical failure threshold.
+
+These follow-ups restrict the interpretation of §§4.4–4.5 without replacing their archived
+pose-policy results. The proposed Study C2 has a preregistration and runner but no executed
+study result; no C2 outcome is included in this manuscript.
+
 ## 5. Discussion and limitations
 
 - **Simulation only.** Every result is synthetic. The pipeline and the modeling result (framed
   as a prediction) are the contributions; no experimental validation is claimed.
-- **One generative model.** All 20 actuators come from a single generator, so held-out
-  evaluation tests robustness to that generator's variation, not real device-to-device spread.
-  This is the first thing a reviewer should weigh and is stated in the abstract.
+- **Limited generator variation.** The original cohort shares one degradation law; the later
+  studies disperse selected parameters within the same model family. Neither tests real
+  device-to-device spread or independent failure mechanisms. The later C-FAIL result limits
+  the interpretation of the original within-generator policy advantage.
 - **Correlation is structurally favored, not demonstrated diagnostic robustness.**
   Both loop area and pose drift share the fatigue generator. Study 3's analytic
   health trajectory has no injected probe noise, quantization or decimation, and
@@ -363,7 +454,14 @@ unseen actuators, not the absolute accuracy.
   sensor-noise level, so the operational case for triggered recalibration strengthens with
   tighter pose requirements, softer actuators (larger per-stage drift), or higher noise.
 - **Modeling choices.** The fatigue law, PCC single-segment kinematics, and lumped network are
-  transparent assumptions chosen for analytic checkability, not calibrated fits.
+  transparent assumptions chosen for analytic checkability, not calibrated fits. The
+  [parameter register](PARAMETER_PROVENANCE.md) distinguishes imposed criteria, selected
+  model values and literature-anchored assumptions from measured inputs. Simulation
+  acceptance is internal consistency, not hardware validation.
+- **Hardware status.** The repository now contains a
+  [known-volume reference-chamber CAD design](../cad/reference-volume/DESIGN_NOTES.md).
+  It is an instrumentation reference, not a soft-actuator specimen or a completed physical
+  validation campaign. No specimen measurement supports the manuscript's results.
 
 ![Cross-talk vs shared-supply softness](../data/sim/phaseD/study4_fig_crosstalk_sensitivity.png)
 
@@ -379,22 +477,36 @@ with fewer counted calibration events (including initialization) than always-on
 adaptation, on held-out identities from the same generator —
 where a sensing-free cycle-count schedule tuned by the same rule does not.
 The shared-manifold cross-talk, while real, is second-order for pose at the tested parameters — a
-retained negative result. The natural next step is a physical bench campaign to anchor the
-synthetic story (single-actuator micro-tear spot-check, then the N≈10 fatigue campaign of the
-companion proposal).
+retained negative result. The subsequent dispersed-cohort studies do not establish transferable
+life estimation, and the corrected profile analysis supports no post-onset precision claim.
+The defensible contribution is thus a reproducible synthetic policy comparison with explicit
+negative results and limits, rather than a validated life sensor. Physical measurements of a
+defined specimen and health-probe acquisition chain remain necessary before deployment claims.
 
 ## 7. Reproducibility
 All code, the dataset generator, and the analysis scripts are in the public repository
-(`https://github.com/500ft/P-V-Fatigue-Manifold-Proprioception`); the version described here is
-pinned by the annotated tag `preprint-v1.3` for unchanged numerical results.
-This correction candidate is uncommitted review text, not part of that tag. The dataset is
+([500ft/soft-actuator-recalibration](https://github.com/500ft/soft-actuator-recalibration));
+the archived numerical results in §§4.1–4.5 are pinned by the annotated tag `preprint-v1.3`.
+This version-controlled correction candidate and the later results in §4.6 are not part of
+that tag. The candidate source hash for review is recorded in
+[publication-readiness.json](publication-readiness.json); author approval remains pending.
+The dataset is
 regenerable from a fixed seed (`python -m scripts.phaseD_dataset`; integrity pinned by the
 manifest SHA-256); the studies are `python -m scripts.run_study2` (correctors), `python -m scripts.run_study3`
 (health indicator + recalibration), and `python -m scripts.run_study4` (cross-talk
 parameter-sensitivity envelope). Frozen result JSON and
 figures are committed under `data/sim/phaseD/`; the pre-specified claim and target figures are
 in `docs/result_spine.md` (commit `d856455`, before result write-up). The full unit-test suite
-and manuscript-number check gate the pipeline in CI.
+and manuscript-number check gate the pipeline in CI. The checker compares selected original
+manuscript numbers with committed outputs; it does not certify every scientific interpretation.
+
+The later canonical result files are linked at each claim in §4.6. Their generators are
+`scripts/run_studyA.py`, `scripts/run_studyB.py`, `scripts/run_studyB_structural.py`,
+`scripts/run_studyC.py`, `scripts/analyze_studyC_failure.py` and
+`scripts/run_dispersion_audit.py`. The [Study B correction record](../evidence/studyB-structural-correction-2026-09-25/README.md)
+identifies the superseded analysis and the numerical repairs. These committed artifacts,
+rather than a fresh regeneration, supply this review candidate. Author review, a separately
+versioned reviewed PDF and a deposit decision remain required before publication.
 
 ## References
 

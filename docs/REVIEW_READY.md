@@ -1,4 +1,18 @@
-# P-V-Fatigue-Manifold-Proprioception — partial handoff, local software ready for review
+# Manuscript review handoff
+
+## Current candidate — 2026-09-29
+
+Review [the refreshed v1.4 manuscript](preprint_v1_4_candidate.md), especially the abstract,
+§3.10, §4.6 and conclusion. It incorporates the completed observability studies, the corrected
+Study B interpretation and the dispersion audit, alongside the retained original pose-policy
+results. New numerical details link to their canonical result files. No new study was run.
+
+Use the [author packet](AUTHOR_REVIEW_DAY3.md) and return the
+[review fields](COMPLETION_RECONCILIATION.md#owner-response--not-submitted).
+The [readiness record](publication-readiness.json) identifies the current source; approval,
+the reviewed release PDF and posting remain pending. Earlier preview PDFs predate this text.
+
+The entries below are historical work records, not the current candidate's approval status.
 
 ## Day-3 preparation — 2026-09-09
 
