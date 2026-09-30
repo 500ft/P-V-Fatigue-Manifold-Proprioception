@@ -35,9 +35,13 @@ does not replace the authoritative protocol or task ledger.
 
 ## Visual provenance
 
-The README lead image, [`media/hero.jpg`](media/hero.jpg), is an AI-generated
-illustration of a pneumatic actuator and a stylized P-V loop. It is not a
-photograph of project hardware or a plot of study data.
+The README leads with the committed
+[Study 3 recalibration plot](../data/sim/phaseD/study3_fig4_recal_tradeoff.png).
+This is an owner-requested trial of an evidence-first README for this repository;
+it shows the policy comparison that motivates the project. Its generator,
+inputs, numeric source and limits are recorded in the
+[figure guide](data-and-figures.md#study-3-recalibration-policy) and
+[manifest](figure-manifest.json). It is a synthetic result, not hardware data.
 
 [`media/project-overview.svg`](media/project-overview.svg) is an original,
 editable conceptual diagram created for the repository presentation. It contains
@@ -45,9 +49,9 @@ no measured values, synthetic plots or purported hardware photographs.
 Sources for its relationships: [Study results](results.md) and [figure provenance](data-and-figures.md).
 
 Each stage carries an explicit text label. Meaning does not depend on red/green
-color differences. The diagram has an SVG title and description; its caption and
-the adjacent README text state the evidence limits. Existing analytical figures
-retain their original files, generators and provenance contracts.
+color differences. The diagram has an SVG title and description. The README's
+Study 3 caption states the evidence limits. Existing analytical figures retain
+their original files, generators and provenance contracts.
 
 ## Keeping navigation reproducible
 

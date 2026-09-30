@@ -3,6 +3,11 @@
 **When should a soft robot recalibrate? A reproducible simulation study of
 pressure–volume probes and pressure-only pose estimation.**
 
+A pressure-to-pose model can drift as a simulated pneumatic actuator ages. This
+repository compares recalibration policies on held-out synthetic actuators and
+shows the cost in calibration events versus pose error. It contains no physical
+actuator measurements.
+
 > **Publication hold:** archived v1.3 contains a methods overstatement. Read the
 > [correction notice](docs/corrections/v1.3-methods-2026-09-05.md) and
 > [corrected manuscript candidate](docs/preprint_v1_4_candidate.md) together.
@@ -13,14 +18,16 @@ pressure–volume probes and pressure-only pose estimation.**
 [![Evidence: simulation only](https://img.shields.io/badge/evidence-simulation_only-475569)](docs/results.md)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](.github/workflows/ci.yml)
 
-[Start here](docs/START_HERE.md) · [Evidence](#evidence-snapshot) ·
-[Quick start](#quick-start) · [Documentation](#documentation) ·
+[Read the results](docs/results.md) · [Reproduce the checks](#quick-start) ·
 [Author review](docs/AUTHOR_REVIEW_DAY3.md)
 
-![Illustration of a bending pneumatic actuator and pressure-volume hysteresis](docs/media/hero.jpg)
+![Study 3 simulation plot comparing fixed, scheduled, triggered, and always-on recalibration by event count and pose RMSE on held-out actuators](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*AI-generated concept illustration, not hardware or an experimental result. The
-Study 3 health probe is analytic and separate from the noisy pose-observation channel.*
+*The central result: a committed Study 3 simulation plot, not a hardware test.
+Event counts include initial calibration; the plotted error is an average, not
+a continuous guarantee. Probe overhead and downtime were not measured. See the
+[results and limits](docs/results.md#study-3-recalibration-policy) and
+[figure provenance](docs/data-and-figures.md#study-3-recalibration-policy).*
 
 ## About
 
@@ -50,16 +57,10 @@ These are committed **simulation outputs**, not device measurements. The
 
 | Finding | Evidence and interpretation |
 | --- | --- |
-| Synthetic evaluation cohort | 2,000 traces; split by actuator identity. [Dataset manifest](data/sim/phaseD/manifest.json) |
-| P-V association with pose drift | Pooled `r = 0.885`; actuator-cluster interval `[0.853, 0.950]`, with only six held-out identities. [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
-| Calibration-event trade-off | Two events versus five for always-on, including initialization; meets the train-derived macro-averaged stage-RMSE budget. Not a continuous accuracy guarantee. [Study 3](data/sim/phaseD/study3_results.json) |
-| Temporal lead | The deployed `tau = 0.05` has no positive lead; lower thresholds trade more events for earlier triggering. [Interpretation](docs/results.md#study-3-recalibration-policy) |
-
-![Recalibration-event count versus pose error on held-out synthetic actuators](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-
-*Committed Study 3 simulation plot. Event counts include initial calibration;
-probe overhead and recalibration downtime were not measured. See the
-[generator and inputs](docs/data-and-figures.md#study-3-recalibration-policy).*
+| Synthetic evaluation cohort | Split by actuator identity. [Dataset manifest](data/sim/phaseD/manifest.json) |
+| P-V association with pose drift | Strong in the synthetic cohort, with a wide cluster interval from few held-out identities. [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
+| Calibration-event trade-off | The triggered policy reduces events relative to always-on while meeting the study's stage-averaged error budget. This is not a continuous accuracy guarantee. [Study 3 results](data/sim/phaseD/study3_results.json) |
+| Temporal lead | The deployed trigger has no positive lead; earlier triggering costs more events. [Interpretation](docs/results.md#study-3-recalibration-policy) |
 
 ## Quick start
 
