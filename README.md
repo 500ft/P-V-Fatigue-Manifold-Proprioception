@@ -1,73 +1,56 @@
 # Soft Actuator Recalibration
 
-**When should a soft robot recalibrate?** This simulation study tests whether
-pressure-volume probes can help answer that question while pose estimates use
-pressure alone.
+**When should a soft robot recalibrate?** A soft pneumatic actuator can
+estimate its pose from pressure alone, but that estimate drifts as the silicone
+fatigues. In simulation, recalibrating when a pressure–volume (P-V) probe says
+so meets the error budget with 2 recalibrations per actuator instead of 5. The
+catch is timing: the probe fires after the error has already passed the budget.
+Everything here is simulation; no physical actuator has been measured.
 
-As a simulated pneumatic actuator ages, its pressure-to-pose calibration can
-drift. The study compares ways to decide when to recalibrate and shows how each
-choice affects pose error and the number of recalibrations. There are no
-physical actuator measurements in this repository.
-
-> **Publication hold:** The archived v1.3 manuscript overstates part of the
-> method. Read the [correction notice](docs/corrections/v1.3-methods-2026-09-05.md)
-> alongside the [revised manuscript](docs/preprint_v1_4_candidate.md). The
-> revision still needs author review. There is no corrected PDF yet, and the
-> revision has no arXiv ID or DOI. A technical check of the old PDF does not
-> mean the revision is ready to publish.
+> **Publication hold.** The archived v1.3 manuscript overstated the method (see
+> the [correction](docs/corrections/v1.3-methods-2026-09-05.md)). The corrected
+> [v1.4 manuscript](docs/preprint_v1_4_candidate.md) is waiting for author
+> review and has no PDF, arXiv ID or DOI yet.
 
 [![CI](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml)
 [![Evidence: simulation only](https://img.shields.io/badge/evidence-simulation_only-475569)](docs/results.md)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](.github/workflows/ci.yml)
 
-[Read the results](docs/results.md) · [Reproduce the checks](#quick-start) ·
-[Author review](docs/AUTHOR_REVIEW_DAY3.md)
+[Results](#results) · [Roadmap](ROADMAP.md) · [Quick start](#quick-start) ·
+[Review packet](docs/REVIEW_READY.md)
 
 ![Simulation results comparing four recalibration policies by pose error and number of recalibrations](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*This plot comes from Study 3's simulation of actuators held out from training.
-The counts include the first calibration. The error is averaged across study
-stages, so the plot does not show the worst error at every moment. The study did
-not measure probe time or downtime. See the [full results](docs/results.md#study-3-recalibration-policy)
-and [how the plot was made](docs/data-and-figures.md#study-3-recalibration-policy).*
+*Study 3: four recalibration policies on six held-out simulated actuators.
+[How the plot was made](docs/data-and-figures.md#study-3-recalibration-policy).*
 
 ## About
 
-A soft pneumatic actuator's response can change as its material wears. More
-frequent recalibration means more calibration events, but waiting too long can
-increase pose error. This
-project tests whether an occasional pressure-volume (P-V) probe can help choose
-when to recalibrate. Normal pose estimates still use pressure alone.
+Recalibrating often keeps pose error low but costs calibration events; waiting
+too long lets the error grow. The study simulates 20 actuators through five
+life stages (2,000 traces), splits them by actuator for training and testing,
+and compares four policies: never recalibrate, recalibrate on a cycle-count
+schedule, recalibrate when the P-V probe crosses a threshold, and recalibrate
+at every stage.
 
-The repository contains the simulator, fatigue and sensing models, pose
-estimators, scripts to run the studies, and the resulting data and figures. The
-main result is the **comparison of recalibration policies**, along with a clear
-account of what the simulation cannot tell us.
+The repository holds the pneumatic simulator, the fatigue and sensing models,
+the pose estimators, the study scripts, and the results and figures they
+produced.
 
-| Question | What the study found |
-| --- | --- |
-| Can a condition-based trigger reduce recalibrations without too much pose error? | The comparison uses synthetic actuators from one degradation model. [Study 3 results](docs/results.md#study-3-recalibration-policy) |
-| Is a shared air supply the main source of pose error? | Its effect was smaller within the tested simulation, but grew as the simulated supply became softer. [Results](docs/results.md#study-4-shared-manifold-sensitivity) |
-| Does the trigger warn us before pose error crosses the limit? | The tested trigger at `tau = 0.05` did not provide advance warning. [Results](docs/results.md#study-3-recalibration-policy) |
-| Does this work on real actuators? | This repository has no physical tests. |
-| Can pressure alone reveal fatigue across different actuators? | Only under some conditions. The [observability studies](docs/specs/observability-program/program.md) document where the approach works and where it fails. |
+## Results
 
-## Evidence snapshot
-
-These are **simulation results**, not measurements from a physical device. The
-[results summary](docs/results.md) explains the limits of each finding.
-
-| Finding | Where to look |
-| --- | --- |
-| Test data | Actuators were separated by identity for training and evaluation. [Dataset manifest](data/sim/phaseD/manifest.json) |
-| P-V probes and pose drift | They move together in this simulation, but the uncertainty is wide because few actuator identities were held out. [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
-| Recalibration trade-off | The triggered policy recalibrates less often than the always-on policy while meeting the study's average error limit. [Study 3 results](data/sim/phaseD/study3_results.json) |
-| Advance warning | The tested trigger gives no advance warning. Triggering earlier means more recalibrations. [Explanation](docs/results.md#study-3-recalibration-policy) |
+| Question | Answer | Source |
+| --- | --- | --- |
+| Can the P-V trigger cut recalibrations and still meet the error budget? | Yes. 2 recalibrations per actuator against 5 for always-on, at 0.058 mm mean pose error against a 0.159 mm budget. A cycle-count schedule tuned the same way misses the budget (0.21 mm). | [Study 3](data/sim/phaseD/study3_results.json) |
+| Does the trigger warn before the error passes the budget? | No. At the chosen threshold (τ = 0.05) it fires at 0.83 of life; the budget is passed at a median 0.71. That is a lead of −0.123 of life, late on all 6 held-out actuators. A lower threshold (τ = 0.01) fires early, median +0.346, at 3 recalibrations. | [Results](docs/results.md#study-3-recalibration-policy) |
+| Does the P-V loop track the drift? | r = 0.885, with a 95% interval of 0.853–0.950 by actuator (0.576–0.973 leaving one actuator out). The probe shares the simulated fatigue state with the drift it predicts, which inflates this. | [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
+| What causes most of the pose error? | Fatigue drift in compliance. With a calibration made when the actuator was new, curvature error grows about a hundredfold over its life. Cross-talk through the shared air supply is second-order; a dynamic corrector for it improves error by about 0%. | [Results](docs/results.md#study-4-shared-manifold-sensitivity) |
+| Can pressure alone reveal fatigue across different actuators? | Not reliably. Study A passes only under an amended rule, Study B's post-onset precision is not established (its two resolution figures were withdrawn), and Study C's life estimator fails its transfer test. | [Observability studies](docs/specs/observability-program/program.md) |
 
 ## Quick start
 
-CI uses Python 3.11. These commands run the tests and check the saved study and
-manuscript files. They do not rerun the studies or change the saved results.
+Python 3.11, the CI version. These commands run the tests and check the saved
+results and manuscripts; they don't rerun the studies.
 
 ```bash
 git clone https://github.com/500ft/soft-actuator-recalibration.git
@@ -81,71 +64,66 @@ python -m scripts.check_pdf_arxiv
 python -m scripts.check_publication_fallback
 ```
 
-The number check covers both the old and revised Markdown manuscripts. The PDF
-check applies **only to the old v1.3 PDF**. A passing archive check means the old
-files are intact; it does not mean the revised manuscript is ready to publish.
-Until the author approves the correction,
-`python -m scripts.check_publication_fallback --for-publication` reports
-**BLOCKED** and exits with code **2**.
+The number check covers the v1.3 and v1.4 manuscripts. The PDF check covers the
+archived v1.3 PDF only. The last command checks the archive; run it with
+`--for-publication` and it exits with code 2 (BLOCKED) until the author
+approves the correction.
 
-For instructions on rerunning the studies and a local pytest workaround, see the
-[reviewer guide](docs/START_HERE.md#reviewer-reproduce-the-checks). Study scripts
-write under `data/`, so run them in a separate checkout after recording the
-source revision. Rerunning a study does not clear the publication hold.
+To rerun the studies, see the
+[reviewer guide](docs/START_HERE.md#reviewer-reproduce-the-checks). The study
+scripts write under `data/`, so use a separate checkout.
+
+## What's next
+
+Author review of the v1.4 manuscript, then a separately versioned PDF,
+approval, and a Zenodo DOI. The [roadmap](ROADMAP.md) has the steps.
+
+## Limits
+
+- All 20 actuators come from one simulated fatigue model. Held-out actuators
+  test robustness to that model, not to real device-to-device variation, and no
+  physical actuator was tested.
+- Study 3's probe is idealized: noise-free, with no rest period, and generated
+  by the same fatigue model as the drift it predicts. Probe noise and varying
+  rest periods are untested.
+- Five life stages can't show how the trigger behaves between them.
+- The error budget is an average over life stages, not a worst case. Probe time
+  and recalibration downtime were not measured.
+- Absolute errors stay under a millimetre throughout, so triggered
+  recalibration matters most where accuracy requirements are tight.
 
 ## Documentation
 
-| Read | For |
+| Document | What it covers |
 | --- | --- |
-| [Reading guide](docs/START_HERE.md) | Short paths for new readers, reviewers, and contributors |
-| [Results and limitations](docs/results.md) | Findings and the limits of the simulation |
-| [Data and figures](docs/data-and-figures.md) · [Figure manifest](docs/figure-manifest.json) | Inputs and scripts behind the figures |
-| [Author review](docs/AUTHOR_REVIEW_DAY3.md) | Decisions needed before publication |
-| [Correction](docs/corrections/v1.3-methods-2026-09-05.md) · [Revised manuscript](docs/preprint_v1_4_candidate.md) | The correction and the version awaiting review |
-| [Proposed follow-up tests](docs/specs/robosoft-v2/claim-spine.md) | Stronger tests that have not been completed |
-| [Observability studies](docs/specs/observability-program/program.md) · [novelty check](docs/reviews/novelty-check-2026-09-16.md) | Results on estimating fatigue from pressure across different actuators |
-| [Literature review](docs/A01_A04_Literature_Review.md) | Related research |
-| [Literature folder](literature/README.md) · [claim ledger](literature/claim-ledger.md) · [gaps](literature/gaps.md) | Sources for and against the study's claims |
-| [Review index](docs/REVIEW_READY.md) | Checks, source records, and open decisions |
+| [Reading guide](docs/START_HERE.md) | Short paths for readers, reviewers and contributors |
+| [Results and limits](docs/results.md) | Every study's findings in full |
+| [Data and figures](docs/data-and-figures.md) · [manifest](docs/figure-manifest.json) | Inputs and scripts behind each figure |
+| [Review packet](docs/REVIEW_READY.md) · [correction](docs/corrections/v1.3-methods-2026-09-05.md) | What the author has to review, and why |
+| [Observability studies](docs/specs/observability-program/program.md) | Estimating fatigue from pressure across actuators |
+| [Literature](literature/README.md) · [claim ledger](literature/claim-ledger.md) | Sources for and against each claim |
 
 ```text
-sim/        pneumatic, fatigue, sensing, and kinematic models
-pipeline/   feature extraction, health signals, and estimators
-scripts/    study runners, plot generation, and artifact checks
-tests/      model, policy, figure, and publication regression tests
-data/       committed synthetic artifacts; large dataset regenerated separately
-docs/       methods, results, manuscripts, and review records
-evidence/   recorded checks and reproducible counterexamples
+sim/        pneumatic, fatigue, sensing and kinematic models
+pipeline/   feature extraction, health signals and estimators
+scripts/    study runners, plot generation and checks
+tests/      model, policy, figure and publication tests
+data/       committed synthetic results; the large dataset is regenerated
+docs/       methods, results, manuscripts and review records
+evidence/   recorded checks
 ```
 
-## What remains
+## Contributing, citation and license
 
-The author must review the corrected manuscript before a new PDF can be prepared
-for publication. The archived v1.3 version will stay as it is. The
-[review packet](docs/AUTHOR_REVIEW_DAY3.md) recommends keeping the uncertainty
-across actuators and the original `tau = 0.05` result. Any new trigger rule needs
-a fresh test on data that did not influence its design.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or results. When
+reporting a problem, include the command, the source revision, and what you
+expected and saw.
 
-The relationship between the P-V probe and pose error may look stronger because
-both depend on the same simulated fatigue state. Study 3 uses an idealized probe
-without a rest period. It does not test probe noise or changing rest periods.
-Measurements at a few life stages cannot show how well the trigger warns at
-every moment. Results on held-out simulated actuators do not show that the
-method transfers to different physical materials or mechanisms.
+[CITATION.cff](CITATION.cff) still describes the v1.3 manuscript. If you cite
+it, name the version and mention the [correction](docs/corrections/v1.3-methods-2026-09-05.md).
+The repository was renamed; the paper title was not
+([identity note](docs/REPOSITORY_IDENTITY.md)).
 
-## Contributing, citation, and license
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or generated
-results. When reporting a problem, include the command, source revision, and
-expected and actual behavior. Describe proposed tests as proposals until they
-have been run.
-
-[CITATION.cff](CITATION.cff) refers to the **old v1.3 manuscript**. When citing
-it, name the version and include the [correction](docs/corrections/v1.3-methods-2026-09-05.md)
-if you discuss its findings. The repository's new name is not a new paper title.
-See [repository identity](docs/REPOSITORY_IDENTITY.md).
-
-Code is licensed under [MIT](LICENSE). Manuscript text, documentation, and
-figures are licensed under [CC BY 4.0](LICENSE-docs). See
-[submission notes](docs/SUBMISSION.md) and [Zenodo notes](docs/ZENODO_FALLBACK.md)
-for publication steps. The publication hold still applies.
+Code is [MIT](LICENSE). Manuscript text, documentation and figures are
+[CC BY 4.0](LICENSE-docs). Publication steps are in
+[submission notes](docs/SUBMISSION.md) and [Zenodo notes](docs/ZENODO_FALLBACK.md).
