@@ -303,13 +303,13 @@ held-out actuator that dominates the deployed threshold's worst negative lead. A
 sensitive frontier point, τ=0.005 fires at every life stage and is identical to always-on
 (5 recalibrations, 0.019 mm). Third, the
 deployed τ\*=0.05 point fires late because the normalized signal's full dynamic range is only
-6.5% over life, so τ\* consumes about 77% of the available range. Thus the observable loop area
+6.5% over life, so τ\* consumes about 77% of the available range. Thus the idealized loop area
 is a strong health correlate and useful recalibration trigger, but positive temporal lead is
 configuration-dependent and is not a title-level claim.
 
 ![P-V loop area tracks pose degradation](../data/sim/phaseD/study3_fig3_leading_indicator.png)
 
-*Figure 3. Observable P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; r = 0.885, 95% CI [0.853, 0.950] (actuator-cluster bootstrap). The deployed threshold does not provide positive temporal lead, but lower thresholds define a lead-vs-recalibration frontier.*
+*Figure 3. Idealized P-V loop-area growth (left axis) tracks fixed-calibration pose error (right axis) over life on held-out actuators; r = 0.885, 95% CI [0.853, 0.950] (actuator-cluster bootstrap). The deployed threshold does not provide positive temporal lead, but lower thresholds define a lead-vs-recalibration frontier.*
 
 ![Cluster-aware intervals for the health-indicator claim](../data/sim/phaseD/study3_fig3b_correlation_cluster_ci.png)
 
@@ -441,7 +441,8 @@ study result; no C2 outcome is included in this manuscript.
   characterized regime rather than a single-point assertion, we swept the network parameters that
   set the coupling magnitude and measured the neighbor/driven response ratio at the actuation band
   (`probe_coupling`, `scripts/run_study4.py`). The coupling rises monotonically with supply
-  softness: at the default parameters it is **6.3%**, and it crosses the **10%** "starts to matter"
+  softness: at the default parameters it is **6.3%** (a response ratio, not the ≈4% curvature
+  share quoted in §4.2), and it crosses the **10%** "starts to matter"
   line only when the supply resistance R_s is **≈1.7×** softer and the **20%** line at **≈4.3×**
   softer. The manifold compliance C_m is a far weaker knob — a larger buffer reduces coupling, and
   across a 128× span (×0.25 to ×32) it stays in the **5.8–6.3%** band and never reaches 10%. So

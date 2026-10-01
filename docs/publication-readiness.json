@@ -7,14 +7,14 @@
   "correction_notice": "docs/corrections/v1.3-methods-2026-09-05.md",
   "correction_notice_sha256": "76e7faadc77b4decff5b3f7becba6412298c2f3ad1f92a291057fef053e91b79",
   "candidate_manuscript": "docs/preprint_v1_4_candidate.md",
-  "candidate_manuscript_sha256": "a9b1111d401c2dc4254744712c5daaf0824f4ec1e0436624b88d58a9c6d6f75e",
+  "candidate_manuscript_sha256": "fd6204bc71c5816f5712208e25d861fd64a4394276a0e38d29c6357952314cd4",
   "corrected_pdf": null,
   "author_approval": null,
   "reserved_doi": null,
   "published_identifier": null,
   "blockers": [
-    "Reconcile separate uncommitted owner drafts.",
     "Render and review a separately versioned corrected PDF and matching metadata.",
-    "Owner decides posting; historical v1.3 checker cannot authorize any release."
+    "Approve that PDF by its hash (artifact-bound author approval).",
+    "Deposit: new Zenodo record after PDF approval (owner account action); arXiv only if an endorser is found."
   ]
 }

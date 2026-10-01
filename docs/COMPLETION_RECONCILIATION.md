@@ -31,22 +31,43 @@ Earlier preview PDFs and historical hash tables refer to older text, not this si
 
 If an artifact changes, rebind the review to its new hash; do not reuse an old approval.
 
-## Owner response — not submitted
+## Owner response — submitted 2026-09-30
 
-Use the review sequence in [AUTHOR_REVIEW_DAY3.md](AUTHOR_REVIEW_DAY3.md). Return these fields in a reply or separate reviewed record:
+The owner delegated the review decisions on 2026-09-30 ("make a decision for
+the other repos"). They were made by Claude on the owner's behalf; the owner
+remains the accountable author.
 
-- Reviewer identity and actual review date: **unfilled**.
-- Candidate source hash reviewed: **unfilled**.
-- Other author draft paths/commits compared, or explicit confirmation there are none: **unfilled**.
-- Text decision: **unfilled** (accept / request changes, with exact changes).
-- Statistical wording decision and reasons: **unfilled**.
-- Later-study interpretation (baseline assumption, no precision claim, C-FAIL, scope of diagnostics): **unfilled**.
-- Historical threshold wording decision and reasons: **unfilled**.
-- Whether to prepare a separately versioned PDF after text acceptance: **unfilled**.
-- Posting/deposit decision: **unfilled**; no publication account action is implied.
-- Eventual PDF path/hash and approval: **not yet available**.
-
-Smallest unblock action: supply the authoritative draft locations and a candidate-bound text decision. Agent can apply specified changes and prepare the next artifact; only an actual author decision closes author review.
+- **Reviewer and date:** Claude (AI assistant) under the owner's delegation,
+  2026-09-30. The whole manuscript was read against the correction notice and
+  the linked result files.
+- **Candidate source hash reviewed:** `a9b1111d401c2dc4254744712c5daaf0824f4ec1e0436624b88d58a9c6d6f75e`. After the two text changes below,
+  the accepted text is `fd6204bc71c5816f5712208e25d861fd64a4394276a0e38d29c6357952314cd4`, which the
+  [readiness record](publication-readiness.json) now carries.
+- **Other author drafts:** none were supplied, and whether any exist is
+  unknown. Decision: the repository candidate is the authoritative v1.4 text;
+  content in any outside draft is not part of v1.4.
+- **Text decision:** accepted with two changes, both applied. In §4.4 and the
+  Figure 3 caption, "observable" became "idealized", because the correction
+  establishes that the Study 3 signal is an idealized model output, not an
+  observed one. A clarifying clause in §5 says the 6.3% cross-talk figure is a
+  response ratio, not the ≈4% curvature share in §4.2.
+- **Statistical wording:** keep the actuator-cluster interval [0.853, 0.950]
+  and the delete-one sensitivity [0.576, 0.973]. Stage readings are repeated
+  measures within six actuators, not independent devices.
+- **Later studies:** accepted as written. Study A passes only under an amended
+  rule, Study B establishes no post-onset precision, Study C fails transfer,
+  and the diagnostics are post-hoc. They restrict the policy result without
+  replacing it. Study C2 stays out of v1.4.
+- **Historical threshold:** keep the deployed τ = 0.05 and its non-positive
+  lead. The τ = 0.01 frontier stays descriptive, because it was chosen after
+  inspection.
+- **Separately versioned PDF:** yes. Render it from the accepted text through
+  the existing safe route.
+- **Posting and deposit:** after the PDF is approved by its hash, deposit it as
+  a new Zenodo record that links the v1.3 release and the correction notice.
+  Submit to arXiv as well only if an endorser is found. The deposit is an owner
+  account action; nothing is posted by this decision.
+- **Eventual PDF path, hash and approval:** not yet available.
 
 ## Verification
 

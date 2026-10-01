@@ -9,8 +9,9 @@ Everything here is simulation; no physical actuator has been measured.
 
 > **Publication hold.** The archived v1.3 manuscript overstated the method (see
 > the [correction](docs/corrections/v1.3-methods-2026-09-05.md)). The corrected
-> [v1.4 manuscript](docs/preprint_v1_4_candidate.md) is waiting for author
-> review and has no PDF, arXiv ID or DOI yet.
+> [v1.4 manuscript](docs/preprint_v1_4_candidate.md) passed author review on
+> 2026-09-30 with two small text changes. Its reviewed PDF, approval and DOI
+> are still to come.
 
 [![CI](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml)
 [![Evidence: simulation only](https://img.shields.io/badge/evidence-simulation_only-475569)](docs/results.md)
@@ -75,8 +76,9 @@ scripts write under `data/`, so use a separate checkout.
 
 ## What's next
 
-Author review of the v1.4 manuscript, then a separately versioned PDF,
-approval, and a Zenodo DOI. The [roadmap](ROADMAP.md) has the steps.
+Author review is done (text accepted with two changes). Next: render the
+reviewed PDF as its own versioned file, approve it by its hash, and deposit it
+on Zenodo. The [roadmap](ROADMAP.md) has the steps.
 
 ## Limits
 
