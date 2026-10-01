@@ -67,7 +67,9 @@ remains the accountable author.
   a new Zenodo record that links the v1.3 release and the correction notice.
   Submit to arXiv as well only if an endorser is found. The deposit is an owner
   account action; nothing is posted by this decision.
-- **Eventual PDF path, hash and approval:** not yet available.
+- **PDF supplied after this decision:** [v1.4 review PDF](preprint_v1_4_review.pdf).
+  Its SHA-256 is `output_sha256` in the [render manifest](preprint_v1_4_review.manifest.json).
+  Owner PDF approval remains pending.
 
 ## Verification
 

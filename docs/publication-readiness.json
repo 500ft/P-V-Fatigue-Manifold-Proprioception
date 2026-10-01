@@ -8,12 +8,12 @@
   "correction_notice_sha256": "76e7faadc77b4decff5b3f7becba6412298c2f3ad1f92a291057fef053e91b79",
   "candidate_manuscript": "docs/preprint_v1_4_candidate.md",
   "candidate_manuscript_sha256": "fd6204bc71c5816f5712208e25d861fd64a4394276a0e38d29c6357952314cd4",
-  "corrected_pdf": null,
+  "corrected_pdf": "docs/preprint_v1_4_review.pdf",
+  "corrected_pdf_manifest": "docs/preprint_v1_4_review.manifest.json",
   "author_approval": null,
   "reserved_doi": null,
   "published_identifier": null,
   "blockers": [
-    "Render and review a separately versioned corrected PDF and matching metadata.",
     "Approve that PDF by its hash (artifact-bound author approval).",
     "Deposit: new Zenodo record after PDF approval (owner account action); arXiv only if an endorser is found."
   ]

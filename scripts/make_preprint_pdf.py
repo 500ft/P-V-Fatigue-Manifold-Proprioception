@@ -287,7 +287,8 @@ def build(source=None, output=None, manifest=None):
 
     SimpleDocTemplate(OUT, pagesize=LETTER, leftMargin=0.9*inch, rightMargin=0.9*inch,
                       topMargin=0.9*inch, bottomMargin=0.9*inch,
-                      title="P-V Loop Shape as a Fatigue Health Indicator (preprint draft)"
+                      title=next((line[2:].strip() for line in lines if line.startswith("# ")),
+                                 "Preprint draft")
                       ).build(story, canvasmaker=_EmbeddedFontCanvas)
     def _verify_protected(stage):
         if _sha256(HISTORICAL_PDF) != pinned:

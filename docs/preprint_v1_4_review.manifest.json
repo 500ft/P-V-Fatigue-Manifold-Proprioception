@@ -1,0 +1,59 @@
+{
+  "schema_version": 3,
+  "rendered_utc": "2026-10-01T03:28:22Z",
+  "source": "docs/preprint_v1_4_candidate.md",
+  "source_sha256": "fd6204bc71c5816f5712208e25d861fd64a4394276a0e38d29c6357952314cd4",
+  "output": "docs/preprint_v1_4_review.pdf",
+  "output_sha256": "51ca0f1598a3d8436e412c5c466aa047aa5a66892cd9c1ef6994c87a331eb1cd",
+  "manifest": "docs/preprint_v1_4_review.manifest.json",
+  "renderer": "scripts/make_preprint_pdf.py",
+  "versions": {
+    "python": "3.11.8",
+    "reportlab": "4.5.1",
+    "pypdf": "6.12.2",
+    "matplotlib_fonts": "3.11.2"
+  },
+  "figures": [
+    {
+      "path": "data/sim/phaseD/study2_fig2_static_vs_dynamic.png",
+      "sha256": "707cccf9d4b33abd0023bf636c87940bf65d4b144e7cca77d113d8c0318e602c"
+    },
+    {
+      "path": "data/sim/phaseD/study2_fig1_drift.png",
+      "sha256": "f461a8b8d63963388ed15b61b8286c17972e82b616996bf1d61d370004bc751b"
+    },
+    {
+      "path": "data/sim/phaseD/study3_fig3_leading_indicator.png",
+      "sha256": "e85b94121f48adfe476551f899a0e34c33365e109917b90f210076cb67a491ac"
+    },
+    {
+      "path": "data/sim/phaseD/study3_fig3b_correlation_cluster_ci.png",
+      "sha256": "7be4c893f5b39ecec09569a6dcef0450de5e33ae8c3eca4a8ce5d0144db86782"
+    },
+    {
+      "path": "data/sim/phaseD/study3_fig4_recal_tradeoff.png",
+      "sha256": "2f7cc01b30777f0fd9dfd1e49ec0132d23c41ae39ba4c2886b257a9f57b3a7fb"
+    },
+    {
+      "path": "data/sim/phaseD/study3_fig4b_recal_cluster_ci.png",
+      "sha256": "ec827a6083f9c7dc50c0291f919434c96ea7ec92baa2b6d91d50c835abe3535e"
+    },
+    {
+      "path": "data/sim/phaseD/study4_fig_crosstalk_sensitivity.png",
+      "sha256": "845a0d0674a288b46c7a88bbec8358a201f01a46161f5d0353da37b42472be5a"
+    }
+  ],
+  "renderer_revision": {
+    "script_sha256": "89dc14afc9931ff24ad65970c432052c643dbb95b6daed7d533c15827de2eaeb",
+    "git_head": "daba7abf5435d9425af301de9fb29284cc7339d2",
+    "git_dirty": true
+  },
+  "protection": {
+    "basis": "git ls-files",
+    "files_verified_unchanged": 273
+  },
+  "historical_pdf_sha256_verified_unchanged": "6a6681fe1a77f7d972048dddc99a0a07b55e5d89dca1a83c11ba5b5cefd0777d",
+  "readiness_sha256_verified_unchanged": "605fd38522b9fa643de9241bac37bcfb75a38164708dbaff3cd6551b2be04123",
+  "author_approval": null,
+  "note": "A rendered PDF is not an approved PDF. Publication readiness is governed by docs/publication-readiness.json, which this render does not modify."
+}

@@ -23,8 +23,10 @@ DOI. The simulation work is complete; no new study is needed to finish.
   withdrawn. Study C's life estimator fails its transfer test.
 - The archived v1.3 manuscript overstated the method (the trigger read an
   idealized, noise-free probe). Publication has been on hold since 2026-09-05.
-- The v1.4 candidate was refreshed on 2026-09-29 with all of the above and is
-  ready for review.
+- The owner accepted the v1.4 text with two wording changes. The
+  [review PDF](docs/preprint_v1_4_review.pdf) now matches that accepted source.
+  Its [render manifest](docs/preprint_v1_4_review.manifest.json) records the
+  source and PDF hashes. PDF approval is pending.
 - arXiv requires an endorser for a first submission. None has been found, so
   Zenodo is the deposit route ([fallback plan](docs/ZENODO_FALLBACK.md)).
 
@@ -33,8 +35,8 @@ DOI. The simulation work is complete; no new study is needed to finish.
 | # | Step | Who | Done when |
 |---|---|---|---|
 | 1 | Review the v1.4 candidate and fill in the response fields | Owner | Done 2026-09-30: text accepted with two changes ([response](docs/COMPLETION_RECONCILIATION.md#owner-response--submitted-2026-09-30)) |
-| 2 | Apply the review edits and render the reviewed PDF as a separately versioned file | Agent | PDF, source and manifest hashes agree; readiness record updated. **Current step.** |
-| 3 | Approve that exact PDF, identified by its hash | Owner | Approval recorded in the readiness record |
+| 2 | Apply the review edits and render the reviewed PDF as a separately versioned file | Agent | Done: [PDF](docs/preprint_v1_4_review.pdf), source and [manifest](docs/preprint_v1_4_review.manifest.json) hashes agree; readiness record points to the render |
+| 3 | Review and approve that exact PDF, using `output_sha256` in the render manifest | Owner | Approval recorded in the readiness record. **Current step.** |
 | 4 | Deposit on Zenodo and tag the v1.4 release. Submit to arXiv as well only if an endorser is found | Owner deposits; agent prepares the metadata | DOI recorded |
 | 5 | Point the README, `CITATION.cff` and the portfolio at v1.4 | Agent | Merged |
 
