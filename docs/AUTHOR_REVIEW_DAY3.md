@@ -1,6 +1,6 @@
 # Author review packet — refreshed 2026-09-29
 
-Status: prepared, not author-approved. Review the [v1.4 correction candidate](preprint_v1_4_candidate.md).
+Status: review decisions recorded 2026-09-30 in the [review form](COMPLETION_RECONCILIATION.md#owner-response--submitted-2026-09-30); text accepted with two changes. The rendered PDF is not yet approved. Review the [v1.4 correction candidate](preprint_v1_4_candidate.md).
 Its abstract, §3.10, §4.6 and conclusion now incorporate the completed observability work;
 the earlier methods correction and original numerical results remain. This update ran no
 new study. The [readiness record](publication-readiness.json) holds the current source hash

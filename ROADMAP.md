@@ -32,8 +32,8 @@ DOI. The simulation work is complete; no new study is needed to finish.
 
 | # | Step | Who | Done when |
 |---|---|---|---|
-| 1 | Review the [v1.4 candidate](docs/preprint_v1_4_candidate.md), mainly the abstract, §3.10, §4.6 and the conclusion, and fill in the [response fields](docs/COMPLETION_RECONCILIATION.md#owner-response--not-submitted) | Owner | Response submitted. **Current step.** |
-| 2 | Apply the review edits and render the reviewed PDF as a separately versioned file | Agent | PDF, source and manifest hashes agree; readiness record updated |
+| 1 | Review the v1.4 candidate and fill in the response fields | Owner | Done 2026-09-30: text accepted with two changes ([response](docs/COMPLETION_RECONCILIATION.md#owner-response--submitted-2026-09-30)) |
+| 2 | Apply the review edits and render the reviewed PDF as a separately versioned file | Agent | PDF, source and manifest hashes agree; readiness record updated. **Current step.** |
 | 3 | Approve that exact PDF, identified by its hash | Owner | Approval recorded in the readiness record |
 | 4 | Deposit on Zenodo and tag the v1.4 release. Submit to arXiv as well only if an endorser is found | Owner deposits; agent prepares the metadata | DOI recorded |
 | 5 | Point the README, `CITATION.cff` and the portfolio at v1.4 | Agent | Merged |
