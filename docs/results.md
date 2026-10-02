@@ -24,7 +24,7 @@ static and dynamic correctors under shared and isolated supply topologies.
 | Dataset | 2,000 synthetic traces split by actuator identity |
 | P-V association | Pooled `r = 0.885`; actuator-cluster bootstrap `[0.853, 0.950]`, leave-one-actuator-out `[0.576, 0.973]`; point-level `[0.835, 0.958]` (superseded) |
 | P-V policy | 2 recalibrations per actuator versus 5 for always-on (identical on every held-out actuator, so the 60% saving has no sampling interval) |
-| Cycle-count baseline | Misses the train-derived macro-averaged stage-RMSE budget at its train-selected period |
+| Cycle-count baseline | Misses the train-derived macro-averaged stage-RMSE budget at its train-selected period (2,700 cycles, 1.5 recalibrations). At matched cost (every 2,400 cycles, 2 recalibrations) it gives the trigger's exact schedule and error; see the [withdrawal note](corrections/v1.4-withdrawn-2026-10-02.md) |
 | Deployed threshold lead | No positive temporal lead at `tau = 0.05` |
 
 Actuator-cluster resampling and leave-one-actuator-out sensitivity are already
@@ -33,7 +33,9 @@ reported in the committed outputs; point-level inference is superseded.
 Study 3's health signal is a separate analytic SLS probe with zero rest input,
 not the noisy Phase D volume channel. Noise, quantization and variable-rest
 robustness of that signal have not been demonstrated. Shared latent fatigue
-drives both endpoints, so correlation is structurally favored.
+drives both endpoints, so correlation is structurally favored. The 2026-10-02 audit found it is stronger than
+favored: normalized loop area equals the normalized compliance multiplier to
+within 2.3 × 10⁻¹⁴ and is the same curve for every actuator.
 
 The policy endpoint averages stage-level pose RMSE over five sampled life stages
 and then actuators. A pass is not a maximum-error or continuous accuracy guarantee.

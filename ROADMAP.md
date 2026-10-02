@@ -1,46 +1,36 @@
 # Roadmap
 
-This is the plan for finishing the project. The review packet is
-[docs/REVIEW_READY.md](docs/REVIEW_READY.md); publication status is recorded in
-[docs/publication-readiness.json](docs/publication-readiness.json); work history
-is in [docs/SPRINT_PROGRESS.md](docs/SPRINT_PROGRESS.md).
+Work history is in [docs/SPRINT_PROGRESS.md](docs/SPRINT_PROGRESS.md); the
+review record is [docs/REVIEW_READY.md](docs/REVIEW_READY.md).
 
 ## Finish line
 
-The project is finished when the corrected v1.4 manuscript has been reviewed by
-the author, rendered as its own versioned PDF, approved, and deposited with a
-DOI. The simulation work is complete; no new study is needed to finish.
+Reached on 2026-10-02. The owner chose to stop the paper and keep the code. The
+project ends as a reproducible simulation pipeline plus an audit of its own
+headline: at matched recalibration cost, a cycle-count clock ties the P-V
+trigger ([withdrawal note](docs/corrections/v1.4-withdrawn-2026-10-02.md)).
 
-## Where it stands (2026-09-30)
+## Where it stands (2026-10-02)
 
-- The recalibration-policy studies are done. The headline result: the
-  P-V-triggered policy meets the error budget with 2 recalibrations per
-  actuator against 5 for always-on, but gives no early warning at the deployed
-  threshold.
-- The observability follow-ups are done. Study A passes only under an amended
-  rule, which is a changed criterion rather than a better result. Study B's
-  post-onset precision is not established, and its two resolution figures were
-  withdrawn. Study C's life estimator fails its transfer test.
-- The archived v1.3 manuscript overstated the method (the trigger read an
-  idealized, noise-free probe). Publication has been on hold since 2026-09-05.
-- The v1.4 candidate was refreshed on 2026-09-29 with all of the above and is
-  ready for review.
-- arXiv requires an endorser for a first submission. None has been found, so
-  Zenodo is the deposit route ([fallback plan](docs/ZENODO_FALLBACK.md)).
+- The recalibration-policy studies and the observability follow-ups are done,
+  and their numbers are kept unchanged.
+- A clock every 2,400 cycles gives the P-V trigger's exact recalibration
+  schedule and error on all 20 actuators. The health signal is the simulator's
+  compliance multiplier read back out.
+- v1.4 is withdrawn: not rendered for release, not approved, not deposited.
+  The archived v1.3 release keeps its methods correction.
 
 ## What's left
 
 | # | Step | Who | Done when |
 |---|---|---|---|
-| 1 | Review the v1.4 candidate and fill in the response fields | Owner | Done 2026-09-30: text accepted with two changes ([response](docs/COMPLETION_RECONCILIATION.md#owner-response--submitted-2026-09-30)) |
-| 2 | Apply the review edits and render the reviewed PDF as a separately versioned file | Agent | PDF, source and manifest hashes agree; readiness record updated. **Current step.** |
-| 3 | Approve that exact PDF, identified by its hash | Owner | Approval recorded in the readiness record |
-| 4 | Deposit on Zenodo and tag the v1.4 release. Submit to arXiv as well only if an endorser is found | Owner deposits; agent prepares the metadata | DOI recorded |
-| 5 | Point the README, `CITATION.cff` and the portfolio at v1.4 | Agent | Merged |
+| 1 | Point the portfolio and resume at the audit result instead of the withdrawn claims | Agent | Merged |
 
 ## Not in this version
 
+- Any v1.4 release, Zenodo deposit or arXiv submission.
 - Study C2. It is designed and coded, but its grid has not been run.
-- Physical actuators. The known-volume reference chamber is the only CAD part,
-  kept for future hardware work; specimen and mould CAD stay deferred.
+- Physical actuators. A hardware study (a real chamber cycled to failure, with
+  rest time and temperature varied) is a separate decision about continuing
+  the research. The known-volume reference chamber CAD is kept for it.
 - The prospective v2 claim spine ([specs/robosoft-v2](docs/specs/robosoft-v2/claim-spine.md)).
