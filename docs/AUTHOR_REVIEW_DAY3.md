@@ -1,6 +1,6 @@
 # Author review packet — refreshed 2026-09-29
 
-Status: review decisions recorded 2026-09-30 in the [review form](COMPLETION_RECONCILIATION.md#owner-response--submitted-2026-09-30); text accepted with two changes. The rendered PDF is not yet approved. Review the [v1.4 correction candidate](preprint_v1_4_candidate.md).
+Status: withdrawn 2026-10-02. The 2026-09-30 text acceptance was withdrawn and v1.4 will not be released; see the [withdrawal note](corrections/v1.4-withdrawn-2026-10-02.md). The packet below is kept as a record.
 Its abstract, §3.10, §4.6 and conclusion now incorporate the completed observability work;
 the earlier methods correction and original numerical results remain. This update ran no
 new study. The [readiness record](publication-readiness.json) holds the current source hash

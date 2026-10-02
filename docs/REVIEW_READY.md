@@ -1,16 +1,15 @@
 # Manuscript review handoff
 
-## Current candidate — 2026-09-29
+## Status, 2026-10-02
 
-Review [the refreshed v1.4 manuscript](preprint_v1_4_candidate.md), especially the abstract,
-§3.10, §4.6 and conclusion. It incorporates the completed observability studies, the corrected
-Study B interpretation and the dispersion audit, alongside the retained original pose-policy
-results. New numerical details link to their canonical result files. No new study was run.
-
-Use the [author packet](AUTHOR_REVIEW_DAY3.md) and return the
-[review fields](COMPLETION_RECONCILIATION.md#owner-response--not-submitted).
-The [readiness record](publication-readiness.json) identifies the current source; approval,
-the reviewed release PDF and posting remain pending. Earlier preview PDFs predate this text.
+v1.4 is withdrawn and will not be released. At matched recalibration cost a
+cycle clock ties the P-V trigger exactly, and the health signal is the
+simulator's compliance multiplier read back out. Review the
+[withdrawal note](corrections/v1.4-withdrawn-2026-10-02.md) and the
+[audit output](../data/sim/phaseD/matched_clock_audit.json). The
+[v1.4 candidate](preprint_v1_4_candidate.md) and the
+[review form](COMPLETION_RECONCILIATION.md#acceptance-withdrawn-2026-10-02) are
+kept as records.
 
 The entries below are historical work records, not the current candidate's approval status.
 

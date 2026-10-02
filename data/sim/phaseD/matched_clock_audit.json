@@ -1,0 +1,47 @@
+{
+  "tau_star": 0.05,
+  "period_star_reported": 2700.0,
+  "budget_mm": 0.15927245632944456,
+  "clock_periods_matching_trigger_schedule_on_all_actuators": [
+    2400.0,
+    2500.0
+  ],
+  "heldout": {
+    "trigger": {
+      "error_mm": 0.057736511841020015,
+      "recalibrations": 2.0
+    },
+    "clock_2400": {
+      "error_mm": 0.057736511841020015,
+      "recalibrations": 2.0
+    },
+    "clock_2700": {
+      "error_mm": 0.20768526373482166,
+      "recalibrations": 1.5
+    }
+  },
+  "train": {
+    "trigger": {
+      "error_mm": 0.04401372416267984,
+      "recalibrations": 2.0
+    },
+    "clock_2400": {
+      "error_mm": 0.04401372416267984,
+      "recalibrations": 2.0
+    },
+    "clock_2700": {
+      "error_mm": 0.1321498916539899,
+      "recalibrations": 1.6428571428571428
+    }
+  },
+  "health_max_spread_across_actuators": 3.3084646133829665e-14,
+  "health_vs_compliance_max_abs_diff": 2.2870594307278225e-14,
+  "life_fractions": [
+    0.1,
+    0.3,
+    0.5,
+    0.7,
+    0.9
+  ],
+  "n_actuators": 20
+}

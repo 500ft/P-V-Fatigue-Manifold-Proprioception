@@ -69,6 +69,15 @@ remains the accountable author.
   account action; nothing is posted by this decision.
 - **Eventual PDF path, hash and approval:** not yet available.
 
+## Acceptance withdrawn, 2026-10-02
+
+The 2026-09-30 acceptance above is withdrawn. It checked wording, hashes and
+intervals, but not whether a clock at matched recalibration cost ties the P-V
+trigger. It does: a clock every 2,400 cycles gives the trigger's exact schedule
+on all 20 actuators. The owner chose on 2026-10-02 to stop the paper and keep
+the code. v1.4 will not be rendered for release, approved or deposited. The
+findings and what still stands are in the [withdrawal note](corrections/v1.4-withdrawn-2026-10-02.md).
+
 ## Verification
 
 From repository root:

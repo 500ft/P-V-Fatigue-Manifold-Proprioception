@@ -2,16 +2,17 @@
 
 **When should a soft robot recalibrate?** A soft pneumatic actuator can
 estimate its pose from pressure alone, but that estimate drifts as the silicone
-fatigues. In simulation, recalibrating when a pressure–volume (P-V) probe says
-so meets the error budget with 2 recalibrations per actuator instead of 5. The
-catch is timing: the probe fires after the error has already passed the budget.
-Everything here is simulation; no physical actuator has been measured.
+fatigues. This repository simulates 20 actuators and tests whether a
+pressure–volume (P-V) probe can say when to recalibrate. In this simulator it
+does no better than counting cycles: at the same number of recalibrations, a
+cycle-count clock matches the P-V trigger exactly. Everything here is
+simulation; no physical actuator has been measured.
 
-> **Publication hold.** The archived v1.3 manuscript overstated the method (see
-> the [correction](docs/corrections/v1.3-methods-2026-09-05.md)). The corrected
-> [v1.4 manuscript](docs/preprint_v1_4_candidate.md) passed author review on
-> 2026-09-30 with two small text changes. Its reviewed PDF, approval and DOI
-> are still to come.
+> **No paper.** The archived v1.3 manuscript overstated the method (see the
+> [correction](docs/corrections/v1.3-methods-2026-09-05.md)). The v1.4
+> candidate was withdrawn on 2026-10-02 because its main claim doesn't survive a
+> comparison at matched cost ([withdrawal note](docs/corrections/v1.4-withdrawn-2026-10-02.md)).
+> The code and the original results are kept.
 
 [![CI](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml)
 [![Evidence: simulation only](https://img.shields.io/badge/evidence-simulation_only-475569)](docs/results.md)
@@ -22,8 +23,9 @@ Everything here is simulation; no physical actuator has been measured.
 
 ![Simulation results comparing four recalibration policies by pose error and number of recalibrations](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
 
-*Study 3: four recalibration policies on six held-out simulated actuators.
-[How the plot was made](docs/data-and-figures.md#study-3-recalibration-policy).*
+*Study 3: four recalibration policies on six held-out simulated actuators. The
+clock shown is the train-selected 2,700-cycle one; a clock every 2,400 cycles
+lands exactly on the triggered point. [How the plot was made](docs/data-and-figures.md#study-3-recalibration-policy).*
 
 ## About
 
@@ -42,9 +44,9 @@ produced.
 
 | Question | Answer | Source |
 | --- | --- | --- |
-| Can the P-V trigger cut recalibrations and still meet the error budget? | Yes. 2 recalibrations per actuator against 5 for always-on, at 0.058 mm mean pose error against a 0.159 mm budget. A cycle-count schedule tuned the same way misses the budget (0.21 mm). | [Study 3](data/sim/phaseD/study3_results.json) |
+| Does the P-V trigger beat counting cycles? | No. It meets the 0.159 mm budget with 2 recalibrations per actuator against 5 for always-on (0.058 mm), but a clock every 2,400 cycles gives exactly the same schedule and error. The 2,700-cycle clock Study 3 reported uses fewer recalibrations and misses the budget (0.21 mm). | [Audit](data/sim/phaseD/matched_clock_audit.json), [Study 3](data/sim/phaseD/study3_results.json) |
 | Does the trigger warn before the error passes the budget? | No. At the chosen threshold (τ = 0.05) it fires at 0.83 of life; the budget is passed at a median 0.71. That is a lead of −0.123 of life, late on all 6 held-out actuators. A lower threshold (τ = 0.01) fires early, median +0.346, at 3 recalibrations. | [Results](docs/results.md#study-3-recalibration-policy) |
-| Does the P-V loop track the drift? | r = 0.885, with a 95% interval of 0.853–0.950 by actuator (0.576–0.973 leaving one actuator out). The probe shares the simulated fatigue state with the drift it predicts, which inflates this. | [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
+| Does the P-V loop track the drift? | Only by construction. r = 0.885 (95% interval 0.853–0.950 by actuator), but in this simulator normalized loop area is the compliance multiplier that drives the drift, read back out: they agree to within 2 × 10⁻¹⁴. | [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
 | What causes most of the pose error? | Fatigue drift in compliance. With a calibration made when the actuator was new, curvature error grows about a hundredfold over its life. Cross-talk through the shared air supply is second-order; a dynamic corrector for it improves error by about 0%. | [Results](docs/results.md#study-4-shared-manifold-sensitivity) |
 | Can pressure alone reveal fatigue across different actuators? | Not reliably. Study A passes only under an amended rule, Study B's post-onset precision is not established (its two resolution figures were withdrawn), and Study C's life estimator fails its transfer test. | [Observability studies](docs/specs/observability-program/program.md) |
 
@@ -67,8 +69,9 @@ python -m scripts.check_publication_fallback
 
 The number check covers the v1.3 and v1.4 manuscripts. The PDF check covers the
 archived v1.3 PDF only. The last command checks the archive; run it with
-`--for-publication` and it exits with code 2 (BLOCKED) until the author
-approves the correction.
+`--for-publication` and it exits with code 2 (BLOCKED), which is now permanent.
+To reproduce the matched-cost audit, regenerate the dataset with
+`python -m scripts.phaseD_dataset`, then run `python -m scripts.audit_matched_clock`.
 
 To rerun the studies, see the
 [reviewer guide](docs/START_HERE.md#reviewer-reproduce-the-checks). The study
@@ -76,9 +79,10 @@ scripts write under `data/`, so use a separate checkout.
 
 ## What's next
 
-Author review is done (text accepted with two changes). Next: render the
-reviewed PDF as its own versioned file, approve it by its hash, and deposit it
-on Zenodo. The [roadmap](ROADMAP.md) has the steps.
+Nothing, for this version. The paper is stopped and the code is kept. A
+hardware study, a real chamber cycled to failure with rest time and temperature
+varied, would be a new project rather than a step toward this paper. See the
+[roadmap](ROADMAP.md).
 
 ## Limits
 
@@ -101,7 +105,7 @@ on Zenodo. The [roadmap](ROADMAP.md) has the steps.
 | [Reading guide](docs/START_HERE.md) | Short paths for readers, reviewers and contributors |
 | [Results and limits](docs/results.md) | Every study's findings in full |
 | [Data and figures](docs/data-and-figures.md) · [manifest](docs/figure-manifest.json) | Inputs and scripts behind each figure |
-| [Review packet](docs/REVIEW_READY.md) · [correction](docs/corrections/v1.3-methods-2026-09-05.md) | What the author has to review, and why |
+| [Review packet](docs/REVIEW_READY.md) · [v1.4 withdrawal](docs/corrections/v1.4-withdrawn-2026-10-02.md) · [v1.3 correction](docs/corrections/v1.3-methods-2026-09-05.md) | Why v1.4 was withdrawn and what v1.3 overstated |
 | [Observability studies](docs/specs/observability-program/program.md) | Estimating fatigue from pressure across actuators |
 | [Literature](literature/README.md) · [claim ledger](literature/claim-ledger.md) | Sources for and against each claim |
 

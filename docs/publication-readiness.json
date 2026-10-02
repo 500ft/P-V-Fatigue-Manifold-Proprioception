@@ -13,8 +13,6 @@
   "reserved_doi": null,
   "published_identifier": null,
   "blockers": [
-    "Render and review a separately versioned corrected PDF and matching metadata.",
-    "Approve that PDF by its hash (artifact-bound author approval).",
-    "Deposit: new Zenodo record after PDF approval (owner account action); arXiv only if an endorser is found."
+    "v1.4 withdrawn 2026-10-02 by owner decision: at matched recalibration cost a cycle clock ties the P-V trigger (docs/corrections/v1.4-withdrawn-2026-10-02.md). No release is planned."
   ]
 }

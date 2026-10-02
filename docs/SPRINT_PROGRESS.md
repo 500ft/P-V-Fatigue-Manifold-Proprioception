@@ -1,5 +1,14 @@
 # Sprint progress — P-V-Fatigue-Manifold-Proprioception
 
+## 2026-10-02 — v1.4 withdrawn: a matched-cost clock ties the P-V trigger
+
+A review found, and `scripts/audit_matched_clock.py` confirms, that a clock every 2,400 cycles gives the P-V
+trigger's exact recalibration schedule on all 20 actuators (held-out 0.058 mm, 2 recalibrations, the same as
+the trigger). Study 3 had reported the cheaper 2,700-cycle clock, which misses the budget. The health signal
+equals the compliance multiplier to 2.3e-14 and is the same curve for every actuator. The owner chose to stop
+the paper and keep the code. The 2026-09-30 text acceptance is withdrawn, PR #49 closed unmerged, and the
+original results are kept unchanged. [Withdrawal note](corrections/v1.4-withdrawn-2026-10-02.md).
+
 ## 2026-09-16 (later) — five follow-ups: renderer fix, database pass, Study A amendment, Study C, cleanup
 
 The renderer now honours Markdown escapes and the preview re-renders without backslash artifacts (PDF `0345c5dc…`,
