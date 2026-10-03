@@ -1,73 +1,47 @@
 # Experimental Protocol & Test Plan
 
-Operational runbook for the P-V fatigue / shared-manifold proprioception study.
+Historical protocol for the P-V fatigue / shared-manifold proprioception study.
+The project is closed under [ROADMAP.md](../ROADMAP.md); the unexecuted hardware
+steps below remain proposals and are not authorized work.
 This is the "how to actually test it" companion to
 [`Proposal_A01_A04_Combined.md`](Proposal_A01_A04_Combined.md). It encodes the
 decisions forced by [`Gate0_Coupling_Simulation.md`](Gate0_Coupling_Simulation.md).
 
-> **Gating philosophy:** cheap, decisive tests first. Every gate can kill or redirect
-> the project before the expensive N=10 campaign. Do them *in order*.
+> The original gate ladder is retained below with its unsupported literature
+> resolutions corrected. It does not reopen the proposed campaign.
 
 ---
 
-## 0. Gate ladder (do these before the full campaign)
+## 0. Historical gate ladder
 
 | Gate | Cost | Time | Kills/redirects if… | Status |
 |---|---|---|---|---|
 | **0 — coupling sim** | \$0 | done | cross-talk not monotone in compliance | ✅ PASS ([doc](Gate0_Coupling_Simulation.md)) |
-| **0b — failure-mode scout** | \$0 | done | sudden rupture dominates, no precursor | ✅ PASS — literature-resolved ([doc](Gate0b_Failure_Mode_Literature.md)) |
-| **1 — volume estimator** | \$0 | done | no clean, repeatable *V* → no P-V loop | ✅ design-resolved ([doc](Gate1_Volume_Estimation_Literature.md)) |
+| **0b: failure-mode scout** | Uncosted | Not run | no useful measured precursor | Unresolved ([review](Gate0b_Failure_Mode_Literature.md)) |
+| **1: volume estimator** | Uncosted | Not run | volume uncertainty obscures loop changes | Unresolved ([review](Gate1_Volume_Estimation_Literature.md)) |
 | **2 — equipment audit** | \$0 | ~1 day | no mocap / no rig access | ☐ TODO |
 | **Week-3 hardware coupling** | (rig) | wk 3 | cross-talk doesn't track P-V feature on real HW | ☐ TODO |
 
-> **Gates 0b and 1 are now resolved from literature** (no own-hardware experiment needed
-> to *decide* them): silicone PneuNets fail gradually with micro-tear precursors (Libby
-> 2022, Torzini 2024), so the leading indicator is viable; and the volume signal is
-> obtained by volumetric (syringe/stepper) drive + a pressure-oscillation observer
-> (Joshi & Paik 2023, ~0.6 % RMS), not by drift-prone flow integration. Each leaves a
-> small commissioning **spot-check** folded into rig bring-up — see the respective docs.
+> Gates 0b and 1 require evidence that the cited experiments do not supply.
+> Their corrected reviews state the remaining measurement questions.
 
 ---
 
-## Gate 0b — Failure-mode scout — RESOLVED FROM LITERATURE ([full doc](Gate0b_Failure_Mode_Literature.md))
+## Gate 0b: Failure-mode scout, unresolved
 
-**Question (binary):** do these actuators fail *gradually* (with a precursor) or by
-*sudden rupture*? **Answer: gradual, with precursors.** Silicone PneuNets accumulate
-microscale fractures that shift behavior measurably before failure — Libby 2022 reports
-FEM agreement drifting 96 %→80 % with fatigue; Torzini 2024 reports 0.2–0.4 mm micro-tears
-at the hump bases, tolerated *before* critical rupture (~3439 cycles, 1 bar). The leading
-indicator is viable; **target compliance-slope / loop-area drift** (early) rather than
-peak-pressure collapse (late). Scope the paper to the **gradual-degradation regime**.
-
-**Remaining spot-check (folded into Study-1 bring-up, not a standalone gate):** cast one
-actuator from the production mold, photograph the chamber walls every ~250 cycles, and
-confirm *your* geometry reproduces hump-base micro-tear nucleation before rupture. If it
-instead ruptures suddenly with no precursor, escalate; otherwise proceed.
+The [corrected failure-mode review](Gate0b_Failure_Mode_Literature.md) withdraws
+the literature-based PASS. The Libby result cannot establish useful P-V warning
+before rupture. The proposed feature choice and single-specimen spot-check were
+not validated by that citation.
 
 ---
 
-## Gate 1 — Volume estimate — DESIGN-RESOLVED FROM LITERATURE ([full doc](Gate1_Volume_Estimation_Literature.md))
+## Gate 1: Volume estimate, unresolved
 
-The entire premise is a *P-V* loop, and **V was the least-specified, most load-bearing
-measurement in the paper.** Literature closes the *method choice*:
-
-- **Reject naive flow integration** — Joshi & Paik confirm error accumulates from
-  integration, noise, and leakage.
-- **Acquire P-V loops by volumetric drive** — a stepper-driven syringe positions the air
-  volume so *V* is known by construction (arXiv:2506.23326, 0.04 mm³/step). Clean,
-  drift-free, cheap; this is standard practice for hysteresis characterization and is used
-  for Study 1 and Study 2 ground truth.
-- **Deployable in-loop estimator** — the pressure-oscillation observer (inject ~5 kPa
-  high-freq oscillation; dP/dt ∝ 1/V) gives ~0.6 % volume RMS (Joshi & Paik), used where
-  the gripper must self-sense without a syringe pump; validate it against the volumetric
-  ground truth.
-
-**Remaining spot-check (folded into rig bring-up):** confirm the syringe drive yields
-repeatable P-V loops over ~50 cycles at the Gate-0 band (~1–5 Hz), and fit + validate the
-oscillation observer on one actuator (target RMS ~ Joshi & Paik's 0.6 %).
-
-**BOM consequence:** add a stepper-driven syringe / small volumetric pump (~tens of \$);
-it replaces reliance on a precision flow sensor. Update Gate 2 accordingly.
+The [corrected volume review](Gate1_Volume_Estimation_Literature.md) retains the
+candidate methods and removes the claim that volume measurement was resolved.
+Their performance on the intended actuator and their ability to resolve the
+hypothesized precursor remain unmeasured.
 
 ---
 

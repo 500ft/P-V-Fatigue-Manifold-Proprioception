@@ -10,8 +10,8 @@ Role legend: **F** = foundational · **CPA** = closest prior art · **M** = meth
 
 - **Mosadegh et al. 2014** — "Pneumatic Networks for Soft Robotics that Actuate Rapidly," *Adv. Funct. Mater.* 24(15):2163–2170. DOI 10.1002/adfm.201303288. **F / CPA.** Defines the PneuNet class — and **assesses fatigue by measuring P-V hysteresis curves before vs. after >10⁶ cycles.** This is direct precedent that P-V hysteresis tracks fatigue; your contribution must be the *cycle-resolved leading-indicator* framing, not the use of P-V per se.
 - **Mosadegh, Shepherd, Whitesides 2020** — "Low strain pneumatic networks for soft robots," US Patent **US10639801B2** (priority 2013-08-20; granted 2020-05-05). **CPA / patent.** The downloaded Google Patents PDF confirms durability claims for >10,000, >200,000, and >1,000,000 cycles without failure at >1–2 Hz; the Google Patents text also states that fatigue was assessed by measuring P-V hysteresis before and after cyclic testing at 2 Hz for 10⁴, 2×10⁵, and 10⁶ complete-actuation cycles, with curves reportedly not changing substantially. This strengthens the boundary: your claim is not "P-V for fatigue," but cycle-resolved prognostic lead time.
-- **Libby et al. 2023** — "What Happens When Pneu-Net Soft Robotic Actuators Get Fatigued?" *ISMR 2023*, DOI 10.1109/ISMR57123.2023.10130227 (arXiv:2212.03420). **CPA.** Cyclic fatigue degrades FEM-predicted behavior (96%→80%); reports that **P-V hysteresis shifts with fatigue.** Same lab (Atashzar/Rizzo, NYU) you're adjacent to. The seed your thesis operationalizes.
-- **Libby et al. 2023** — "How Does the Inner Geometry of Soft Actuators Modulate the Dynamic and Hysteretic Response?" arXiv:2308.04722. **F.** Chamber geometry programs the hysteresis/dynamics trade-off → loop shape carries mechanical-state information.
+- **Libby et al. 2023**: "What Happens When Pneu-Net Soft Robotic Actuators Get Fatigued?" *ISMR 2023*, DOI [10.1109/ISMR57123.2023.10130227](https://doi.org/10.1109/ISMR57123.2023.10130227). **CPA.** Pressure-angle model drift under repeated bending. See the [full-text check](#libby-full-text-check) for the measured quantities and limits.
+- **Libby et al. 2023**: "How Does the Inner Geometry of Soft Actuators Modulate the Dynamic and Hysteretic Response?" [arXiv:2308.04722v1](https://arxiv.org/abs/2308.04722v1). **F.** Geometry-dependent pressure-angle hysteresis. See the [full-text check](#libby-full-text-check).
 - **Wong, Luo, Scharff 2026** — "Durability of Soft Pneumatic Actuators: A Review and Benchmarking Protocol," *Advanced Robotics Research*, article e202500172. DOI 10.1002/adrr.202500172. **CPA.** Current durability reference frame (cycles-to-failure). Position your leading indicator against this *lagging* metric.
 - **Torzini et al. 2024** — "Characterization of fatigue behavior of 3D printed pneumatic fluidic elastomer actuators," *Int. J. Adv. Manuf. Technol.* 134:2725–2736. DOI 10.1007/s00170-024-14216-0. **M.** Inflate/deflate-to-failure protocol; cycles-to-failure baselines; microtears before rupture.
 - **Mars & Fatemi 2002** — "A literature survey on fatigue analysis approaches for rubber," *Int. J. Fatigue* 24(9):949–961. DOI 10.1016/S0142-1123(02)00008-7. **F.** Canonical elastomer-fatigue mechanics (crack nucleation vs. growth, energy-based parameters). Grounds your framing beyond soft-robotics-only literature.
@@ -21,6 +21,27 @@ Role legend: **F** = foundational · **CPA** = closest prior art · **M** = meth
 - **Marechal et al. 2021** — "Toward a Common Framework and Database of Materials for Soft Robotics," *Soft Robotics* 8(3):284–297. DOI 10.1089/soro.2019.0115. **S.** Elastomer property database (Dragon Skin/Ecoflex).
 - **Case, White, Kramer 2015** — "Soft Material Characterization for Robotic Applications," *Soft Robotics* 2(2):80–87. DOI 10.1089/soro.2015.0002. **F.** Origin of "characterize elastomer time-dependence for modeling."
 - **Kurata et al. 2025** — "Dynamic response characterization of soft fluidic actuators via dielectric elastomer sensors," *Measurement* 246:116616. DOI 10.1016/j.measurement.2024.116616. **S.** Alternative in-situ deformation-sensing modality.
+
+### Libby full-text check
+
+The ISMR DOI above identifies Jacqueline Libby's fatigue paper. Its available
+[arXiv full text, 2212.03420v1](https://arxiv.org/pdf/2212.03420v1), was posted in
+2022; the conference publication is from 2023.
+
+Section II.C and Section III (PDF pp. 4-6, Figs. 8-12) report inlet pressure and
+camera-derived bending angle on one actuator over ten staircase trials. Pressure
+steps run from 0 to 45 kPa in 5 kPa increments, held for 16 seconds each. Bending-angle
+NRMSE against the FEM rises from 4% to 20%. These are repeated observations of the
+same specimen, not independent actuator replicates. The authors attribute the drift
+to fatigue; the reported experiment contains no volume measurement, P-V loop,
+rupture endpoint, or measured warning interval before failure.
+
+The separate [geometry paper](https://arxiv.org/pdf/2308.04722v1), Section III.C,
+Figs. 12-14, compares pressure-angle loops across designs. Its reference [42] points
+back to the fatigue paper; its P-V reference [45] concerns mammalian lungs.
+Neither Libby paper establishes a useful P-V failure precursor or qualifies a
+volume measurement method for this project. Evidence grade: C for the fatigue
+experiment's small sample; relevant to model drift, insufficient for P-V prognosis.
 
 ## 2. Health monitoring / prognostics & transferable early-warning methodology
 

@@ -22,15 +22,16 @@ sources; the rest were graded from abstracts and the repository's earlier annota
 "abstract only".
 
 Survivorship caveat: web search ranks by its own relevance; two paywalled full texts (Torzini 2024,
-Libby 2023) could not be fetched here, so their sample sizes are taken from the repository's earlier
-reading, not re-verified today.
+Libby 2023) could not be fetched during the original search. The Libby row and its dependent
+claim below now follow the [full-text correction](../A01_A04_Literature_Review.md#libby-full-text-check);
+the remaining rows retain the original review's evidence scope.
 
 ## Evidence table
 
 | Source | Year | About. | Evid. | Key finding for this question |
 |---|---|---|---|---|
 | Mosadegh et al., *Adv. Funct. Mater.* (lit base §1) | 2014 | 2 | B | P-V hysteresis measured before/after >10⁶ cycles as a fatigue assessment; establishes P-V-tracks-fatigue as prior art. Not cross-unit, not identifiability. |
-| Libby et al., ISMR / arXiv:2212.03420 | 2023 | 2 | B (abstract only) | FEM agreement drops from ~96 % to 80 % after repetitive high-angle bending; P-V hysteresis shifts with fatigue. Cross-actuator variability not reported in the abstract. |
+| Libby et al., ISMR / arXiv:2212.03420 | 2023 | 2 | C (small sample; full text checked) | Pressure-angle model drift. The earlier P-V attribution is withdrawn; see the [full-text check](../A01_A04_Literature_Review.md#libby-full-text-check). |
 | Endurance tests of a fabric-reinforced actuator, *Front. Mater.* 10.3389/fmats.2023.1112540 (full text) | 2023 | 2 | B | Ten Dragon Skin 30 actuators; burst pressure 37.1–41.15 kPa (<10 % spread); trajectory path-length variability mean 16.94 mm, SD 5.33 mm (~31 % CV); one of ten failed prematurely by leakage after "a few hundred cycles"; stress-softening shift over cycles. **Direct evidence that between-unit dispersion and a leak failure mode are real at n = 10.** |
 | Torzini et al., *IJAMT* 134:2725 (lit base §1) | 2024 | 2 | B (not re-fetched) | Inflate/deflate-to-failure; micro-tears 0.2–0.4 mm precede rupture (~3439 cycles at 1 bar). Gradual-degradation regime. |
 | Wong, Luo, Scharff, *Adv. Robot. Res.* (lit base §1) | 2026 | 1 | D | Durability benchmark protocol; cycles-to-failure as the lagging metric. |
@@ -54,10 +55,10 @@ actuator; no fetched source contained those numbers, so they are not used.
 ## Claim ledger
 
 ```
-Claim 1: P-V hysteresis (loop area, slope) changes with fatigue and has been used to assess it.
-Support: Mosadegh 2014 (B), Libby 2023 (B, abstract), Frontiers 2023 (B)
-Counter-evidence or gaps: none needed; this is prior art the program does not claim.
-Confidence: high.
+Claim 1: P-V curves have been used in before/after durability assessments.
+Support: Mosadegh 2014 (B).
+Gap: the Libby citation does not establish P-V changes or useful warning before failure.
+Confidence: high for use in durability assessment; predictive value remains unestablished here.
 
 Claim 2: Pressure-only proprioception / self-sensing is established.
 Support: Wang & Wang 2020 (B), Joshi & Paik 2023 (B), Zou 2024 and others in the lit base (B)

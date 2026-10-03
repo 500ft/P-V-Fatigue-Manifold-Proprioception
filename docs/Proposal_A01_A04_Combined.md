@@ -25,7 +25,7 @@ Soft pneumatic grippers face two monitoring problems in deployment: **(i) fatigu
 
 A 6-cluster literature sweep (45 verified papers, see companion review) sharpened the claims. **What already exists, and must be cited as the boundary:**
 
-- P-V hysteresis is *already* used as a **before/after** fatigue diagnostic (Mosadegh et al. 2014, >10⁶ cycles; Libby et al. 2023 shows the loop shifts with fatigue). → **We do NOT claim first use of P-V for fatigue.**
+- P-V measurements have been used in before/after durability assessments (Mosadegh et al. 2014). Libby et al. 2023 supports pressure-angle model drift; the [full-text check](A01_A04_Literature_Review.md#libby-full-text-check) removes its earlier attribution to P-V fatigue measurements.
 - Pressure-only multi-chamber proprioception exists (L. Wang 2020, 2023; J. Wang 2025; Joshi & Paik 2023; Zou et al. 2024) — but assumes *independent / clean* per-chamber supply.
 - Hysteresis-loop-area-as-damage-proxy has strong cross-domain precedent (metals: Haghshenas et al. 2021; flight control: Guo et al. 2021; SHM/AE: Galanopoulos et al. 2023; early-warning theory: Scheffer et al. 2009). → This *supports* the leading-indicator framing rather than undermining it.
 

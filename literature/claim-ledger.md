@@ -10,11 +10,14 @@ which is recorded in the [study verdicts](../docs/results.md).
 ---
 
 ```
-Claim 1: P-V hysteresis changes with fatigue and has been used to assess it.
-Support: Mosadegh 2014 (B), Libby 2023 (B), Bui 2023 (A, n=10), Torzini 2024 (A, n=5 per group)
-Counter: none
-Confidence: HIGH. Prior art; the project does not claim it.
+Claim 1: P-V curves have been used in before/after durability assessments.
+Support: Mosadegh 2014; see the annotated literature base, section 1.
+Gap: the earlier Libby attribution to P-V fatigue measurements is withdrawn;
+     see the full-text check linked below. It cannot establish a useful failure precursor.
+Confidence: high for use in durability assessment; predictive value remains unestablished here.
 ```
+
+[Libby full-text check](../docs/A01_A04_Literature_Review.md#libby-full-text-check).
 
 ```
 Claim 2: Pressure-only proprioception is established.

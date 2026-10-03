@@ -87,8 +87,9 @@ of the frozen spine.
 **P-V hysteresis and fatigue.** P-V hysteresis is *already* used as a before/after fatigue
 diagnostic: Mosadegh et al. [2014] assess PneuNet durability across >10⁶ cycles by comparing
 P-V curves, and US Patent 10,639,801B2 [Mosadegh, Shepherd, Whitesides 2020] documents the same
-before/after protocol. Libby et al. [2023] show the loop shifts with fatigue, and report
-FEM-agreement degradation (96%→80%). Hysteresis-loop area as a damage proxy has strong
+before/after protocol. Libby et al. [2023] report pressure-angle model drift under repeated bending.
+Their experiment measures no volume or P-V loop and establishes no warning time
+before failure; see the [full-text check](A01_A04_Literature_Review.md#libby-full-text-check). Hysteresis-loop area as a damage proxy has strong
 cross-domain precedent — metals [Haghshenas 2021], flight-control health indicators [Guo 2021],
 SHM/acoustic-emission RUL [Galanopoulos 2023] — grounded in early-warning theory [Scheffer 2009]
 and the prognostics-pipeline / health-indicator-quality criteria of Lei et al. [2018].
@@ -401,7 +402,7 @@ DOIs are listed. Selected works cited here:
 
 - Mosadegh et al. 2014, *Adv. Funct. Mater.* 24(15):2163–2170. DOI 10.1002/adfm.201303288.
 - Mosadegh, Shepherd, Whitesides 2020, US Patent US10639801B2.
-- Libby et al. 2023, *ISMR 2023*. DOI 10.1109/ISMR57123.2023.10130227.
+- Libby, J., et al. 2023. "What Happens When Pneu-Net Soft Robotic Actuators Get Fatigued?" *ISMR 2023*. DOI 10.1109/ISMR57123.2023.10130227. [Full text: arXiv:2212.03420v1](https://arxiv.org/pdf/2212.03420v1).
 - Wong, Luo, Scharff 2026, *Adv. Robotics Research* e202500172. DOI 10.1002/adrr.202500172.
 - Mars & Fatemi 2002, *Int. J. Fatigue* 24(9):949–961. DOI 10.1016/S0142-1123(02)00008-7.
 - Lavazza, Contino, Marano 2023, *Mech. of Materials* 178:104560. DOI 10.1016/j.mechmat.2023.104560.
