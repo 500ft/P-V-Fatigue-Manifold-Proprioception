@@ -10,7 +10,7 @@ project ends as a reproducible simulation pipeline plus an audit of its own
 headline: at matched recalibration cost, a cycle-count clock ties the P-V
 trigger ([withdrawal note](docs/corrections/v1.4-withdrawn-2026-10-02.md)).
 
-## Where it stands (2026-10-02)
+## Where it stands
 
 - The recalibration-policy studies and the observability follow-ups are done,
   and their numbers are kept unchanged.
@@ -20,11 +20,15 @@ trigger ([withdrawal note](docs/corrections/v1.4-withdrawn-2026-10-02.md)).
 - v1.4 is withdrawn: not rendered for release, not approved, not deposited.
   The archived v1.3 release keeps its methods correction.
 
-## What's left
+## Close-out status
 
-| # | Step | Who | Done when |
-|---|---|---|---|
-| 1 | Point the portfolio and resume at the audit result instead of the withdrawn claims | Agent | Merged |
+| Step | Status |
+|---|---|
+| Point the portfolio and resume at the audit result | Complete on [Portfolio main](https://github.com/500ft/Portfolio/tree/96da45f65e0748f40767ed473d1e81677dfcfdb1), including merged [PR #3](https://github.com/500ft/Portfolio/pull/3) |
+| Correct the Libby citation and dependent measurement claims | Corrected in the manuscript sources and [literature review](docs/A01_A04_Literature_Review.md#libby-full-text-check); the precursor and volume gates remain unresolved |
+
+No implementation work remains in this scope. Any new hardware study requires
+an owner decision; the literature correction does not reopen the paper.
 
 ## Not in this version
 
