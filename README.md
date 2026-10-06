@@ -46,7 +46,7 @@ produced.
 | --- | --- | --- |
 | Does the P-V trigger beat counting cycles? | No. It meets the 0.159 mm budget with 2 recalibrations per actuator against 5 for always-on (0.058 mm), but a clock every 2,400 cycles gives exactly the same schedule and error. The 2,700-cycle clock Study 3 reported uses fewer recalibrations and misses the budget (0.21 mm). | [Audit](data/sim/phaseD/matched_clock_audit.json), [Study 3](data/sim/phaseD/study3_results.json) |
 | Does the trigger warn before the error passes the budget? | No. At the chosen threshold (τ = 0.05) it fires at 0.83 of life; the budget is passed at a median 0.71. That is a lead of −0.123 of life, late on all 6 held-out actuators. A lower threshold (τ = 0.01) fires early, median +0.346, at 3 recalibrations. | [Results](docs/results.md#study-3-recalibration-policy) |
-| Does the P-V loop track the drift? | Only by construction. r = 0.885 (95% interval 0.853–0.950 by actuator), but in this simulator normalized loop area is the compliance multiplier that drives the drift, read back out: they agree to within 2 × 10⁻¹⁴. | [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
+| Does the P-V loop track the drift? | Only by construction. r = 0.885 (95% interval 0.853–0.950 by actuator), but in this simulator normalized loop area is the compliance multiplier that drives the drift, read back out. | [Audit](data/sim/phaseD/matched_clock_audit.json), [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
 | What causes most of the pose error? | Fatigue drift in compliance. With a calibration made when the actuator was new, curvature error grows about a hundredfold over its life. Cross-talk through the shared air supply is second-order; a dynamic corrector for it improves error by about 0%. | [Results](docs/results.md#study-4-shared-manifold-sensitivity) |
 | Can pressure alone reveal fatigue across different actuators? | Not reliably. Study A passes only under an amended rule, Study B's post-onset precision is not established (its two resolution figures were withdrawn), and Study C's life estimator fails its transfer test. | [Observability studies](docs/specs/observability-program/program.md) |
 
@@ -131,5 +131,5 @@ The repository was renamed; the paper title was not
 ([identity note](docs/REPOSITORY_IDENTITY.md)).
 
 Code is [MIT](LICENSE). Manuscript text, documentation and figures are
-[CC BY 4.0](LICENSE-docs). Publication steps are in
+[CC BY 4.0](LICENSE-docs). Superseded publication instructions are preserved in
 [submission notes](docs/SUBMISSION.md) and [Zenodo notes](docs/ZENODO_FALLBACK.md).

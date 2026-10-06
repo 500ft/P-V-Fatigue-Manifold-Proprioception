@@ -1,5 +1,10 @@
 # Revision Plan — frozen preprint v1.3 and v2 (RoboSoft package)
 
+> **Historical plan.** The study is closed and v1.4 is
+> [withdrawn](corrections/v1.4-withdrawn-2026-10-02.md). The proposals and release
+> steps below are superseded. [ROADMAP.md](../ROADMAP.md) is the current plan;
+> it leaves further research outside this scope.
+
 > **2026-08-03 update:** `preprint-v1.3` and its Zenodo payload remain frozen.
 > The original Wave-B sequence below is retained as history, but the canonical v2
 > claim boundary and execution scope now live in:

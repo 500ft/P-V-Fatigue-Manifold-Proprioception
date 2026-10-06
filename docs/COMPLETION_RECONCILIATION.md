@@ -1,4 +1,9 @@
 # Completion reconciliation and author return
+
+The study is closed. The [acceptance withdrawal](#acceptance-withdrawn-2026-10-02)
+supersedes the review and release actions recorded below. v1.4 will not be
+released; [ROADMAP.md](../ROADMAP.md) holds the current scope.
+
 Refreshed 2026-09-29 for the updated v1.4 candidate. This is a review handoff, not an author signature or a publication clearance. Task status authority: [SPRINT_TASKS.csv](SPRINT_TASKS.csv), especially PV-08 and PV-COR-01.
 
 ## Each recommendation, separately
