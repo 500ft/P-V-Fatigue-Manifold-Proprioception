@@ -1,8 +1,8 @@
 # Soft Actuator Recalibration
 
-**When should a soft robot recalibrate?** A soft pneumatic actuator can
-estimate its pose from pressure alone, but that estimate drifts as the silicone
-fatigues. This repository simulates 20 actuators and tests whether a
+**When should a soft robot recalibrate?** This closed simulation study models
+a pressure-based pose estimate that drifts with assumed fatigue. It simulates
+20 actuators and tests whether a
 pressure–volume (P-V) probe can say when to recalibrate. In this simulator it
 does no better than counting cycles: at the same number of recalibrations, a
 cycle-count clock matches the P-V trigger exactly. Everything here is
@@ -20,12 +20,6 @@ simulation; no physical actuator has been measured.
 
 [Results](#results) · [Roadmap](ROADMAP.md) · [Quick start](#quick-start) ·
 [Review packet](docs/REVIEW_READY.md)
-
-![Simulation results comparing four recalibration policies by pose error and number of recalibrations](data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-
-*Study 3: four recalibration policies on six held-out simulated actuators. The
-clock shown is the train-selected 2,700-cycle one; a clock every 2,400 cycles
-lands exactly on the triggered point. [How the plot was made](docs/data-and-figures.md#study-3-recalibration-policy).*
 
 ## About
 
@@ -77,12 +71,22 @@ To rerun the studies, see the
 [reviewer guide](docs/START_HERE.md#reviewer-reproduce-the-checks). The study
 scripts write under `data/`, so use a separate checkout.
 
-## What's next
+## Separate successor preparation
 
-Nothing, for this version. The paper is stopped and the code is kept. A
-hardware study, a real chamber cycled to failure with rest time and temperature
-varied, would be a new project rather than a step toward this paper. See the
-[roadmap](ROADMAP.md).
+The owner authorized local software preparation for a new question: does
+qualified pressure retention improve prediction of independently measured
+functional failure beyond age and duty history on unseen manufacturing batches?
+Initial defect screening and advance warning remain separate questions.
+
+The executed work checks sensor resolution and ideal-gas pressure-decay
+calculations, with a theoretical metrology figure. It lives in a separate local
+repository while its public name is pending. The [decision and result location](docs/decisions/0002-successor-software-preparation.md)
+record what exists and how to reproduce it. Physical start, equipment, location,
+budget and endpoint remain undecided. Blocked force is a proposed endpoint.
+
+This repository keeps the closed study and its audit. The [history index](docs/history/README.md)
+links the original results, figures, manuscript records and useful CAD. See the
+[roadmap](ROADMAP.md) for the remaining owner action.
 
 ## Limits
 
@@ -106,7 +110,7 @@ varied, would be a new project rather than a step toward this paper. See the
 | [Results and limits](docs/results.md) | Every study's findings in full |
 | [Data and figures](docs/data-and-figures.md) · [manifest](docs/figure-manifest.json) | Inputs and scripts behind each figure |
 | [Review packet](docs/REVIEW_READY.md) · [v1.4 withdrawal](docs/corrections/v1.4-withdrawn-2026-10-02.md) · [v1.3 correction](docs/corrections/v1.3-methods-2026-09-05.md) | Why v1.4 was withdrawn and what v1.3 overstated |
-| [Observability studies](docs/specs/observability-program/program.md) | Estimating fatigue from pressure across actuators |
+| [Study history](docs/history/README.md) · [Observability studies](docs/specs/observability-program/program.md) | Closed simulation questions, original figures and retained CAD |
 | [Literature](literature/README.md) · [claim ledger](literature/claim-ledger.md) | Sources for and against each claim |
 
 ```text

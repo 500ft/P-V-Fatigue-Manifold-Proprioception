@@ -7,6 +7,12 @@ outside its scope.
 
 The machine-readable companion is [`figure-manifest.json`](figure-manifest.json).
 
+These are historical figures from the closed study. The README no longer uses
+the unmatched-cost policy figure as its lead illustration. The separate local
+successor's calculated metrology figure is located through the
+[preparation record](decisions/0002-successor-software-preparation.md); it is
+outside this simulation registry.
+
 ## Data lineage
 
 ```mermaid
@@ -104,6 +110,10 @@ python -m scripts.phaseD_dataset
   not maximum or continuously bounded error. Event counts include initialization.
 - **Outputs:** the leading-indicator and recalibration-trade-off figures plus
   `study3_results.json`.
+
+The policy plot uses the train-selected clock and omits the matched-cost clock
+that coincides with the trigger; see [matched_clock_audit.json](../data/sim/phaseD/matched_clock_audit.json).
+The original plot is retained without regeneration.
 
 ## Study 4: network sensitivity
 

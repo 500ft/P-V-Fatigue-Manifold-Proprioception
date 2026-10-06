@@ -1,12 +1,22 @@
 # Cross-unit observability program — is soft-actuator fatigue state observable from pressure alone?
 
+Current status: closed with the simulation study. The historical program below
+is retained for interpretation of its executed results. Unrun extensions,
+including Study C2, D and E, are superseded in active scope and remain unanswered.
+The [roadmap](../../../ROADMAP.md) is the current plan; the
+[successor decision](../../decisions/0002-successor-software-preparation.md)
+authorizes separate local software preparation only. Study B's later corrections
+are linked in the [result index](../../results.md).
+
+## Historical program record
+
 Proposed 2026-09-16. Status: **preregistered at `9e71a3f`; Studies A and B executed on the same branch afterwards.**
 Recorded verdicts: Study A **A-FAIL** (value spread passes, trigger-timing spread fails), Study B **B-PASS** with the
 latent coordinate identifiable only before the acceleration onset — see the
 [evidence](../../../evidence/observability-2026-09-16/README.md). Owner amendment 2026-09-16 withdrew Study A's
 criterion iii (amended verdict A-PASS); Study C then ran under its amended trajectory design and records **C-FAIL**
 (6/10 held-out units within 0.10 life, 7/10 below the clock; [evidence](../../../evidence/next-five-2026-09-16/README.md)).
-Studies D and E remain gated; no transfer claim is made. Task status lives only in
+Studies D and E remain gated; no transfer claim is made. Historical task status is recorded in
 [SPRINT_TASKS.csv](../../SPRINT_TASKS.csv) (rows PV-OBS-*). This program does not modify the frozen v1.3
 release, the v1.4 candidate, PV-08, or the [RoboSoft v2 claim spine](../robosoft-v2/claim-spine.md).
 

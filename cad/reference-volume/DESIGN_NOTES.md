@@ -1,8 +1,10 @@
 # Reference volume chamber — design notes
 
-A rigid cavity of exactly the volume the simulator assumes, for calibrating the volumetric drive.
+A CAD model with the simulator's nominal cavity volume, retained for possible
+volumetric-drive calibration work. Manufacture, assembled-volume calibration,
+seal integrity and pressure suitability remain unverified.
 
-**Built 2026-09-26** on the CAD host with CadQuery 2.8.0, headless, no dialogs.
+**CAD model generated 2026-09-26** on the CAD host with CadQuery 2.8.0, headless, no dialogs.
 Artifacts: `build/reference_volume.step`, `.stl`, `geometry_check.json`. Parameters and their provenance:
 [`parameters.csv`](parameters.csv). Generator: [`generate.py`](generate.py).
 

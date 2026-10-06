@@ -11,7 +11,8 @@ was measured. The [repository overview](../README.md) gives the short version.
 1. Read the [Study 3 trade-off and limits](results.md#study-3-recalibration-policy):
    the matched-cost audit removes the claimed advantage over counting cycles.
 2. Inspect the [recalibration plot](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-   and its [lineage](data-and-figures.md#study-3-recalibration-policy).
+   and its [lineage](data-and-figures.md#study-3-recalibration-policy). This
+   historical figure omits the matched-cost clock that ties the trigger.
 3. Read the [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md).
    The historical [author-review packet](AUTHOR_REVIEW_DAY3.md) is retained as
    a record; its acceptance was withdrawn.
@@ -131,7 +132,9 @@ parameters are largely unsourced. **No result in this repository is validated ag
 hardware.**
 
 No manuscript-review or publication action remains in this scope. Any hardware
-study requires a separate owner decision; see [ROADMAP.md](../ROADMAP.md).
+study requires a separate owner decision. Local successor software preparation
+is recorded in the [decision](decisions/0002-successor-software-preparation.md);
+see [ROADMAP.md](../ROADMAP.md) and the [history index](history/README.md).
 The [review index](REVIEW_READY.md) links the historical execution records.
 
 ## September 11 completion correction
