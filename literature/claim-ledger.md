@@ -1,8 +1,9 @@
 # Claim ledger
 
-Every claim the project currently makes, mapped to supporting and counter evidence from this folder.
-Following the repository's [research-analysis doctrine](../docs/reviews/novelty-check-2026-09-16.md): if a
-claim has no entry here, it should not appear in a write-up.
+This ledger records the closed study's claims and hypotheses alongside the
+literature inspected at the time. It does not authorize further research.
+The [withdrawal](../docs/corrections/v1.4-withdrawn-2026-10-02.md) records the
+matched-cost audit and the decision to stop the paper.
 
 Confidence is about the *literature's* support for the claim, not about the project's internal evidence,
 which is recorded in the [study verdicts](../docs/results.md).
@@ -140,7 +141,7 @@ Confidence: MODERATE. The design-matters claim is well supported; the specific c
 ```
 
 ```
-Claim 10: A state-triggered recalibration policy beats a cycle-count clock.
+Claim 10 (withdrawn for this study): A state-triggered recalibration policy beats a cycle-count clock.
 Support: Andersen & Nielsen 2024 (C) largest observed advantage 45%, growing with life dispersion;
          Cheikh 2026 (C) quantile-based inspection beats block replacement on mean AND variability;
          Chen 2015 (C), Fauriat & Zio 2020 (C) for the policy machinery
@@ -151,8 +152,12 @@ Counter: de Jonge 2017 (C) the advantage shrinks with noisy measurements and ran
          cost model that survives that comparison
 Confidence: LOW-MODERATE, and conditional. Every comparison found assumes a CORRECTLY SPECIFIED condition
             signal. None models this project's actual situation -- a state-triggered policy whose state is
-            partly a clock. That regime is unquantified. See gaps.md item 5.
+            partly a clock.
 ```
+
+The project's [matched-cost audit](../data/sim/phaseD/matched_clock_audit.json)
+found identical schedules and errors for the clock and trigger. The literature
+above does not establish a sensing advantage in this simulation.
 
 ---
 

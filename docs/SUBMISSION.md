@@ -1,5 +1,10 @@
 # Citable Release Runbook — preprint v1.3
 
+> **Publication stopped.** The owner withdrew v1.4 and closed the study in the
+> [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md).
+> Do not execute the review, rendering, endorsement or deposit steps below.
+> The dated instructions are retained as history. [Current scope](../ROADMAP.md).
+
 > **Current decision: HOLD, reviewed 2026-09-06.** The historical GO and fallback
 > instructions below are superseded by the
 > [methods correction](corrections/v1.3-methods-2026-09-05.md).

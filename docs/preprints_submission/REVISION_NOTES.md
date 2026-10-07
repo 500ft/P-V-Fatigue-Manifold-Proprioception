@@ -1,5 +1,8 @@
 # Preprints.org revision notes
 
+These notes are historical. The [withdrawal decision](../corrections/v1.4-withdrawn-2026-10-02.md)
+supersedes the submission actions below; the study is closed.
+
 ## Revision scope
 
 The Preprints.org conversion changed manuscript structure, front matter, language,

@@ -1,18 +1,21 @@
 # Start here: Soft Actuator Recalibration
 
-This is a simulation-methodology repository with an unresolved publication
-correction, not a validated fatigue-monitoring device. Choose a reading path
-below. The [repository overview](../README.md) gives the short version.
+The simulation study is closed and v1.4 is withdrawn. At matched recalibration
+cost, a cycle-count clock ties the P-V trigger; see the
+[withdrawal](corrections/v1.4-withdrawn-2026-10-02.md) and
+[audit output](../data/sim/phaseD/matched_clock_audit.json). No physical actuator
+was measured. The [repository overview](../README.md) gives the short version.
 
 ## Recruiter or prospective supervisor: two minutes
 
 1. Read the [Study 3 trade-off and limits](results.md#study-3-recalibration-policy):
-   a state-dependent signal can reduce calibration events within the simulator.
+   the matched-cost audit removes the claimed advantage over counting cycles.
 2. Inspect the [recalibration plot](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-   and its [lineage](data-and-figures.md#study-3-recalibration-policy).
-3. Read the [author-review decisions](AUTHOR_REVIEW_DAY3.md). Retaining a negative
-   lead result and correcting an overstated method are part of the engineering
-   work, not completed hardware evidence.
+   and its [lineage](data-and-figures.md#study-3-recalibration-policy). This
+   historical figure omits the matched-cost clock that ties the trigger.
+3. Read the [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md).
+   The historical [author-review packet](AUTHOR_REVIEW_DAY3.md) is retained as
+   a record; its acceptance was withdrawn.
 
 The work demonstrates model construction, actuator-identity evaluation,
 policy comparison, and reproducible artifact checks. It does not establish
@@ -55,11 +58,10 @@ Check the separate publication gate:
 python -m scripts.check_publication_fallback --for-publication
 ```
 
-Expected while author review is unresolved: publication **BLOCKED**, exit **2**.
-Do not weaken that gate to make a release appear ready. The governing files are
-[publication-readiness.json](publication-readiness.json), the
-[correction](corrections/v1.3-methods-2026-09-05.md), and the
-[author packet](AUTHOR_REVIEW_DAY3.md).
+Expected after withdrawal: publication **BLOCKED**, exit **2**. No release is
+planned. The [readiness record](publication-readiness.json) retains that block;
+the [withdrawal](corrections/v1.4-withdrawn-2026-10-02.md) supersedes the
+historical author-review and deposit instructions.
 
 ### Local pytest startup workaround
 
@@ -103,8 +105,8 @@ therefore different tasks. Preserve differences for review instead of copying
 new outputs over the frozen source state. See the [packet](AUTHOR_REVIEW_DAY3.md).
 
 Reproduction uses known synthetic inputs and does not create a new held-out
-evaluation. Prospective v2 intervention studies remain separate from archived
-v1.x claims and must follow their [claim spine](specs/robosoft-v2/claim-spine.md).
+evaluation. The [v2 claim spine](specs/robosoft-v2/claim-spine.md) is retained as
+a historical proposal outside the closed scope in [ROADMAP.md](../ROADMAP.md).
 
 ## Contributor: pick a bounded change
 
@@ -129,10 +131,11 @@ what that sweep found — in short, strong preregistration discipline over a syn
 parameters are largely unsourced. **No result in this repository is validated against physical
 hardware.**
 
-The next bounded owner action is the [author review](AUTHOR_REVIEW_DAY3.md).
-There is no DOI, corrected-PDF approval, independent hardware validation, or
-prospective v2 result implied by a completed code review. The
-[review index](REVIEW_READY.md) links the supporting execution records.
+No manuscript-review or publication action remains in this scope. Any hardware
+study requires a separate owner decision. Local successor software preparation
+is recorded in the [decision](decisions/0002-successor-software-preparation.md);
+see [ROADMAP.md](../ROADMAP.md) and the [history index](history/README.md).
+The [review index](REVIEW_READY.md) links the historical execution records.
 
 ## September 11 completion correction
 

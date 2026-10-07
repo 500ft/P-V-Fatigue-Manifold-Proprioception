@@ -1,5 +1,10 @@
 # Citable-Release Fallback — Zenodo
 
+> **Publication stopped.** The [v1.4 withdrawal](corrections/v1.4-withdrawn-2026-10-02.md)
+> supersedes the correction-and-review path described below. No draft creation,
+> DOI reservation or deposit is planned. The dated instructions are retained as
+> history. [Current scope](../ROADMAP.md).
+
 > **Superseded operational instruction, 2026-09-05; reviewed 2026-09-06.**
 > Do not execute the archived August 2 deposit instruction below. A methods
 > correction blocks new posting of v1.3 even when its checksum passes.

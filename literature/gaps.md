@@ -1,5 +1,13 @@
 # Gaps: what the literature does not answer
 
+Current status: this is the closed study's historical gap inventory. Its proposed
+follow-ups are superseded in active scope, without resolving the open scientific
+questions. The [roadmap](../ROADMAP.md) and
+[successor decision](../docs/decisions/0002-successor-software-preparation.md)
+define the authorized software work and pending physical decisions.
+
+## Historical inventory
+
 Two kinds of item. **Actionable now** means the project can settle it in its own simulator or repository
 this week. **Needs an experiment** means no amount of analysis will close it.
 
