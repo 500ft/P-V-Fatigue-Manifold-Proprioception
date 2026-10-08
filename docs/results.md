@@ -10,7 +10,9 @@ below remain unchanged and synthetic. Archived v1.3 retains its
 The [successor preparation record](decisions/0002-successor-software-preparation.md)
 points to separate local metrology calculations and their theoretical figure.
 They contain no new actuator measurements. Historical extensions and assets are
-listed in the [history index](history/README.md).
+listed in the [history index](history/README.md). The unrun C2 implementation
+was removed with the obsolete plans; no executed result was removed. The
+[roadmap](../ROADMAP.md) records the adopted dependency order and pending inputs.
 
 ## Study 1: health-indicator validation
 

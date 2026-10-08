@@ -10,7 +10,7 @@ amendment targets the existing day-2 PR, not main. No owner/measurement gate clo
 
 Base: head of `task/priority-one-20260908` (PR #8). Deliverables: [`tests/test_figure_manifest.py`](../../tests/test_figure_manifest.py)
 and two additions to [`docs/figure-manifest.json`](../../docs/figure-manifest.json). Authoritative status:
-[SPRINT_TASKS.csv](../../docs/SPRINT_TASKS.csv).
+[SPRINT_TASKS.csv](../../docs/history/SPRINT_TASKS.csv).
 
 The manifest is what `docs/data-and-figures.md` calls the machine-readable companion and what an
 external regeneration audit runs from. Nothing checked it. Now seven tests hold it to the tree in

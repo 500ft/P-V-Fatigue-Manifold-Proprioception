@@ -1,7 +1,9 @@
 # Contributing
 
 Contributions should keep the simulation, generated artifacts, and manuscript
-numbers synchronized.
+numbers synchronized. The simulation study is closed; [ROADMAP.md](ROADMAP.md)
+defines its maintenance scope and points to the separate successor. Historical
+task lists and removed proposal commands do not authorize new experiments.
 
 ## Development setup
 

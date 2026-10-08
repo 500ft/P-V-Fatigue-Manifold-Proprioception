@@ -129,7 +129,7 @@ for name in sorted(set(changed + untracked)):
             continue
         target = unquote(target.split("#",1)[0])
         assert (path.parent / target).exists(), (name,target)
-assert subprocess.check_output(["git","show",BASE+":docs/SPRINT_TASKS.csv"]) == (root / "docs/SPRINT_TASKS.csv").read_bytes()
+assert subprocess.check_output(["git","show",BASE+":docs/SPRINT_TASKS.csv"]) == (root / "docs/history/SPRINT_TASKS.csv").read_bytes()
 active = sum(float(r["estimate_hours"]) for r in rows if r["day"] != "conditional")
 parked = sum(float(r["estimate_hours"]) for r in rows if r["day"] == "conditional" and r["estimate_hours"])
 unknown = sum(not r["estimate_hours"] for r in rows)

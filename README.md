@@ -74,14 +74,15 @@ scripts write under `data/`, so use a separate checkout.
 ## Separate successor preparation
 
 The owner authorized local software preparation for a new question: does
-qualified pressure retention improve prediction of independently measured
-functional failure beyond age and duty history on unseen manufacturing batches?
+qualified pressure retention predict independently measured functional loss
+within the next N cycles beyond cycle count and load history on unseen batches?
 Initial defect screening and advance warning remain separate questions.
 
 The executed work checks sensor resolution and ideal-gas pressure-decay
 calculations, with a theoretical metrology figure. It lives in a separate local
 repository while its public name is pending. The [decision and result location](docs/decisions/0002-successor-software-preparation.md)
-record what exists and how to reproduce it. Physical start, equipment, location,
+record what exists and how to reproduce it. The adopted dependency roadmap covers
+setup, qualification, pilot, frozen-batch confirmation and write-up. Physical start, equipment, location,
 budget and endpoint remain undecided. Blocked force is a proposed endpoint.
 
 This repository keeps the closed study and its audit. The [history index](docs/history/README.md)

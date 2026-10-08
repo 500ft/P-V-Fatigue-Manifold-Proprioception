@@ -64,3 +64,24 @@ No measured blank, known leak, compliant-specimen response or independent
 functional endpoint is available. The owner decisions in the [roadmap](../../ROADMAP.md)
 precede physical qualification. The calculations do not establish a useful
 failure precursor or authorize the later fatigue campaign.
+
+## Dependency-plan adoption and cleanup
+
+The owner subsequently authorized date-free dependency roadmaps and removal of
+obsolete active work. The successor's full roadmap is now committed locally at
+`978e5d3de9276d6e47b9060a39f644d4a841e606`, branch `cleanup/dependency-roadmap`,
+in the same independent repository above. Its metrology implementation, inputs,
+results, sources and figure are unchanged from the executed result recorded here.
+
+The adopted question is functional loss within N cycles on unseen batches.
+Setup and endpoint decisions precede one-channel acquisition, independent probe
+qualification, a development pilot, justified sizing and frozen whole-batch
+confirmation. Each milestone states prerequisites and completion evidence.
+The roadmap keeps the outgoing-flow sign and reference-state conditions,
+conditional thermal waiting rule, proposed endpoint and unqualified sensor
+specifications explicit.
+
+The [retirement record](../history/README.md#retired-active-material) lists the
+removed C2 extension, redundant plans and conceptual figure and links their
+pre-cleanup source. Recorded results remain reproducible. This adoption leaves
+all physical, funding, naming and publication decisions above unanswered.

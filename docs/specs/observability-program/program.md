@@ -3,6 +3,8 @@
 Current status: closed with the simulation study. The historical program below
 is retained for interpretation of its executed results. Unrun extensions,
 including Study C2, D and E, are superseded in active scope and remain unanswered.
+The C2 implementation was removed; its source snapshot and retained preregistration
+are explained in the [history index](../../history/README.md#retired-active-material).
 The [roadmap](../../../ROADMAP.md) is the current plan; the
 [successor decision](../../decisions/0002-successor-software-preparation.md)
 authorizes separate local software preparation only. Study B's later corrections
@@ -17,7 +19,7 @@ latent coordinate identifiable only before the acceleration onset — see the
 criterion iii (amended verdict A-PASS); Study C then ran under its amended trajectory design and records **C-FAIL**
 (6/10 held-out units within 0.10 life, 7/10 below the clock; [evidence](../../../evidence/next-five-2026-09-16/README.md)).
 Studies D and E remain gated; no transfer claim is made. Historical task status is recorded in
-[SPRINT_TASKS.csv](../../SPRINT_TASKS.csv) (rows PV-OBS-*). This program does not modify the frozen v1.3
+[SPRINT_TASKS.csv](../../history/SPRINT_TASKS.csv) (rows PV-OBS-*). This program does not modify the frozen v1.3
 release, the v1.4 candidate, PV-08, or the [RoboSoft v2 claim spine](../robosoft-v2/claim-spine.md).
 
 ## Audited state, verified against the tree on 2026-09-16
@@ -25,7 +27,7 @@ release, the v1.4 candidate, PV-08, or the [RoboSoft v2 claim spine](../robosoft
 | Claim in the program brief | Verified? | Evidence |
 |---|---|---|
 | Studies 1–4 reproduce to floating-point noise | Yes, with a caveat | 50/50 regenerated outputs identical between pre- and post-refactor code ([PV-R04](../../../evidence/ponytail-2026-09-14/README.md)); current-code regeneration still differs from the *committed* artifacts (documented drift, [START_HERE](../../START_HERE.md)). |
-| A RoboSoft 2027 manuscript exists, not submitted | Yes | `docs/preprint_v1_4_candidate.md`; [SUBMISSION.md](../../SUBMISSION.md) decision HOLD; deadline **2026-10-15** per [v2 scope](../robosoft-v2/scope.md). |
+| A RoboSoft 2027 manuscript exists, not submitted | Yes | `docs/preprint_v1_4_candidate.md`; [SUBMISSION.md](../../SUBMISSION.md) decision HOLD; deadline **2026-10-15** per [v2 scope](https://github.com/500ft/soft-actuator-recalibration/blob/f67118d2598910d9913ccd372c90a60cb8752e6b/docs/specs/robosoft-v2/scope.md). |
 | Submission task PV-11 is open | **No such row** | The ledger has no PV-11; submission is gated by PV-08 (author review) and the v2 must-haves. This program adds no submission row; it is the owner's decision. |
 | Normalised health indicator is invariant to every actuator parameter | Yes, exactly | `indicator_invariance_check` in `study3_cluster_ci_results.json`: max deviation 2.6e-14 across held-out units and 3.5e-13 across a wide (k1, k2, τ, rupture) sweep; per-actuator r 0.9570–0.9574. Mechanism: `degraded_sls` scales k2 by `loss_multiplier(u)`, which depends only on the canonical `FatigueParams` shared by every unit; normalising by the young value cancels k2. |
 

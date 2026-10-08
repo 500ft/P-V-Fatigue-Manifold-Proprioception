@@ -1,5 +1,10 @@
 # Study C2 — is the limitation the clock prior, the probe schedule, or the signal? (preregistration)
 
+Historical preregistration: the C2 grid was never run and its implementation is
+retired. Source links below pin the [pre-cleanup snapshot](https://github.com/500ft/soft-actuator-recalibration/tree/f67118d2598910d9913ccd372c90a60cb8752e6b),
+which also preserves the original preregistration bytes. The scientific rules
+below remain unchanged. Current work is governed by [ROADMAP.md](../../../ROADMAP.md).
+
 Frozen 2026-09-20 as task R2 of the [week plan](https://github.com/500ft/soft-actuator-recalibration/blob/27798940999732255c906180e7b479ca667f7952/docs/WEEKLY_RESEARCH_PLAN_2026-09-21.txt), **before any C2
 run exists**. R3 may not begin until this file has a commit hash; R4 may not begin until the owner has
 reviewed it or authorised execution.
@@ -145,6 +150,6 @@ seeds, schedule definitions, train/test indices, every per-unit row, output hash
 ## Status of the contract
 
 The parts of this design that must not drift are implemented as pure functions in
-[`pipeline/schedules.py`](../../../pipeline/schedules.py) and pinned by 46 acceptance tests in
+[`pipeline/schedules.py`](https://github.com/500ft/soft-actuator-recalibration/blob/f67118d2598910d9913ccd372c90a60cb8752e6b/pipeline/schedules.py) and pinned by 46 acceptance tests in
 `tests/test_schedules.py`, committed with this document and before the runner exists. R3 consumes them and
 does not redefine them.

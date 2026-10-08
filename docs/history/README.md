@@ -2,8 +2,9 @@
 
 The recalibration study is finished. The [matched-cost audit](../../data/sim/phaseD/matched_clock_audit.json)
 removed the claimed advantage over counting cycles; [v1.4 is withdrawn](../corrections/v1.4-withdrawn-2026-10-02.md).
-Original artifacts remain at their existing paths so reproduction commands and
-historical links keep working.
+Executed artifacts remain at their existing paths. The old sprint task ledger
+is retained byte-for-byte [here](SPRINT_TASKS.csv) as history, with no pending
+work assigned by it.
 
 | Retained material | Interpretation |
 |---|---|
@@ -18,3 +19,28 @@ The [successor decision](../decisions/0002-successor-software-preparation.md)
 records the new question and executed local software work. It does not reopen
 these historical manuscript or simulation tasks. The [roadmap](../../ROADMAP.md)
 is the only current plan.
+
+## Retired active material
+
+The [pre-cleanup tree](https://github.com/500ft/soft-actuator-recalibration/tree/f67118d2598910d9913ccd372c90a60cb8752e6b)
+retains removed source and documents:
+
+- `scripts/run_studyC2.py`, `pipeline/schedules.py` and their dedicated test
+  files. Import and command scans found no other executable consumers. C2 has
+  no committed study result; its stub tests were implementation checks only.
+  Study C and every executed-result generator remain. The C2 preregistration
+  remains as a historical scientific record; links to removed source now pin
+  this pre-cleanup tree without changing its rules.
+- `docs/REVISION_PLAN.md`, the original combined proposal, the RoboSoft v2 scope
+  and manuscript outline, and the completed evidence-gap implementation plan.
+  These were alternate instructions for retired or completed work. Scientific
+  corrections, experimental caveats, executed phase reports and frozen claim
+  spines remain in the tree.
+- `docs/media/project-overview.svg`, an unused conceptual illustration for the
+  retired proposal. Its artifact-specific presentation check was removed; link,
+  identity, alternative-text and original result-figure checks remain active.
+
+Historical references to removed paths describe the pre-cleanup tree. They are
+not commands to resume that work. No stored study result, manuscript/PDF, source
+license, holdout or CAD parameter was removed. CI workflows and dependencies
+remain because they serve the retained reproducibility and integrity checks.

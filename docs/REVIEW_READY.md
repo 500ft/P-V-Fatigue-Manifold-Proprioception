@@ -39,7 +39,7 @@ Final commit: this review packet's containing commit; its SHA is reported in the
 because a commit cannot embed its own identity. No deployment, publication,
 outreach or spending occurred. Original checkout/user changes were preserved.
 
-[Roadmap](https://github.com/500ft/soft-actuator-recalibration/blob/61f35233a87dfad9d713b688a1cd9db9b78fc881/docs/SPRINT_ROADMAP.md) · [Authoritative ledger](SPRINT_TASKS.csv) ·
+[Roadmap](https://github.com/500ft/soft-actuator-recalibration/blob/61f35233a87dfad9d713b688a1cd9db9b78fc881/docs/SPRINT_ROADMAP.md) · [Historical ledger](history/SPRINT_TASKS.csv) ·
 [Progress](SPRINT_PROGRESS.md) · [Selected candidate hashes](../evidence/sprint-2026-09-05/candidate.json).
 
 ## Latest follow-up — 2026-09-09

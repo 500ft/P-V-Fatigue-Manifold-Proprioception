@@ -153,7 +153,7 @@ post-onset probes, which makes that a useful negative condition rather than mere
 ### The contract is code, not prose
 
 The parts that must not drift during R3 are pure functions in
-[`pipeline/schedules.py`](../../pipeline/schedules.py), pinned by **46 acceptance tests**
+[`pipeline/schedules.py`](https://github.com/500ft/soft-actuator-recalibration/blob/f67118d2598910d9913ccd372c90a60cb8752e6b/pipeline/schedules.py), pinned by **46 acceptance tests**
 (`tests/test_schedules.py`) committed *before* the runner exists: the reference schedule reproduces Study
 C's cycles and seed namespace exactly; no schedule probes at or after rupture; every condition carries the
 baseline exactly once and de-duplicates; schedule ordinals are stable under insertion so adding a schedule

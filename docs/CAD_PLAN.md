@@ -6,7 +6,8 @@ Amended 2026-09-06 after source review. Planning only: no CAD, fixture, fabricat
 
 **Main-branch placement authorized — 2026-09-06 (America/New_York).** The owner explicitly requested merging these PRs to their respective main branches. This supersedes the earlier placement hold for this PR's current documents and prerequisite integrity changes; it is not a blanket policy for future private material. Hardware, measurement and disclosure gates remain unchanged. See [CAD_REVIEW_DISPOSITION.md](CAD_REVIEW_DISPOSITION.md).
 
-[CAD_TASKS.csv](CAD_TASKS.csv) is the sole CAD status ledger. [SPRINT_TASKS.csv](SPRINT_TASKS.csv) remains byte-preserved for the earlier integrity sprint. [Scope tiers](specs/cad-development/scope.md) and [reproduction checks](CAD_PLAN_CHECKS.md) describe this amendment, not physical validation.
+[CAD_TASKS.csv](CAD_TASKS.csv) is a historical CAD ledger. Current scope is set
+by [ROADMAP.md](../ROADMAP.md); no physical build is authorized. [SPRINT_TASKS.csv](history/SPRINT_TASKS.csv) remains byte-preserved for the earlier integrity sprint. [Scope tiers](specs/cad-development/scope.md) and [reproduction checks](CAD_PLAN_CHECKS.md) describe this amendment, not physical validation.
 
 ## Verified source context
 
