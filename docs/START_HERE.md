@@ -108,12 +108,14 @@ Reproduction uses known synthetic inputs and does not create a new held-out
 evaluation. The [v2 claim spine](specs/robosoft-v2/claim-spine.md) is retained as
 a historical proposal outside the closed scope in [ROADMAP.md](../ROADMAP.md).
 
-## Contributor: pick a bounded change
+## Contributor: maintain retained evidence
 
 Read [CONTRIBUTING.md](../CONTRIBUTING.md), then identify the relevant model,
 runner, test, and [figure-manifest](figure-manifest.json) entry before editing.
-For a defect, retain a failing reproduction and test the correction. For a
-research change, record the hypothesis and selection rule before new evaluation.
+For a defect, retain a failing reproduction and test the correction. The old
+study is closed. Unrun C2 code and obsolete proposal instructions were removed;
+see the [retirement record](history/README.md#retired-active-material). Successor
+work belongs to the separate local repository and its dependency roadmap.
 
 Keep historical manuscript titles and release artifacts intact during repository
 maintenance. A name change is explained in [REPOSITORY_IDENTITY.md](REPOSITORY_IDENTITY.md),

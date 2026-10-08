@@ -4,7 +4,7 @@ Historical protocol for the P-V fatigue / shared-manifold proprioception study.
 The project is closed under [ROADMAP.md](../ROADMAP.md); the unexecuted hardware
 steps below remain proposals and are not authorized work.
 This is the "how to actually test it" companion to
-[`Proposal_A01_A04_Combined.md`](Proposal_A01_A04_Combined.md). It encodes the
+[`Proposal_A01_A04_Combined.md`](https://github.com/500ft/soft-actuator-recalibration/blob/f67118d2598910d9913ccd372c90a60cb8752e6b/docs/Proposal_A01_A04_Combined.md). It encodes the
 decisions forced by [`Gate0_Coupling_Simulation.md`](Gate0_Coupling_Simulation.md).
 
 > The original gate ladder is retained below with its unsupported literature

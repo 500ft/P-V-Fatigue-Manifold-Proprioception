@@ -31,26 +31,16 @@ mass-edited just to remove the former name.
 The [README](../README.md) is the project overview.
 [Start here](START_HERE.md) offers short paths for readers, technical reviewers
 and contributors. Detailed claims remain in their source documents; an overview
-does not replace the authoritative protocol or task ledger.
+does not replace the [current roadmap](../ROADMAP.md). The old task ledger is
+[historical](history/SPRINT_TASKS.csv).
 
 ## Visual provenance
 
-The owner chose the committed
-[Study 3 recalibration plot](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-for the README because it shows the project's main comparison. The figure comes
-from simulation, not hardware. The [figure guide](data-and-figures.md#study-3-recalibration-policy)
-and [manifest](figure-manifest.json) record how it was made and which results
-support it.
-
-[`media/project-overview.svg`](media/project-overview.svg) is an original,
-editable conceptual diagram created for the repository presentation. It contains
-no measured values, synthetic plots or purported hardware photographs.
-Sources for its relationships: [Study results](results.md) and [figure provenance](data-and-figures.md).
-
-Each stage carries an explicit text label. Meaning does not depend on red/green
-color differences. The diagram has an SVG title and description. The README's
-Study 3 caption states the evidence limits. Existing analytical figures retain
-their original files, generators and provenance contracts.
+Original simulation figures remain in the [figure guide](data-and-figures.md)
+and [manifest](figure-manifest.json). The old conceptual overview was removed
+with the retired proposal. The policy plot remains historical evidence and
+omits the matched-cost clock that ties the trigger. No illustration in this
+repository represents successor hardware data.
 
 ## Keeping navigation reproducible
 
@@ -63,9 +53,9 @@ python tools/test_presentation.py
 
 CI runs these checks alongside the existing project gates. They check the README,
 reading guide, identity note, contribution guide and figure guide: local paths,
-anchors, canonical title/CI badge, image alternative text and SVG accessibility.
+anchors, canonical title/CI badge, image alternative text.
 Four offline cases confirm valid input passes while missing links, wrong anchors
-and identity/accessibility errors fail. This is a bounded presentation checker,
+and identity errors fail. This is a bounded presentation checker,
 not an exhaustive Markdown parser, external-link crawler or scientific validator.
 
 ## Presentation references
@@ -79,7 +69,7 @@ The organization is informed by these examples, reviewed September 10, 2026:
 - [gym-pybullet-drones](https://github.com/learnsyslab/gym-pybullet-drones):
   reproducible use, environment boundaries and source/citation entry points.
 
-The text and overview diagram are project-specific; no template screenshot,
+The text is project-specific; no template screenshot,
 branding, claim of adoption or unrelated technology badge is borrowed.
 These presentation changes do not change this repository's existing licensing,
 grant permission for hardware tests, or establish a publication/validation verdict.

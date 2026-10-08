@@ -11,7 +11,8 @@ These are historical figures from the closed study. The README no longer uses
 the unmatched-cost policy figure as its lead illustration. The separate local
 successor's calculated metrology figure is located through the
 [preparation record](decisions/0002-successor-software-preparation.md); it is
-outside this simulation registry.
+outside this simulation registry. The obsolete conceptual overview was removed;
+all registered result figures and their reproduction sources are retained.
 
 ## Data lineage
 

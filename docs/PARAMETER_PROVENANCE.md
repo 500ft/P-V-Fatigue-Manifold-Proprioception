@@ -179,4 +179,6 @@ none. Short of that:
 - A **sourced assumption** becomes defensible when the source's material, geometry and protocol are stated
   alongside the number, so a reader can judge transfer. The dispersion rows mostly lack this.
 
-Outstanding work: `PV-PROV-01` to `PV-PROV-04` in [`SPRINT_TASKS.csv`](SPRINT_TASKS.csv).
+Historical unexecuted items: `PV-PROV-01` to `PV-PROV-04` in [`SPRINT_TASKS.csv`](history/SPRINT_TASKS.csv).
+
+References to retired C2 source paths resolve in the [pre-cleanup tree](history/README.md#retired-active-material). The [roadmap](../ROADMAP.md) is the current plan.

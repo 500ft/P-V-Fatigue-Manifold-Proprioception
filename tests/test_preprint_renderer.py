@@ -71,7 +71,7 @@ class DestinationCollisionTests(unittest.TestCase):
     Every destination must be validated against every protected file and alias BEFORE any write,
     and the protected set re-verified AFTER the last write (the manifest)."""
     PROTECTED = [HIST, ROOT / "docs/publication-readiness.json", ROOT / "docs/preprint_v1.md", CAND, ROOT / "docs/results.md",
-                 ROOT / "docs/SPRINT_TASKS.csv", ROOT / "docs/specs/cad-development/scope.md"]
+                 ROOT / "docs/history/SPRINT_TASKS.csv", ROOT / "docs/specs/cad-development/scope.md"]
 
     def setUp(self):
         self.before = {p: sha(p) for p in self.PROTECTED}
@@ -122,7 +122,7 @@ class DestinationCollisionTests(unittest.TestCase):
     def test_nested_spec_sprint_ledger_and_consumed_figure_are_protected(self):
         # Review 2 (2026-09-12): the protected set scanned only top-level docs/ extensions.
         figs = R.consumed_figures(str(CAND)); self.assertGreater(len(figs), 0)
-        for dest in (ROOT / "docs/specs/cad-development/scope.md", ROOT / "docs/SPRINT_TASKS.csv", Path(figs[0]), ROOT / "docs/../" / Path(figs[0]).relative_to(ROOT)):
+        for dest in (ROOT / "docs/specs/cad-development/scope.md", ROOT / "docs/history/SPRINT_TASKS.csv", Path(figs[0]), ROOT / "docs/../" / Path(figs[0]).relative_to(ROOT)):
             self.assertTrue(dest.exists(), dest)
             self._refused(manifest=str(dest))
         # --output must be .pdf; the one tracked, non-archive PDF-typed protected target is the archive itself (covered above),
