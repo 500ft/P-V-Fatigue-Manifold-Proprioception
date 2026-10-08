@@ -1,0 +1,6 @@
+policy,label,mean_pose_rmse_mm,recalibrations_per_actuator
+fixed,Initial calibration only,0.4008204622019221,1.0
+clock_2700,"Clock: 2,700 cycles (train-selected)",0.20768526373482166,1.5
+clock_2400,"Clock: 2,400 cycles (matched cost)",0.057736511841020015,2.0
+trigger,P-V trigger: τ = 0.05,0.057736511841020015,2.0
+always,Calibration at every stage,0.018669907001729956,5.0

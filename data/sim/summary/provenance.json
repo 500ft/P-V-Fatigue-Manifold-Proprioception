@@ -1,0 +1,15 @@
+{
+  "evidence": "Saved simulation outputs only; no new evaluation or physical data",
+  "inputs_sha256": {
+    "data/sim/phaseD/matched_clock_audit.json": "dbc41725e6fae207557bd9ae6b7778fcf32b296087819411f184901583ee3179",
+    "data/sim/phaseD/study3_results.json": "128c17e9ad3b5c7e777f0b7d14e459e9af47567134453e1cc1fef3ea99b77341",
+    "data/sim/phaseD/study4_results.json": "63179a65ac1d2454274f52460ab26ec59d7d41234c5939dc6e014533dd3c8f3e"
+  },
+  "generator_sha256": "448fabcd2e9fb056e6ca23ae5fe953ed5ff71edf12d14d0343bc91a9582fc829",
+  "matplotlib_version": "3.11.2",
+  "visual_reference": {
+    "repository": "500ft/sensor-enclosure-thermal-design",
+    "commit": "bad572fc0902437445a5446bb5bc43098cc6211f"
+  },
+  "csv_note": "Generated views; original JSON remains the numeric source of truth."
+}
