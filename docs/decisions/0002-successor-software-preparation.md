@@ -69,7 +69,7 @@ failure precursor or authorize the later fatigue campaign.
 
 The owner subsequently authorized date-free dependency roadmaps and removal of
 obsolete active work. The successor's full roadmap is now committed locally at
-`93e40c9ff8ada334d83fe795fbd43de1206efa22`, branch `cleanup/dependency-roadmap`,
+`978e5d3de9276d6e47b9060a39f644d4a841e606`, branch `cleanup/dependency-roadmap`,
 in the same independent repository above. Its metrology implementation, inputs,
 results, sources and figure are unchanged from the executed result recorded here.
 
