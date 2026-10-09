@@ -12,7 +12,9 @@ simulation; no physical actuator has been measured.
 > [correction](docs/corrections/v1.3-methods-2026-09-05.md)). The v1.4
 > candidate was withdrawn on 2026-10-02 because its main claim doesn't survive a
 > comparison at matched cost ([withdrawal note](docs/corrections/v1.4-withdrawn-2026-10-02.md)).
-> The code and the original results are kept.
+> The code and the original results are kept. Maintenance theory predicts the
+> tie for units that share one degradation curve
+> ([why the tie was expected](docs/corrections/v1.4-withdrawn-2026-10-02.md#why-the-tie-was-expected-2026-10-09)).
 
 [![CI](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/500ft/soft-actuator-recalibration/actions/workflows/ci.yml)
 [![Evidence: simulation only](https://img.shields.io/badge/evidence-simulation_only-475569)](docs/results.md)

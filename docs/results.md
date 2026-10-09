@@ -2,7 +2,9 @@
 
 The simulation study is closed. The [matched-cost audit](../data/sim/phaseD/matched_clock_audit.json)
 found that a cycle-count clock ties the P-V trigger, prompting the
-[v1.4 withdrawal](corrections/v1.4-withdrawn-2026-10-02.md). The original results
+[v1.4 withdrawal](corrections/v1.4-withdrawn-2026-10-02.md). Maintenance theory
+predicts the tie for units that share one degradation curve
+([why the tie was expected](corrections/v1.4-withdrawn-2026-10-02.md#why-the-tie-was-expected-2026-10-09)). The original results
 below remain unchanged and synthetic. Archived v1.3 retains its
 [methods correction](corrections/v1.3-methods-2026-09-05.md); the
 [withdrawn candidate](preprint_v1_4_candidate.md) is kept as a record.

@@ -179,6 +179,14 @@ Andersen & Nielsen 2024 and Pedersen & Vatn 2022 are covered above.
   **Bearing:** the headline citation for this section. It names measurement accuracy and failure-level
   randomness as the two factors that erode a state-triggered policy's advantage toward parity with a clock —
   both of which the project has in abundance.
+- **Zhang, Lei & Shen 2016**: "How heterogeneity influences condition-based maintenance for gamma
+  degradation process," *International Journal of Production Research* 54(19):5829–5841.
+  DOI 10.1080/00207543.2016.1181282. **[3] [C] [search-snippet]** Added 2026-10-09 from the literature
+  review of that date. Studies a condition-based policy on a gamma degradation process whose parameters vary
+  between units. **Bearing:** with de Jonge 2017, the result that a condition-based trigger beats a clock only
+  when units differ in their degradation. Study 3 gave all 20 actuators one shared health curve, so the
+  [matched-cost tie](../docs/corrections/v1.4-withdrawn-2026-10-02.md#why-the-tie-was-expected-2026-10-09)
+  follows from the study design.
 - **Fauriat & Zio 2020** — "Optimization of an aperiodic sequential inspection and condition-based
   maintenance policy driven by value of information," *RESS* 204. DOI 10.1016/j.ress.2020.107133.
   **[3] [C] [search-snippet]** Uses value of information to schedule the next inspection aperiodically when
