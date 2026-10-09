@@ -7,12 +7,46 @@ outside its scope.
 
 The machine-readable companion is [`figure-manifest.json`](figure-manifest.json).
 
-These are historical figures from the closed study. The README no longer uses
-the unmatched-cost policy figure as its lead illustration. The separate local
-successor's calculated metrology figure is located through the
-[preparation record](decisions/0002-successor-software-preparation.md); it is
-outside this simulation registry. The obsolete conceptual overview was removed;
-all registered result figures and their reproduction sources are retained.
+## Active summaries and retained history
+
+The current README and result page use summaries of saved outputs. Regenerate
+only these views from the repository root:
+
+```sh
+python -m scripts.plot_result_summaries
+```
+
+This command reads committed JSON, writes PNG/SVG and full-precision CSV views
+under `data/sim/summary/`, and updates the marked policy tables in README and
+results. It does not import study runners, regenerate the dataset, fit a model
+or change a scientific result. [Input and generator hashes](../data/sim/summary/provenance.json)
+record the bytes used. Original JSON remains the numeric source of truth.
+
+| Current visual or table | Source and display choice | Historical material retained |
+|:---|:---|:---|
+| [Policy comparison](../data/sim/summary/policy_comparison.png), [SVG](../data/sim/summary/policy_comparison.svg), [CSV](../data/sim/summary/policy_comparison.csv) | Matched-cost audit plus saved Study 3 context policies. Aligned error/count panels; linear axes start at zero. Separate rows show the exact tie without covering either marker. | Original trade-off figure omits the matched-cost clock; retained for manuscript reproduction. |
+| [Trigger timing](../data/sim/summary/trigger_timing.png), [SVG](../data/sim/summary/trigger_timing.svg), [CSV](../data/sim/summary/trigger_timing.csv) | Saved per-actuator crossing estimates, unchanged order and exclusions. Paired crossings and signed lead use separate axes; connectors are not intervals. | Original dual-axis association figure and generator are retained. Recreating its source trajectories would require dataset regeneration, which this visual task does not perform. |
+| [Cross-talk](../data/sim/summary/cross_talk.png), [SVG](../data/sim/summary/cross_talk.svg), [CSV](../data/sim/summary/cross_talk.csv) | Saved resistance/compliance curves, default point and reference thresholds. Same curve selection as the original; log parameter ratio with explicit units. No inferred uncertainty. | Original Study 4 figure remains byte-preserved. |
+| README and result policy tables | Generated from the same rows used by the figure. Errors rounded to millimetre thousandths for display; event counts retain fractional cohort means. Full precision remains in JSON and exported CSV. | Manuscript tables and original reported values are unchanged. |
+| Other study figures, result tables and manuscript/release images | Retained as executed historical evidence. They are linked from the history/result records, not restyled through a research rerun. | All original numerical figures, frozen manuscripts and release assets are unchanged. |
+
+The visual reference is the inspected
+[enclosure source](https://github.com/500ft/sensor-enclosure-thermal-design/blob/bad572fc0902437445a5446bb5bc43098cc6211f/analysis/thermal_bias.py)
+and its `thermal_bias.png` and `thermal_transient_prediction.png` at that commit.
+These views use its white scientific background, coordinated panels, restrained
+grids and explicit evidence status. Marker shapes and line styles supplement
+color. There are no new error bars or confidence intervals. Displayed values
+were checked independently against source JSON and inspected at GitHub width.
+
+The [separate local metrology figure](decisions/0002-successor-software-preparation.md)
+is theoretical and outside this simulation registry. Its local source inputs
+and calculation output remain unchanged; its generated sensor table separates
+resolution from BFSL accuracy and typical total error band.
+
+## Historical figure reproduction
+
+The commands below reproduce historical studies and can overwrite their outputs.
+They are retained for reproducibility and were not run for this redesign.
 
 ## Data lineage
 

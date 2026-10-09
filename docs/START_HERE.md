@@ -10,9 +10,9 @@ was measured. The [repository overview](../README.md) gives the short version.
 
 1. Read the [Study 3 trade-off and limits](results.md#study-3-recalibration-policy):
    the matched-cost audit removes the claimed advantage over counting cycles.
-2. Inspect the [recalibration plot](../data/sim/phaseD/study3_fig4_recal_tradeoff.png)
-   and its [lineage](data-and-figures.md#study-3-recalibration-policy). This
-   historical figure omits the matched-cost clock that ties the trigger.
+2. Inspect the [matched-cost comparison](../data/sim/summary/policy_comparison.png)
+   and its [source tables and reproduction command](data-and-figures.md#active-summaries-and-retained-history).
+   Both tied policies are visible; counts include initial calibration.
 3. Read the [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md).
    The historical [author-review packet](AUTHOR_REVIEW_DAY3.md) is retained as
    a record; its acceptance was withdrawn.

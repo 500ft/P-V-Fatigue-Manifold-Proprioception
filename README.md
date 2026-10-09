@@ -36,13 +36,30 @@ produced.
 
 ## Results
 
-| Question | Answer | Source |
-| --- | --- | --- |
-| Does the P-V trigger beat counting cycles? | No. It meets the 0.159 mm budget with 2 recalibrations per actuator against 5 for always-on (0.058 mm), but a clock every 2,400 cycles gives exactly the same schedule and error. The 2,700-cycle clock Study 3 reported uses fewer recalibrations and misses the budget (0.21 mm). | [Audit](data/sim/phaseD/matched_clock_audit.json), [Study 3](data/sim/phaseD/study3_results.json) |
-| Does the trigger warn before the error passes the budget? | No. At the chosen threshold (τ = 0.05) it fires at 0.83 of life; the budget is passed at a median 0.71. That is a lead of −0.123 of life, late on all 6 held-out actuators. A lower threshold (τ = 0.01) fires early, median +0.346, at 3 recalibrations. | [Results](docs/results.md#study-3-recalibration-policy) |
-| Does the P-V loop track the drift? | Only by construction. r = 0.885 (95% interval 0.853–0.950 by actuator), but in this simulator normalized loop area is the compliance multiplier that drives the drift, read back out. | [Audit](data/sim/phaseD/matched_clock_audit.json), [Cluster results](data/sim/phaseD/study3_cluster_ci_results.json) |
-| What causes most of the pose error? | Fatigue drift in compliance. With a calibration made when the actuator was new, curvature error grows about a hundredfold over its life. Cross-talk through the shared air supply is second-order; a dynamic corrector for it improves error by about 0%. | [Results](docs/results.md#study-4-shared-manifold-sensitivity) |
-| Can pressure alone reveal fatigue across different actuators? | Not reliably. Study A passes only under an amended rule, Study B's post-onset precision is not established (its two resolution figures were withdrawn), and Study C's life estimator fails its transfer test. | [Observability studies](docs/specs/observability-program/program.md) |
+![Saved simulation policy comparison: the matched-cost clock and P-V trigger have equal pose error and calibration count](data/sim/summary/policy_comparison.png)
+
+Held-out point summaries from the [audit](data/sim/phaseD/matched_clock_audit.json)
+and [Study 3](data/sim/phaseD/study3_results.json). Counts include initial
+calibration; pose error averages life stages, then actuators. The dashed line is
+the train-derived error budget. [Download values](data/sim/summary/policy_comparison.csv).
+
+<!-- policy-summary:start -->
+| Policy | Mean pose RMSE [mm] | Calibrations / actuator |
+|:---|---:|---:|
+| Initial calibration only | 0.401 | 1.0 |
+| Clock: 2,700 cycles (train-selected) | 0.208 | 1.5 |
+| Clock: 2,400 cycles (matched cost) | 0.058 | 2.0 |
+| P-V trigger: τ = 0.05 | 0.058 | 2.0 |
+| Calibration at every stage | 0.019 | 5.0 |
+<!-- policy-summary:end -->
+
+| Question | Recorded interpretation | Evidence |
+|:---|:---|:---|
+| Does the P-V trigger beat counting cycles? | The matched-cost clock ties it exactly. | [Audit](data/sim/phaseD/matched_clock_audit.json) |
+| Does the deployed trigger warn before the error budget is crossed? | It fires late on every held-out actuator. | [Timing figure](docs/results.md#study-3-recalibration-policy) |
+| Does the P-V loop track drift? | The association is constructed by the shared fatigue law. | [Audit](data/sim/phaseD/matched_clock_audit.json) |
+| How does shared-manifold cross-talk vary? | It increases with supply resistance within the saved model sweep. | [Sensitivity figure](docs/results.md#study-4-shared-manifold-sensitivity) |
+| Does pressure-only fatigue estimation transfer across actuators? | Study C fails its transfer rule; Study B's post-onset precision remains unestablished. | [Observability record](docs/specs/observability-program/program.md) |
 
 ## Quick start
 
