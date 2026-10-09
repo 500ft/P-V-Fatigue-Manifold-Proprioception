@@ -107,36 +107,75 @@ def main():
 
 def _plots(outdir, sls, A, fpk, freqs, area_num, area_ana,
            tf, ct_const, ct_g0, ct_sls):
+    figstyle.apply()
+    C = figstyle.COLOR
+    note = (f"Simulation: standard-linear-solid wall, {A * 1e6:.0f} mL volume amplitude, "
+            f"τ = {sls.tau:g} s. No physical measurement.")
+
     # P-V loops at 0.1x, 1x, 10x the loss peak
-    fig, ax = plt.subplots(figsize=(6, 5))
-    for mult, c in [(0.1, "C0"), (1.0, "C3"), (10.0, "C2")]:
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 3.0))
+    shades = dict(zip((0.1, 10.0, 1.0), (figstyle.ramp(C["pv"], 5)[1], C["ref"], C["pv"])))
+    styles = {0.1: "--", 1.0: "-", 10.0: ":"}
+    for mult in (0.1, 10.0, 1.0):
         lp = pv_loop(fpk * mult, A, sls)
-        ax.plot(np.array(lp["V"]) * 1e6, np.array(lp["P"]) / 1e3, c,
-                label=f"f = {fpk*mult:.2f} Hz  (area {lp['area']*1e3:.2f} mJ)")
-    ax.set_xlabel("volume V  [mL]"); ax.set_ylabel("pressure P  [kPa]")
-    ax.set_title("Synthetic P-V hysteresis loops (SLS wall)")
-    ax.legend(fontsize=8); ax.grid(alpha=0.3)
-    fig.tight_layout(); fig.savefig(outdir / "fig_pv_loops.png", dpi=130); plt.close(fig)
+        ax.plot(np.array(lp["V"]) * 1e6, np.array(lp["P"]) / 1e3, styles[mult], color=shades[mult],
+                lw=1.6 if mult == 1.0 else 1.2,
+                label=f"{fpk * mult:.2f} Hz: {lp['area'] * 1e3:.1f} mJ")
+    ax.set_xlabel("Chamber volume (mL)")
+    ax.set_ylabel("Chamber pressure (kPa)")
+    ax.set_title("The loop is widest at the viscoelastic corner")
+    h, lab = ax.get_legend_handles_labels()
+    order = [0, 2, 1]                                  # list by frequency; the corner loop is drawn last
+    ax.legend([h[i] for i in order], [lab[i] for i in order], loc="upper left",
+              title="Drive frequency: loop area", alignment="left")
+    ax.margins(0.05)
+    figstyle.footnote(fig, note.replace(", τ", ",\nτ") + f" Corner f = 1/(2πτ) = {fpk:.2f} Hz.")
+    figstyle.save(fig, outdir / "fig_pv_loops", formats=("png",)); plt.close(fig)
 
     # loop area vs frequency: numeric vs analytic
-    fig, ax = plt.subplots(figsize=(6.5, 4.3))
-    ax.semilogx(freqs, area_num * 1e3, "o", ms=4, label="numerical (∮P dV)")
-    ax.semilogx(freqs, area_ana * 1e3, "-", label="analytic SLS dissipation")
-    ax.axvline(fpk, ls="--", c="k", alpha=0.4, label=f"f_peak = 1/(2πτ) = {fpk:.2f} Hz")
-    ax.set_xlabel("frequency [Hz]"); ax.set_ylabel("loop area [mJ/cycle]")
-    ax.set_title("Loop area vs frequency (peaks at the viscoelastic corner)")
-    ax.legend(fontsize=8); ax.grid(which="both", alpha=0.3)
-    fig.tight_layout(); fig.savefig(outdir / "fig_loop_area_vs_freq.png", dpi=130); plt.close(fig)
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    ax.plot(freqs, area_ana * 1e3, "-", color=C["ref"], lw=1.2, zorder=1)
+    ax.plot(freqs, area_num * 1e3, "o", color=C["pv"], ms=4, mec="white", mew=0.5, zorder=2)
+    ax.set_xscale("log")
+    ax.set_xticks([0.1, 1, 10], ["0.1", "1", "10"])
+    ax.axvline(fpk, ls="--", c=C["ref"], lw=0.8)
+    ax.annotate(f"corner {fpk:.2f} Hz", (fpk, 0.02), xycoords=("data", "axes fraction"), xytext=(4, 0),
+                textcoords="offset points", fontsize=figstyle.SIZE["note"], color=C["ref"])
+    i = int(np.argmin(np.abs(freqs - 8)))
+    figstyle.end_label(ax, freqs[i], area_ana[i] * 1e3, "analytic SLS\ndissipation", C["ref"], dx=8, dy=10)
+    j = int(np.argmin(np.abs(freqs - 0.55)))
+    figstyle.end_label(ax, freqs[j], area_num[j] * 1e3, "numerical ∮P dV", C["pv"], dx=-7, dy=4, ha="right")
+    ax.set_xlabel("Drive frequency (Hz)")
+    ax.set_ylabel("Loop area (mJ per cycle)")
+    ax.set_title("Numerical loop area matches the analytic dissipation")
+    ax.set_ylim(0, None)
+    ax.margins(x=0.04)
+    rel = np.abs(area_num - area_ana) / np.maximum(area_ana, 1e-30)
+    figstyle.footnote(fig, note.replace(", τ", ",\nτ") + f" {len(freqs)} frequencies; "
+                      f"largest relative error {rel.max() * 100:.2f} %.")
+    figstyle.save(fig, outdir / "fig_loop_area_vs_freq", formats=("png",)); plt.close(fig)
 
     # Gate 0 consistency
-    fig, ax = plt.subplots(figsize=(6.5, 4.3))
-    ax.semilogx(tf, ct_g0 * 100, "k-", lw=2, label="Gate 0 model (constant C)")
-    ax.semilogx(tf, ct_const * 100, "C1--", lw=2, label="SLS network, constant C=1/k1")
-    ax.semilogx(tf, ct_sls * 100, "C3-", label="SLS network, full viscoelastic C(ω)")
-    ax.set_xlabel("frequency [Hz]"); ax.set_ylabel("cross-talk |H21/H11| [%]")
-    ax.set_title("Tie-back: SLS network reduces to Gate 0 in the constant-C limit")
-    ax.legend(fontsize=8); ax.grid(which="both", alpha=0.3)
-    fig.tight_layout(); fig.savefig(outdir / "fig_gate0_consistency.png", dpi=130); plt.close(fig)
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    ax.plot(tf, ct_g0 * 100, "-", color=C["ref"], lw=2.6, zorder=1)
+    ax.plot(tf, ct_const * 100, "--", color=C["compliance"], lw=1.3, zorder=2)
+    ax.plot(tf, ct_sls * 100, "-", color=C["pv"], lw=1.3, zorder=3)
+    ax.set_xscale("log")
+    ax.set_xticks([0.01, 0.1, 1, 10, 100], ["0.01", "0.1", "1", "10", "100"])
+    k = int(np.argmin(np.abs(tf - 1.2)))
+    ax.annotate("Gate 0 model and\nSLS network with\nconstant C = 1/k1", (tf[k], ct_g0[k] * 100), xytext=(0.012, 10.0),
+                fontsize=figstyle.SIZE["note"], color=C["ref"], ha="left", va="center",
+                arrowprops=dict(arrowstyle="-", lw=0.6, color=C["ref"], shrinkA=2, shrinkB=2))
+    m = int(np.argmin(np.abs(tf - 5)))
+    figstyle.end_label(ax, tf[m], ct_sls[m] * 100, "SLS network,\nfrequency-dependent C(ω)", C["pv"], dx=6, dy=-14)
+    ax.set_xlabel("Drive frequency (Hz)")
+    ax.set_ylabel("Cross-talk |H21/H11| (%)")
+    ax.set_title("With constant compliance the SLS network is Gate 0")
+    ax.margins(x=0.03)
+    err = float(np.max(np.abs(ct_const - ct_g0)))
+    figstyle.footnote(fig, "Simulation: three-chamber network with an SLS wall. Largest gap between\n"
+                      f"Gate 0 and the constant-C network: {err:.1e} (cross-talk ratio).")
+    figstyle.save(fig, outdir / "fig_gate0_consistency", formats=("png",)); plt.close(fig)
 
 
 if __name__ == "__main__":

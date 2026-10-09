@@ -9,6 +9,15 @@ The machine-readable companion is [`figure-manifest.json`](figure-manifest.json)
 
 ## Active summaries and retained history
 
+Every figure under `data/gate0/` and `data/sim/` uses the shared style in
+[`scripts/figstyle.py`](../scripts/figstyle.py): three font sizes, one colour per
+entity in every figure, a simulation footnote with n and the fixed conditions,
+300-dpi PNG and dateless PDF or SVG. Vermillion marks the P-V signal and methods
+built on it, blue the cycle-count clock, and grays the reference policies. The
+owner asked for this pass on 2026-10-09. Redrawing changed no result; the
+[redraw commands](#redraw-every-figure) read saved JSON or rerun a deterministic
+script whose JSON output is byte-identical.
+
 The current README and result page use summaries of saved outputs. Regenerate
 only these views from the repository root:
 
@@ -28,25 +37,55 @@ record the bytes used. Original JSON remains the numeric source of truth.
 | [Trigger timing](../data/sim/summary/trigger_timing.png), [SVG](../data/sim/summary/trigger_timing.svg), [CSV](../data/sim/summary/trigger_timing.csv) | Saved per-actuator crossing estimates, unchanged order and exclusions. Paired crossings and signed lead use separate axes; connectors are not intervals. | Original dual-axis association figure and generator are retained. Recreating its source trajectories would require dataset regeneration, which this visual task does not perform. |
 | [Cross-talk](../data/sim/summary/cross_talk.png), [SVG](../data/sim/summary/cross_talk.svg), [CSV](../data/sim/summary/cross_talk.csv) | Saved resistance/compliance curves, default point and reference thresholds. Same curve selection as the original; log parameter ratio with explicit units. No inferred uncertainty. | Original Study 4 figure remains byte-preserved. |
 | README and result policy tables | Generated from the same rows used by the figure. Errors rounded to millimetre thousandths for display; event counts retain fractional cohort means. Full precision remains in JSON and exported CSV. | Manuscript tables and original reported values are unchanged. |
-| Other study figures, result tables and manuscript/release images | Retained as executed historical evidence. They are linked from the history/result records, not restyled through a research rerun. | All original numerical figures, frozen manuscripts and release assets are unchanged. |
+| Study figures under `data/gate0/` and `data/sim/` | Redrawn with the shared style from saved results; same paths, formats and plotted values. | The archived v1.3 PDF and the Preprints.org package in `docs/preprints_submission/` keep the original figures. |
 
-The visual reference is the inspected
-[enclosure source](https://github.com/500ft/sensor-enclosure-thermal-design/blob/bad572fc0902437445a5446bb5bc43098cc6211f/analysis/thermal_bias.py)
-and its `thermal_bias.png` and `thermal_transient_prediction.png` at that commit.
-These views use its white scientific background, coordinated panels, restrained
-grids and explicit evidence status. Marker shapes and line styles supplement
-color. There are no new error bars or confidence intervals. Displayed values
-were checked independently against source JSON and inspected at GitHub width.
+Marker shapes and line styles supplement colour. There are no new error bars or
+confidence intervals; intervals appear only where a saved result contains them.
+Displayed values were checked against source JSON. `provenance.json` still names
+the enclosure commit that set the first layout of these three summaries.
 
 The [separate local metrology figure](decisions/0002-successor-software-preparation.md)
 is theoretical and outside this simulation registry. Its local source inputs
 and calculation output remain unchanged; its generated sensor table separates
 resolution from BFSL accuracy and typical total error band.
 
+## Redraw every figure
+
+Run from the repository root. None of these commands changes a committed JSON
+file.
+
+```sh
+python -m scripts.gate0_lumped_rc                 # 2 s; rewrites the same gate0_results.json
+python -m scripts.phaseA_plant_demo               # 2 s; rewrites the same phaseA_results.json
+python -m scripts.phaseB_fatigue_demo --replot
+python -m scripts.run_study1 --replot
+python -m scripts.run_study2 --replot
+python -m scripts.phaseD_dataset                  # 51 s; the next two read the dataset
+python -m scripts.run_study3 --replot
+python -m scripts.run_study3_cluster_ci --replot
+python -m scripts.run_study4                      # 10 s; rewrites the same study4_results.json
+python -m scripts.run_studyA                      # 38 s; rewrites the same studyA_results.json
+python -m scripts.run_studyB --replot
+python -m scripts.run_studyB_structural --replot
+python -m scripts.run_studyC --replot
+python -m scripts.analyze_studyC_failure --replot
+python -m scripts.run_dispersion_audit --replot
+python -m scripts.plot_result_summaries
+```
+
+`--replot` redraws figures and writes no result files. Most scripts draw from
+the saved result. The Study 3 and cluster-interval redraws recompute their
+per-actuator curves from the regenerated dataset, and Phase B recomputes its
+deterministic curves. A full Phase B run would add a `fatigue_exponent` entry to
+`phaseB_results.json`. Full runs of Studies 1, 2 and 3 do not reproduce
+their committed JSON byte for byte (see the reproduction caveat in the
+[observability program](specs/observability-program/program.md)), so the redraw
+does not use them.
+
 ## Historical figure reproduction
 
 The commands below reproduce historical studies and can overwrite their outputs.
-They are retained for reproducibility and were not run for this redesign.
+They are retained for reproducibility and were not run for the figure redraw.
 
 ## Data lineage
 
@@ -148,7 +187,7 @@ python -m scripts.phaseD_dataset
 
 The policy plot uses the train-selected clock and omits the matched-cost clock
 that coincides with the trigger; see [matched_clock_audit.json](../data/sim/phaseD/matched_clock_audit.json).
-The original plot is retained without regeneration.
+Its redrawn footnote points to the matched-cost summary.
 
 ## Study 4: network sensitivity
 

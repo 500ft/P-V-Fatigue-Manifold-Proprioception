@@ -8,7 +8,7 @@ work assigned by it.
 
 | Retained material | Interpretation |
 |---|---|
-| [Results](../results.md), [figure lineage](../data-and-figures.md), [simulation outputs](../../data/sim/) | Synthetic results and original figures; the policy plot omits the clock that ties at matched cost |
+| [Results](../results.md), [figure lineage](../data-and-figures.md), [simulation outputs](../../data/sim/) | Synthetic results and their figures, redrawn without rerunning a study; the policy plot omits the clock that ties at matched cost |
 | [Simulator](../../sim/), [pipeline](../../pipeline/), [runners](../../scripts/), [checks](../../tests/) | Reproducible software; see [commands](../START_HERE.md#reviewer-reproduce-the-checks) |
 | [v1.3 source](../preprint_v1.md), [v1.3 correction](../corrections/v1.3-methods-2026-09-05.md), [v1.4 candidate](../preprint_v1_4_candidate.md), [review record](../REVIEW_READY.md) | Historical manuscript and decision records; no release action is pending |
 | [Observability program](../specs/observability-program/program.md), [v2 claim spine](../specs/robosoft-v2/claim-spine.md), [gap inventory](../../literature/gaps.md) | Proposed extensions are superseded in active scope. Unrun questions remain unanswered; the frozen claims are preserved as written |

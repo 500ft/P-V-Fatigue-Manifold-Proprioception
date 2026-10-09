@@ -124,22 +124,65 @@ def main():
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         return
-    fig, (a, b) = plt.subplots(1, 2, figsize=(9.5, 3.4))
+    C, S = figstyle.COLOR, figstyle.SIZE
+    life = np.asarray(LIFE)
+    mid = life >= 0.5
+    fig = plt.figure(figsize=(figstyle.FULL, 3.0))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.25, 1], wspace=0.42, hspace=0.6)
+    a = fig.add_subplot(gs[:, 0])
+    b = fig.add_subplot(gs[0, 1])
+    c = fig.add_subplot(gs[1, 1], sharex=b)
     for h in meas.mean(axis=2):
-        a.plot(LIFE, h, "-", lw=0.8, alpha=0.6)
-    a.axhline(1.0 + TAU_TRIGGER, ls="--", color="k", lw=0.8)
-    a.set_xlabel("normalized life"); a.set_ylabel("measured P-V loop area / young")
-    a.set_title(f"{N_UNITS} dispersed units, fixed {F_PROBE_HZ:g} Hz probe")
-    b.plot(LIFE, m["ratio"], "o-", label="SD between / SD within")
-    b.plot(LIFE, m["icc"], "s-", label="ICC(1)")
-    b.axhline(2.0, ls=":", color="k", lw=0.8); b.axhline(0.5, ls=":", color="k", lw=0.8)
-    b.set_xlabel("normalized life"); b.set_title(f"verdict: {v}"); b.legend()
-    fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "studyA_fig_indicator_spread")); plt.close(fig)
-    fig, ax = plt.subplots(figsize=(6.0, 3.2))
-    names = list(ablation); ax.bar(names, [ablation[n]["ideal_sd_between_u090"] for n in names])
-    ax.set_ylabel("ideal SD between units at u = 0.9"); ax.set_title("one-axis ablation (others canonical)")
-    ax.tick_params(axis="x", rotation=45)
-    fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "studyA_fig_ablation")); plt.close(fig)
+        a.plot(LIFE, h, "-", lw=0.7, color=C["unit"], alpha=0.8)
+    a.axhline(1.0 + TAU_TRIGGER, ls="--", color=C["pv"], lw=0.9)
+    a.text(LIFE[0], 1.0 + TAU_TRIGGER + 0.002, f"trigger at τ = {TAU_TRIGGER:g}", fontsize=S["note"],
+           color=figstyle.ink(C["pv"]), va="bottom")
+    a.set_xlabel("Normalized life")
+    a.set_ylabel("Measured P-V loop area / young")
+    a.set_title(f"{N_UNITS} dispersed units fan out after mid-life")
+    a.margins(x=0.02)
+    ratio, icc = np.asarray(m["ratio"]), np.asarray(m["icc"])
+    b.plot(LIFE, ratio, "o-", color=C["always"], ms=3)
+    b.axhline(2.0, ls=":", color=C["ref"], lw=0.8)
+    b.text(LIFE[-1], 2.6, "criterion 2", fontsize=S["note"], color=C["ref"], ha="right", va="bottom")
+    b.set_ylabel("SD ratio,\nbetween / within")
+    b.set_title(f"From mid-life units differ {ratio[mid].min():.0f}–{ratio[mid].max():.0f}× more than noise")
+    c.plot(LIFE, icc, "o-", color=C["always"], ms=3)
+    c.axhline(0.5, ls=":", color=C["ref"], lw=0.8)
+    c.text(LIFE[-1], 0.42, "criterion 0.5", fontsize=S["note"], color=C["ref"], ha="right", va="top")
+    c.set_ylabel("ICC(1)")
+    c.set_ylim(-0.35, 1.1)
+    c.set_xlabel("Normalized life")
+    plt.setp(b.get_xticklabels(), visible=False)
+    c.set_title(f"ICC stays at or above {np.floor(icc[mid].min() * 100) / 100:.2f} from mid-life")
+    figstyle.panel_letter(a, "a", dx=-40)
+    figstyle.panel_letter(b, "b", dx=-60)
+    figstyle.panel_letter(c, "c", dx=-60)
+    figstyle.footnote(fig, f"Simulation: {N_UNITS} synthetic units with assumed degradation-law and plant dispersion, "
+                      f"fixed {F_PROBE_HZ:g} Hz probe, {REPEATS} repeats per stage. Preregistered verdict {v} on its "
+                      f"timing criterion: trigger-life SD {trigger_sd:.3f} life.")
+    figstyle.save(fig, os.path.join(DATA, "studyA_fig_indicator_spread")); plt.close(fig)
+
+    names = {"none": "none (all canonical)", "rupture": "rupture life", "mullins": "Mullins softening",
+             "fatigue_law": "degradation law", "leak": "leak", "tau": "time constant τ", "stiffness": "stiffness",
+             "thickness": "wall thickness", "temperature": "temperature"}
+    rows = sorted(ablation, key=lambda k: -ablation[k]["ideal_sd_between_u090"])
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.8))
+    for y, k in enumerate(rows):
+        val = ablation[k]["ideal_sd_between_u090"]
+        ax.plot([0, val], [y, y], color="#BDBDBD", lw=1.0, zorder=1)
+        ax.plot(val, y, "o", color=C["pv"] if val > 1e-9 else C["fixed"], ms=5, zorder=2)
+        ax.annotate(f"{val:.2g}" if val > 1e-9 else "≈ 0", (val, y), xytext=(6, 0), textcoords="offset points",
+                    va="center", fontsize=S["note"], color="#222222")
+    ax.set_yticks(range(len(rows)), [names.get(k, k) for k in rows])
+    ax.set_ylim(len(rows) - 0.5, -0.5)
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlim(-0.0004, max(ablation[k]["ideal_sd_between_u090"] for k in rows) * 1.3)
+    ax.set_xlabel("Noise-free SD between units at u = 0.9")
+    ax.set_title("The degradation law drives the spread;\nplant parameters add nothing")
+    figstyle.footnote(fig, f"Simulation: {N_UNITS} units, one dispersion axis switched on at a time, all others "
+                      "canonical; values below 10⁻⁹ shown as ≈ 0.")
+    figstyle.save(fig, os.path.join(DATA, "studyA_fig_ablation")); plt.close(fig)
     print(f"results + figures -> {DATA}/")
 
 

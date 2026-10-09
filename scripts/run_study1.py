@@ -405,7 +405,14 @@ def main(argv=None):
     parser.add_argument("--trials", type=int, default=200)
     parser.add_argument("--calibration", type=int, default=5000)
     parser.add_argument("--quick", action="store_true", help="small smoke grid")
+    parser.add_argument("--replot", action="store_true",
+                        help="redraw the figures from the saved study1_results.json; no recomputation")
     args = parser.parse_args(argv)
+    if args.replot:
+        outdir = REPO / "data" / "sim" / "study1"
+        _plots(outdir, json.loads((outdir / "study1_results.json").read_text()))
+        print("replotted from the saved result")
+        return 0
     if args.trials <= 0 or args.calibration < 10:
         parser.error("trials must be positive and calibration >= 10")
 
@@ -514,7 +521,7 @@ def main(argv=None):
     (outdir / "study1_results.json").write_text(json.dumps(_json_safe(result), indent=2))
 
     if plt is not None:
-        _plots(outdir, result, representative_clean, base_sls, frequency, amplitude)
+        _plots(outdir, result)
 
     print("=" * 76)
     print("PHASE C / STUDY 1 — causal health indicators + onset identifiability")
@@ -527,72 +534,130 @@ def main(argv=None):
     return 0 if result["verdict"] == "PASS" else 1
 
 
-def _plots(outdir, result, representative_clean, base_sls, frequency, amplitude):
+def _plots(outdir, result):
+    figstyle.apply()
+    C, S = figstyle.COLOR, figstyle.SIZE
+    proto = result["registered_protocol"]
+    trials = proto["evaluation_trials"]
+
     fusion = result["fusion_comparison"]
     cycles = np.asarray(fusion["cycles"])
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    ax.plot(cycles, fusion["fused_hi"], label="oriented z-mean")
-    ax.plot(cycles, fusion["area_hi"], label="area")
-    ax.plot(cycles, fusion["compliance_hi"], label="compliance")
-    ax.set(xlabel="cycles", ylabel="baseline-normalized HI [-]",
-           title="Synthetic early-HI comparison (0.25% FS noise)")
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_hi_fusion_comparison.png", dpi=130); plt.close(fig)
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    for key, label, color in (("area_hi", "loop area", C["pv"]), ("fused_hi", "fused z-mean", C["fused"]),
+                              ("compliance_hi", "compliance", C["compliance"])):
+        y = np.asarray(fusion[key])
+        ax.plot(cycles, y, color=color)
+        figstyle.end_label(ax, cycles[-1], y[-1], label, color)
+    ax.set_xlabel("Cycles")
+    ax.set_ylabel("Health index above baseline\n(baseline noise SDs)")
+    ax.set_title("Loop area rises furthest above its baseline")
+    ax.margins(x=0.02)
+    mono = fusion["monotonicity"]
+    figstyle.footnote(fig, "Simulation: one synthetic life at 0.25 % FS pressure noise. Monotonicity: loop area "
+                      f"{mono['area']:.2f}, fused {mono['fused']:.2f}, compliance {mono['compliance']:.2f}.")
+    figstyle.save(fig, outdir / "fig_hi_fusion_comparison", formats=("png",)); plt.close(fig)
 
     recovery = result["recovery"]
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    for feature in ("loop_area", "compliance"):
-        ax.plot([r["cycles"] for r in recovery],
-                [r["fits"][feature]["tau_s"] / 3600 for r in recovery], "o-", label=feature)
-    ax.axhline(24, ls="--", c="k", alpha=0.5, label="injected 24 h")
-    ax.set(xlabel="life cycle", ylabel="recovered tau [h]",
-           title="Cross-rest recovery fit is life-invariant by construction")
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.3))
+    life = [r["cycles"] for r in recovery]
+    ax.axhline(24, ls="--", lw=0.8, color=C["ref"])
+    ax.text(life[0], 24.04, "injected 24 h", fontsize=S["note"], color=C["ref"], va="bottom")
+    for feature, label, color, marker in (("loop_area", "loop-area fit", C["pv"], "o"),
+                                          ("compliance", "compliance fit", C["compliance"], "x")):
+        ax.plot(life, [r["fits"][feature]["tau_s"] / 3600 for r in recovery], marker=marker, ls="none",
+                color=color, ms=6 if marker == "o" else 7, mew=1.4, label=label)
+    ax.set_xticks(life, [f"{c:,.0f}" for c in life])
     ax.set_ylim(23.5, 24.5)
     ax.ticklabel_format(axis="y", style="plain", useOffset=False)
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_recovery_validation.png", dpi=130); plt.close(fig)
+    ax.set_xlabel("Life stage of the rest test (cycles)")
+    ax.set_ylabel("Recovered time constant τ (h)")
+    ax.set_title("The recovery fit returns the injected τ at every stage")
+    ax.legend(loc="lower right", ncol=2)
+    ax.margins(x=0.12)
+    err = max(r["fits"][f]["tau_relative_error"] for r in recovery for f in ("loop_area", "compliance"))
+    figstyle.footnote(fig, f"Simulation: injected recovery τ = 24 h, recovered without noise, so the match holds by "
+                      f"construction. Largest relative error {err:.1e}.")
+    figstyle.save(fig, outdir / "fig_recovery_validation", formats=("png",)); plt.close(fig)
 
     fixture = result["metric_fixtures"]
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    labels = ["Mon clean", "Mon dip", "Trend self", "Trend corrupt", "Prog spread"]
-    values = [fixture["monotonicity_clean"], fixture["monotonicity_recovery_dip"],
-              fixture["trendability_self_similar"], fixture["trendability_corrupted"],
-              fixture["prognosability_known_spread"]["value"]]
-    ax.bar(labels, values); ax.set_ylim(0, 1.05); ax.tick_params(axis="x", rotation=20)
-    ax.set(ylabel="metric [-]", title="Known-ground-truth HI metric fixtures")
-    ax.grid(axis="y", alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_metric_fixtures.png", dpi=130); plt.close(fig)
+    rows = [("Monotonicity", "clean trajectory", fixture["monotonicity_clean"]),
+            ("Monotonicity", "recovery dip", fixture["monotonicity_recovery_dip"]),
+            ("Trendability", "self-similar units", fixture["trendability_self_similar"]),
+            ("Trendability", "corrupted unit", fixture["trendability_corrupted"]),
+            ("Prognosability", "known end-of-life spread", fixture["prognosability_known_spread"]["value"])]
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.3))
+    for y, (metric, case, value) in enumerate(rows):
+        bad = case in ("recovery dip", "corrupted unit")
+        col = C["ref"] if bad else C["fused"]
+        ax.plot([0, value], [y, y], color="#BDBDBD", lw=1.0, zorder=1)
+        ax.plot(value, y, "o", color=col, mfc="white" if bad else col, mew=1.2, ms=5.5, zorder=2)
+        ax.annotate(f"{value:.2f}", (value, y), xytext=(6, 0), textcoords="offset points", va="center",
+                    fontsize=S["note"], color=col)
+    ax.set_yticks(range(len(rows)), [f"{m}: {c}" for m, c, _ in rows])
+    ax.set_ylim(len(rows) - 0.5, -0.5)
+    ax.set_xlim(0, 1.18)
+    ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlabel("Metric value (1 = ideal)")
+    ax.set_title("Monotonicity and trendability drop\non their corrupted fixtures")
+    figstyle.footnote(fig, "Synthetic fixtures with known ground truth; open circles mark the deliberately "
+                      "corrupted cases.")
+    figstyle.save(fig, outdir / "fig_metric_fixtures", formats=("png",)); plt.close(fig)
 
     conditions = result["conditions"]
-    selected = [c for c in conditions if c["onset_fraction"] == 0.70
-                and c["cadence_cycles"] == 100]
-    fig, ax = plt.subplots(figsize=(7.5, 4.8))
-    for generator in sorted({(c["generator"], c["logistic_sharpness"]) for c in selected}):
-        rows = [c for c in selected if (c["generator"], c["logistic_sharpness"]) == generator]
-        rows.sort(key=lambda c: c["noise_percent_fs_sigma"])
-        label = generator[0] if generator[1] is None else f"logistic k={generator[1]:g}"
-        ax.plot([r["noise_percent_fs_sigma"] for r in rows],
-                [r["models"]["segmented_quadratic"]["median_absolute_onset_error"] for r in rows],
-                "o-", label=label)
-    ax.set(xlabel="pressure noise sigma [% FS]", ylabel="median |onset error| [life fraction]",
-           title="Segmented-estimator inverse-crime/generalization gap")
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_onset_generalization_gap.png", dpi=130); plt.close(fig)
+    selected = [c for c in conditions if c["onset_fraction"] == 0.70 and c["cadence_cycles"] == 100]
+    gens = sorted({(c["generator"], c["logistic_sharpness"]) for c in selected},
+                  key=lambda g: (g[0] != "quadratic", g[1] or 0))
+    blues = figstyle.ramp(C["onset"], len(gens) + 1)[2:]
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    for generator in gens:
+        rows = sorted((c for c in selected if (c["generator"], c["logistic_sharpness"]) == generator),
+                      key=lambda c: c["noise_percent_fs_sigma"])
+        x = [r["noise_percent_fs_sigma"] for r in rows]
+        y = [r["models"]["segmented_quadratic"]["median_absolute_onset_error"] for r in rows]
+        if generator[0] == "quadratic":
+            ax.plot(x, y, "o-", color=C["fused"], ms=4)
+        else:
+            k = gens.index(generator) - 1
+            ax.plot(x, y, ["s", "^", "D"][k % 3] + "-", color=blues[k], ms=[6, 4.5, 3][k % 3], lw=1.0)
+    logistic = [g[1] for g in gens if g[0] == "logistic"]
+    ax.text(0.0, 0.37, "logistic data, k = " + ", ".join(f"{k:g}" for k in logistic) + " (lines overlap)",
+            fontsize=S["note"], color=figstyle.ink(C["onset"]), va="top")
+    ax.text(0.0, 0.035, "quadratic data, the estimator's own form", fontsize=S["note"],
+            color=C["fused"], va="bottom")
+    ax.set_xticks(proto["noise_percent_fs_sigma"])
+    ax.set_xlabel("Pressure noise σ (% of full scale)")
+    ax.set_ylabel("Median onset error\n(fraction of life)")
+    ax.set_title("The estimator finds the onset only in data\nshaped like its own model")
+    ax.set_ylim(-0.02, 0.45)
+    ax.margins(x=0.04)
+    figstyle.footnote(fig, f"Simulation: segmented-quadratic onset estimator; true onset 0.70 of life, probe every "
+                      f"100 cycles, {trials} trials per point.")
+    figstyle.save(fig, outdir / "fig_onset_generalization_gap", formats=("png",)); plt.close(fig)
 
     noisy = [c for c in conditions if c["detection"] is not None
              and c["generator"] == "quadratic" and c["onset_fraction"] == 0.70
              and c["cadence_cycles"] == 100]
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    x = np.arange(len(noisy)); width = 0.35
-    ax.bar(x - width/2, [c["detection"]["sustained_3sigma"]["median_alarm_cycle"] for c in noisy],
-           width, label="sustained 3σ")
-    ax.bar(x + width/2, [c["detection"]["cusum"]["median_alarm_cycle"] for c in noisy],
-           width, label="matched-FA CUSUM")
-    ax.set_xticks(x, [f"{c['noise_percent_fs_sigma']}%" for c in noisy])
-    ax.set(xlabel="pressure noise sigma [% FS]", ylabel="median confirmed alarm cycle",
-           title="Slow-drift detector timing (both alarm in 100% of trials)")
-    ax.legend(); ax.grid(axis="y", alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_detector_comparison.png", dpi=130); plt.close(fig)
+    rates = [c["detection"][d]["alarm_rate"] for c in noisy for d in ("sustained_3sigma", "cusum")]
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.5))
+    x = np.arange(len(noisy)); width = 0.36
+    for off, key, label, color in ((-width / 2, "sustained_3sigma", "sustained 3σ", C["always"]),
+                                   (width / 2, "cusum", "CUSUM, matched false alarms", C["fixed"])):
+        vals = [c["detection"][key]["median_alarm_cycle"] for c in noisy]
+        ax.bar(x + off, vals, width * 0.95, color=color, label=label)
+        for xi, v in zip(x + off, vals):
+            ax.text(xi, v + 12, f"{v:.0f}", ha="center", va="bottom", fontsize=S["note"], color="#222222")
+    ax.set_xticks(x, [f"{c['noise_percent_fs_sigma']:g} %" for c in noisy])
+    ax.set_xlabel("Pressure noise σ (% of full scale)")
+    ax.set_ylabel("Median confirmed alarm (cycle)")
+    ax.set_title("Sustained 3σ alarms 100 cycles before CUSUM\nat every noise level" if all(
+        c["detection"]["cusum"]["median_alarm_cycle"] - c["detection"]["sustained_3sigma"]["median_alarm_cycle"] == 100
+        for c in noisy) else "Sustained 3σ and CUSUM alarm timing")
+    ax.legend(loc="upper left")
+    ax.set_ylim(0, max(c["detection"]["cusum"]["median_alarm_cycle"] for c in noisy) * 1.25)
+    figstyle.footnote(fig, f"Simulation: quadratic fatigue, onset 0.70 of life, probe every 100 cycles, {trials} "
+                      f"trials per bar. Alarm rate {min(rates):.0%} for both detectors at every noise level.")
+    figstyle.save(fig, outdir / "fig_detector_comparison", formats=("png",)); plt.close(fig)
 
 
 if __name__ == "__main__":

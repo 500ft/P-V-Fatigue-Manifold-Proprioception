@@ -52,7 +52,7 @@ Outputs
   data/gate0/fig_dc_independence.png
 and a printed PASS / FAIL / WEAK verdict.
 
-Run:  python3 scripts/gate0_lumped_rc.py
+Run:  python -m scripts.gate0_lumped_rc
 """
 
 from __future__ import annotations
@@ -64,14 +64,11 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import spearmanr
 
+from scripts import figstyle
+
 # matplotlib is optional at run time; degrade gracefully if headless/missing.
-try:
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    _HAVE_MPL = True
-except Exception:  # pragma: no cover
-    _HAVE_MPL = False
+plt = figstyle.setup(style=False)
+_HAVE_MPL = plt is not None
 
 
 # --------------------------------------------------------------------------- #
@@ -362,62 +359,98 @@ def _interpretation(verdict, p: Params, best_freq, band) -> str:
 def make_plots(results: dict, outdir: Path):
     if not _HAVE_MPL:
         return []
+    figstyle.apply()
+    C = figstyle.COLOR
     pl = results["_plot"]
-    freqs = pl["freqs_hz"]
-    fat = pl["fatigue_levels"]
-    saved = []
-
-    # 1) cross-talk vs frequency for a few compliance levels (ratio + absolute)
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(11, 4.4))
-    idxs = np.linspace(0, len(fat) - 1, 5).astype(int)
+    freqs = np.asarray(pl["freqs_hz"])
+    fat = np.asarray(pl["fatigue_levels"])
     f_act = results["params"]["f_actuation_hz"]
-    for i in idxs:
-        axL.semilogx(freqs, pl["ct_vs_freq"][i] * 100, label=f"C1 = {fat[i]:.2f}x")
-        axR.loglog(freqs, pl["ctabs_vs_freq"][i], label=f"C1 = {fat[i]:.2f}x")
-    for ax in (axL, axR):
-        ax.axvline(f_act, ls="--", c="k", alpha=0.4)
-        ax.set_xlabel("frequency [Hz]")
-        ax.grid(True, which="both", alpha=0.3)
-    axL.set_ylabel("relative cross-talk |H21/H11|  [%]")
-    axL.set_title("Relative cross-talk (saturates with freq)")
-    axR.set_ylabel("absolute cross-talk |H21|  [Pa per unit dg]")
-    axR.set_title("Measurable cross-talk (peaks in actuation band)")
-    axL.legend(fontsize=8)
-    fig.suptitle("Inter-chamber cross-talk vs frequency, by chamber-1 compliance "
-                 f"(dashed = {f_act:.0f} Hz)", fontsize=11)
-    fig.tight_layout()
-    f1 = outdir / "fig_crosstalk_vs_freq.png"
-    fig.savefig(f1, dpi=130); plt.close(fig); saved.append(f1)
+    saved = []
+    sim_note = ("Simulation: lumped R-C model, three chambers on one manifold. Chamber-1 compliance\n"
+                "is scaled; all other parameters are fixed. No physical measurement.")
 
-    # 2) headline: cross-talk at actuation freq vs compliance
-    fig, ax = plt.subplots(figsize=(6.5, 4.2))
-    ax.plot(fat, pl["ct_at_act"] * 100, "o-", c="C3")
-    ax.set_xlabel("chamber-1 compliance multiplier (fatigue ->)")
-    ax.set_ylabel(f"cross-talk at {results['params']['f_actuation_hz']:.0f} Hz  [%]")
+    # 1) cross-talk vs frequency for five compliance steps (ratio + measurable amplitude)
+    idxs = np.linspace(0, len(fat) - 1, 5).astype(int)
+    shades = figstyle.ramp(C["compliance"], len(idxs))
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.7), gridspec_kw={"wspace": 0.55})
+    for i, col in zip(idxs, shades):
+        axL.plot(freqs, pl["ct_vs_freq"][i] * 100, color=col)
+        axR.plot(freqs, pl["ctabs_vs_freq"][i], color=col)
+        figstyle.end_label(axL, freqs[-1], pl["ct_vs_freq"][i][-1] * 100, f"{fat[i]:.1f}×", col)
+    axL.text(0.02, 0.97, "Line labels: chamber-1\ncompliance, × healthy", transform=axL.transAxes,
+             fontsize=figstyle.SIZE["note"], color=figstyle.ink(C["compliance"]), ha="left", va="top")
+    for ax in (axL, axR):
+        ax.set_xscale("log")
+        ax.axvline(f_act, ls="--", lw=0.8, color=C["ref"])
+        ax.set_xlabel("Drive frequency (Hz)")
+        ax.set_xticks([0.01, 0.1, 1, 10, 100], ["0.01", "0.1", "1", "10", "100"])
+        ax.margins(x=0.02)
+    axR.set_yscale("log")
+    axR.set_yticks([3e10, 1e11, 3e11, 6e11], ["3×10¹⁰", "10¹¹", "3×10¹¹", "6×10¹¹"])
+    axR.yaxis.set_minor_formatter(plt.NullFormatter())
+    axL.text(f_act * 1.15, 0.03, f"{f_act:.0f} Hz actuation", transform=axL.get_xaxis_transform(),
+             fontsize=figstyle.SIZE["note"], color=C["ref"], ha="left", va="bottom")
+    axL.set_ylabel("Relative cross-talk\n|H21/H11| (%)")
+    axR.set_ylabel("Neighbour pressure |H21|\n(Pa per unit Δg)")
+    axL.set_title("Softer chamber raises cross-talk above 0.1 Hz")
+    axR.set_title("Neighbour response peaks near the actuation band")
+    figstyle.panel_letter(axL, "a")
+    figstyle.panel_letter(axR, "b")
+    figstyle.footnote(fig, sim_note + " Δg: valve-conductance step on chamber 1.\n"
+                      f"Dashed line: {f_act:.0f} Hz actuation frequency.")
+    f1 = outdir / "fig_crosstalk_vs_freq"
+    figstyle.save(fig, f1, formats=("png",)); plt.close(fig); saved.append(f1.with_suffix(".png"))
+
+    # 2) headline: cross-talk at the actuation frequency vs compliance
+    ct = np.asarray(pl["ct_at_act"]) * 100
     rho = results["headline_metric"]["spearman_rho"]
     dr = results["headline_metric"]["relative_drift"] * 100
-    ax.set_title(f"Cross-talk vs fatigue   (Spearman rho={rho:.3f}, drift={dr:.0f}%)")
-    ax.grid(True, alpha=0.3)
-    fig.tight_layout()
-    f2 = outdir / "fig_crosstalk_vs_compliance.png"
-    fig.savefig(f2, dpi=130); plt.close(fig); saved.append(f2)
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    ax.plot(fat, ct, "o-", color=C["compliance"], ms=4)
+    for x, y, ha, dx in ((fat[0], ct[0], "left", 6), (fat[-1], ct[-1], "right", -6)):
+        ax.annotate(f"{y:.1f} %", (x, y), xytext=(dx, 0), textcoords="offset points", ha=ha, va="center",
+                    fontsize=figstyle.SIZE["note"], color=figstyle.ink(C["compliance"]))
+    ax.set_xlabel("Chamber-1 compliance (× healthy)")
+    ax.set_ylabel(f"Cross-talk at {f_act:.0f} Hz (%)")
+    ax.set_title(f"Cross-talk at {f_act:.0f} Hz rises steadily with compliance")
+    ax.margins(0.06)
+    figstyle.footnote(fig, f"Simulation, lumped R-C model; {len(fat)} compliance steps.\n"
+                      f"Spearman ρ = {rho:.3f}; rise over the sweep {dr:.0f} %.")
+    f2 = outdir / "fig_crosstalk_vs_compliance"
+    figstyle.save(fig, f2, formats=("png",)); plt.close(fig); saved.append(f2.with_suffix(".png"))
 
-    # 3) DC independence: healthy vs fatigued static gain matrices
-    fig, axes = plt.subplots(1, 2, figsize=(8.5, 3.8))
-    for ax, G, ttl in zip(axes, [pl["G_healthy"], pl["G_fatigued"]],
-                          ["DC gain (healthy)", "DC gain (fatigued, C1=2x)"]):
-        im = ax.imshow(np.abs(G), cmap="viridis")
-        ax.set_title(ttl, fontsize=10)
-        ax.set_xlabel("driven valve i"); ax.set_ylabel("chamber pressure j")
-        for (r, c), v in np.ndenumerate(G):
-            ax.text(c, r, f"{v:.1e}", ha="center", va="center",
-                    color="w", fontsize=7)
-        fig.colorbar(im, ax=ax, fraction=0.046)
-    fig.suptitle("Static (DC) gain is compliance-independent -> coupling drift is dynamic",
-                 fontsize=10)
-    fig.tight_layout()
-    f3 = outdir / "fig_dc_independence.png"
-    fig.savefig(f3, dpi=130); plt.close(fig); saved.append(f3)
+    # 3) DC independence: healthy vs fatigued static gain matrices (signed, diverging about zero)
+    G = [np.asarray(pl["G_healthy"]), np.asarray(pl["G_fatigued"])]
+    scale = 1e12
+    lim = max(np.abs(g).max() for g in G) / scale
+    fig, axes = plt.subplots(1, 2, figsize=(figstyle.WIDE, 2.5), gridspec_kw={"wspace": 0.25})
+    cmap = plt.get_cmap("PuOr_r")
+    for ax, g, ttl, letter in zip(axes, G, ["Healthy chamber 1", "Chamber-1 compliance 2×"], "ab"):
+        im = ax.imshow(g / scale, cmap=cmap, vmin=-lim, vmax=lim)
+        n = g.shape[0]
+        ax.set_xticks(range(n), [str(k + 1) for k in range(n)])
+        ax.set_yticks(range(n), [str(k + 1) for k in range(n)])
+        ax.tick_params(length=0)
+        for s in ax.spines.values():
+            s.set_visible(False)
+        ax.set_xlabel("Driven valve")
+        ax.set_title(ttl)
+        figstyle.panel_letter(ax, letter, dx=-20)
+        for (r, c), v in np.ndenumerate(g / scale):
+            light = abs(v) / lim < 0.55
+            ax.text(c, r, f"{v:.3g}".replace("-", "\u2212"), ha="center", va="center", fontsize=figstyle.SIZE["note"],
+                    color="#222222" if light else "white")
+    axes[0].set_ylabel("Chamber pressure")
+    cb = fig.colorbar(im, ax=axes, fraction=0.035, pad=0.03)
+    cb.set_label("DC gain (10¹² Pa per unit Δg)", fontsize=figstyle.SIZE["note"])
+    cb.ax.tick_params(labelsize=figstyle.SIZE["tick"])
+    fig.suptitle("Static gain is identical at both compliances, so the coupling drift is dynamic",
+                 x=0.06, y=1.02, ha="left", fontsize=figstyle.SIZE["label"])
+    dci = results["dc_independence"]
+    figstyle.footnote(fig, f"Simulation, lumped R-C model. DC cross-talk change from 1× to 2× compliance: "
+                      f"{dci['relative_change'] * 100:.4f} %.")
+    f3 = outdir / "fig_dc_independence"
+    figstyle.save(fig, f3, formats=("png",)); plt.close(fig); saved.append(f3.with_suffix(".png"))
     return saved
 
 

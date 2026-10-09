@@ -151,19 +151,52 @@ def main():
     print(f"  adversarial worst RMSE {adv[worst]['rmse']:.3f} (clock {adv[worst]['rmse_clock']:.3f}); "
           f"{results['adversarial']['fraction_within_target']:.2f} of 200 within target")
 
-    plt = figstyle.setup()
-    if plt is None:  # pragma: no cover
-        return
-    fig, ax = plt.subplots(figsize=(6.0, 3.4))
-    ids = np.arange(len(heldout))
-    ax.bar(ids - 0.2, r, 0.4, label="pressure + clock (transferred)")
-    ax.bar(ids + 0.2, rc, 0.4, label="clock only")
-    ax.axhline(PASS_RMSE, ls="--", color="k", lw=0.8)
-    ax.set_xticks(ids); ax.set_xticklabels([str(i) for i in test_idx]); ax.set_xlabel("held-out unit")
-    ax.set_ylabel("u-RMSE [life]"); ax.set_title(f"unseen-unit transfer — verdict {verdict}"); ax.legend()
-    fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "studyC_fig_transfer")); plt.close(fig)
+    plot(results)
     print(f"results + figure -> {DATA}/")
 
 
+
+def plot(results):
+    """Per-unit transfer figure from a saved or fresh result dict."""
+    plt = figstyle.setup()
+    if plt is None:  # pragma: no cover
+        return
+    C, S = figstyle.COLOR, figstyle.SIZE
+    heldout, test_idx = results["heldout"], results["test_units"]
+    r = np.array([h["rmse"] for h in heldout]); rc = np.array([h["rmse_clock"] for h in heldout])
+    n = len(heldout)
+    fig, ax = plt.subplots(figsize=(figstyle.WIDE, 2.6))
+    ids = np.arange(n)
+    for i in ids:
+        ax.plot([i, i], [r[i], rc[i]], color="#BDBDBD", lw=1.2, zorder=1)
+    ax.plot(ids, rc, "s", color=C["clock"], ms=5, zorder=2)
+    ax.plot(ids, r, "o", color=C["pv"], ms=5.5, zorder=3)
+    ax.axhline(PASS_RMSE, ls="--", color=C["ref"], lw=0.8)
+    ax.text(-0.5, PASS_RMSE + 0.006, f"target {PASS_RMSE:.2f} life", ha="left", va="bottom",
+            fontsize=S["note"], color=C["ref"])
+    j = int(np.argmax(rc))
+    figstyle.end_label(ax, j, rc[j], "clock only", C["clock"], dx=7)
+    figstyle.end_label(ax, j, r[j], "pressure features + clock\n(transferred)", C["pv"], dx=7)
+    ax.set_xticks(ids, [str(i) for i in test_idx])
+    ax.set_xlim(-0.6, n - 0.4)
+    ax.set_ylim(0, max(rc.max(), r.max()) * 1.12)
+    ax.set_xlabel("Held-out unit")
+    ax.set_ylabel("Life-estimate RMSE (life)")
+    ax.set_title(f"The transferred estimator meets the target on {results['n_within_target']} of {n} units\n"
+                 f"and beats the clock on {results['n_beats_clock']}")
+    ax.text(1.0, 0.98, "lower is better", transform=ax.transAxes, ha="right", va="top", fontsize=S["note"],
+            color=C["muted"])
+    ax.grid(axis="y")
+    ax.set_axisbelow(True)
+    figstyle.footnote(fig, f"Simulation: one ridge estimator trained on {len(results['train_units'])} dispersed "
+                      f"synthetic units, applied unchanged to {n} unseen units. Verdict {results['verdict']}: the "
+                      "preregistered rule needs 8 of 10 on both counts.")
+    figstyle.save(fig, os.path.join(DATA, "studyC_fig_transfer")); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--replot" in sys.argv:                      # redraw from the saved result, no recomputation
+        plot(json.load(open(os.path.join(DATA, "studyC_results.json"))))
+        print("replotted from the saved result")
+    else:
+        main()

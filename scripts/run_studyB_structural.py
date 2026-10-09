@@ -349,47 +349,91 @@ def plot(results):
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         return
-    fig, (a, b) = plt.subplots(1, 2, figsize=(10.0, 3.8))
-    for label, marker in (("u+onset", "o"), ("u+leak", "s"), ("u+onset+leak", "^"), ("u+tau", "x")):
-        pts = [r for r in collinearity if r["unit"] == "canonical" and r.get(label) is not None]
-        if pts:
-            a.semilogy([r["u"] for r in pts], [r[label] for r in pts], marker=marker, ls="-", label=label)
-    a.text(0.31, 3e3, "onset fraction and leak are\ninert before onset:\ncollinearity undefined, not infinite",
-           fontsize=6.5, color="grey", va="center")
-    a.axhline(COLLINEARITY_POOR, ls="--", color="k", lw=0.8)
-    a.axvline(FatigueParams().acceleration_onset_fraction, ls=":", color="grey", lw=1.0)
-    a.set_xlabel("normalized life u"); a.set_ylabel("Brun collinearity index $\\gamma_K$")
-    a.set_title("subset collinearity (dashed = poor flag, dotted = onset)", fontsize=9)
-    a.legend(fontsize=7)
+    C, S = figstyle.COLOR, figstyle.SIZE
+    fig = plt.figure(figsize=(figstyle.FULL, 2.9))
+    outer = fig.add_gridspec(1, 2, width_ratios=[1, 2.05], wspace=0.48)
+    a = fig.add_subplot(outer[0])
+    inner = outer[1].subgridspec(1, 2, wspace=0.07)
+    b = fig.add_subplot(inner[0])
+    c = fig.add_subplot(inner[1], sharey=b)
+
+    # a: Brun collinearity index per parameter subset, canonical unit
+    subsets = [("u+onset+leak", "life + onset + leak"), ("u+onset", "life + onset"), ("u+leak", "life + leak"),
+               ("u+tau", "life + τ")]
+    pts = sorted((r for r in collinearity if r["unit"] == "canonical"), key=lambda r: r["u"])
+    onset_u = FatigueParams().acceleration_onset_fraction
+    for y, (key, label) in enumerate(subsets):
+        for r in pts:
+            v = r.get(key)
+            if v is None:
+                continue
+            post = r["u"] > onset_u
+            a.plot(v, y, "o", color=C["pv"] if post else C["fixed"], mfc=C["pv"] if post else "none",
+                   ms=5.5 if post else 8, mew=1.0, zorder=3 if post else 4)
+            if post:
+                a.annotate(f"{v:.3g}" if v < 1e3 else f"{v:.2e}".replace("e+0", "e"), (v, y), xytext=(10, 0),
+                           textcoords="offset points", ha="left", va="center", fontsize=S["tick"],
+                           color=figstyle.ink(C["pv"]))
+    a.axvline(COLLINEARITY_POOR, ls="--", color=C["ref"], lw=0.8)
+    a.text(COLLINEARITY_POOR * 1.3, -0.75, f"poor above {COLLINEARITY_POOR:g}", fontsize=S["note"],
+           color=C["ref"], va="center")
+    a.set_xscale("log")
+    a.set_xlim(0.3, 1e8)
+    a.set_xticks([1, 1e2, 1e4, 1e6, 1e8], ["1", "100", "10⁴", "10⁶", "10⁸"])
+    a.xaxis.set_minor_formatter(plt.NullFormatter())
+    a.set_yticks(range(len(subsets)), [lab for _, lab in subsets])
+    a.set_ylim(len(subsets) - 0.4, -1.0)
+    a.tick_params(axis="y", length=0)
+    a.set_xlabel("Brun collinearity index γ_K")
+    a.set_title("The life–onset–leak triple is far\nmore collinear than any pair")
+    a.plot([], [], "o", color=C["pv"], ms=5.5, label="after onset (u = 0.9)")
+    a.plot([], [], "o", color=C["fixed"], mfc="none", ms=8, label="before onset (u = 0.3, 0.5)")
+    a.legend(loc="upper left", bbox_to_anchor=(-0.05, -0.2), handletextpad=0.2, borderaxespad=0.0)
+
+    # b, c: profile likelihood with nuisance re-optimised, one panel per true life
     FLOOR = 1e-11
-    for p in profiles:
-        # a linear axis is useless here: the pre-onset misfit is ~1e6 while the region of interest is ~1
-        pts = sorted(p["profile"], key=lambda q: q["u"])
-        ys = [max(q["delta_nll"], FLOOR) for q in pts]
-        style = "o-" if p["design"] == "B2" else "s--"
-        line, = b.semilogy([q["u"] for q in pts], ys, style, ms=3, lw=1.0,
-                           label=f"{p['design']}, true u = {p['u_true']:.2f} ({p['verdict']})")
-        # every point whose nuisance fit is pinned to the box, so a reader can see that the crossings
-        # coincide with the bounds rather than with a rise the data produced
-        pin = [(q["u"], max(q["delta_nll"], FLOOR)) for q in pts if any(q.get("at_bound", []))]
-        if pin:
-            b.plot([x for x, _ in pin], [y for _, y in pin], "x", ms=7, mew=1.3,
-                   color=line.get_color(), ls="none")
-        b.axvline(p["u_true"], ls=":", lw=0.8, color="grey")
-    # shade the post-onset B2 plateau: the "interval" the profile never resolves within
+    styles = {"B2": (C["pv"], "o", "-", "B2 with young baseline"), "B1": (C["supply"], "s", "--", "B1 single snapshot")}
+    for ax, u_true in ((b, 0.5), (c, 0.9)):
+        for p in (q for q in profiles if q["u_true"] == u_true):
+            col, mk, ls, lab = styles[p["design"]]
+            q = sorted(p["profile"], key=lambda q: q["u"])
+            us = [r["u"] for r in q]
+            ys = [max(r["delta_nll"], FLOOR) for r in q]
+            ax.plot(us, ys, ls, color=col, lw=1.0, marker=mk, ms=2.5, label=lab)
+            pin = [(r["u"], max(r["delta_nll"], FLOOR)) for r in q if any(r.get("at_bound", []))]
+            if pin:
+                ax.plot(*zip(*pin), "x", color=col, ms=5, mew=1.0, ls="none")
+        ax.axvline(u_true, ls=":", lw=0.8, color=C["ref"])
+        ax.axhline(CHI2_95, ls="--", lw=0.8, color=C["ref"])
+        ax.set_yscale("log")
+        ax.set_xlim(0, 1)
+        ax.set_xlabel("Normalized life u")
     pp = next((q for q in profiles if q["design"] == "B2" and q["u_true"] == 0.90), None)
     if pp:
         flat = [q["u"] for q in pp["profile"] if q["delta_nll"] <= CHI2_95 and q["u"] >= pp["interval"]["u_at_minimum"]]
         if flat:
-            b.axvspan(min(flat), max(flat), color="grey", alpha=0.15, lw=0)
-            b.text(min(flat), 3e-10, " B2 plateau: nll varies by 6e-10\n across this whole span",
-                   fontsize=6, color="dimgrey", va="bottom")
-    b.axhline(CHI2_95, ls="--", color="k", lw=0.8)
-    b.set_xlabel("normalized life u"); b.set_ylabel(r"$\Delta(-\log L)$  (log scale)")
-    b.set_title("profile likelihood, nuisance re-optimised (solid B2, dashed B1; x = at a nuisance bound)",
-                fontsize=8)
-    b.legend(fontsize=6)
-    fig.tight_layout()
+            c.axvspan(min(flat), max(flat), color="#E6E6E6", lw=0, zorder=0)
+            spread = max(q["delta_nll"] for q in pp["profile"] if min(flat) <= q["u"] <= max(flat))
+            c.text(min(flat) - 0.02, 1e-5, f"B2 flat here:\nvaries by {spread:.0e}", fontsize=S["note"],
+                   color=C["muted"], ha="right", va="bottom")
+    b.set_ylim(FLOOR / 3, 3e6)
+    b.set_yticks([1e-10, 1e-6, 1e-2, 1e2, 1e6], ["10⁻¹⁰", "10⁻⁶", "0.01", "100", "10⁶"])
+    b.yaxis.set_minor_formatter(plt.NullFormatter())
+    plt.setp(c.get_yticklabels(), visible=False)
+    b.set_ylabel("Δ(−log L), log scale")
+    c.text(0.02, CHI2_95 * 1.6, f"95 % cut {CHI2_95:g}", fontsize=S["note"], color=C["ref"], va="bottom")
+    b.set_title("True u = 0.5: only B2\ndips near the truth")
+    c.set_title("True u = 0.9: both\nprofiles stay flat")
+    b.plot([], [], "x", color=C["ref"], ms=5, mew=1.0, ls="none", label="fit at a nuisance bound")
+    b.legend(loc="upper left", bbox_to_anchor=(0.0, -0.2), ncol=3, borderaxespad=0.0, columnspacing=1.2)
+    b.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+    for ax, letter, dx in ((a, "a", -92), (b, "b", -30), (c, "c", -12)):
+        figstyle.panel_letter(ax, letter, dx=dx)
+    figstyle.footnote(fig, "Simulation: local diagnostics on the canonical synthetic unit, nuisance parameters "
+                      f"re-optimised at each u, {N_REP} sensor repeats. Dotted line: true u; onset at {onset_u:.2f}; before onset the onset and leak parameters are inert, so their "
+                      f"collinearity is undefined. "
+                      f"Values below {FLOOR:.0e} are drawn at that floor. Profile verdicts are recorded in "
+                      "studyB_structural.json.")
     figstyle.save(fig, os.path.join(DATA, "studyB_fig_structural"))
     plt.close(fig)
     print(f"results + figure -> {DATA}/")

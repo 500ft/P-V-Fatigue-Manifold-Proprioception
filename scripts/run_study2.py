@@ -116,29 +116,64 @@ def main():
     print("  shared:  " + "  ".join(f"{v:.3f}" for v in expA["shared"]))
     print("  isolated:" + "  ".join(f"{v:.3f}" for v in expA["isolated"]))
 
+    plot(results)
+    print(f"figures + results -> {DATA}/")
+
+
+
+def plot(results):
+    """Drift and corrector figures from a saved or fresh result dict."""
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         print("(matplotlib unavailable, skipped figures)")
         return
-    plt.figure()
-    plt.plot(LIFE_ALL, expA["shared"], "o-", label="shared manifold")
-    plt.plot(LIFE_ALL, expA["isolated"], "s--", label="isolated supply")
-    plt.xlabel("normalized life"); plt.ylabel("curvature RMSE [1/m]")
-    plt.title("Static calibrator drift over life"); plt.legend(); plt.tight_layout()
-    figstyle.save(plt.gcf(), os.path.join(DATA, "study2_fig1_drift")); plt.close()
+    C, S = figstyle.COLOR, figstyle.SIZE
+    expA = results["experimentA_static_drift_over_life"]
+    expB = results["experimentB_static_vs_dynamic_young_to_old"]
+    n = len(results["test_actuators"])
+    life = expA["life_fractions"]
 
-    plt.figure()
-    x = np.arange(2); w = 0.35
-    plt.bar(x - w/2, [expB["isolated"]["static_kappa_rmse"], expB["shared"]["static_kappa_rmse"]],
-            w, label="static ridge")
-    plt.bar(x + w/2, [expB["isolated"]["dynamic_kappa_rmse"], expB["shared"]["dynamic_kappa_rmse"]],
-            w, label="dynamic (lagged)")
-    plt.xticks(x, ["isolated", "shared"]); plt.ylabel("curvature RMSE [1/m]")
-    plt.title("Static-blind / dynamic-recover (held-out actuators, old life)")
-    plt.legend(); plt.tight_layout()
-    figstyle.save(plt.gcf(), os.path.join(DATA, "study2_fig2_static_vs_dynamic")); plt.close()
-    print(f"figures + results -> {DATA}/")
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    for key, label, color, style in (("shared", "shared manifold", C["supply"], "o-"),
+                                     ("isolated", "isolated supply", C["isolated"], "s--")):
+        ax.plot(life, expA[key], style, color=color, ms=4)
+    figstyle.end_label(ax, life[-1], expA["isolated"][-1], "isolated\nsupply", C["isolated"], dx=6)
+    figstyle.end_label(ax, life[-1], expA["shared"][-1], "shared\nmanifold", C["supply"], dx=6, dy=-4)
+    ax.set_xticks(life)
+    ax.set_xlabel("Normalized life")
+    ax.set_ylabel("Curvature RMSE (1/m)")
+    ax.set_title("A young calibration stays close until\n0.7 of life, then its error jumps")
+    ax.set_ylim(0, None)
+    ax.margins(x=0.05)
+    figstyle.footnote(fig, f"Simulation: Phase D cohort, {n} held-out actuators; static ridge calibrated on each "
+                      "actuator at 0.10 of life; mean over actuators.")
+    figstyle.save(fig, os.path.join(DATA, "study2_fig1_drift")); plt.close(fig)
 
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    topo = ["isolated", "shared"]
+    x = np.arange(len(topo)); w = 0.36
+    for off, key, label, color in ((-w / 2, "static_kappa_rmse", "static ridge", C["fixed"]),
+                                   (w / 2, "dynamic_kappa_rmse", f"dynamic, {results['n_lags']} lags", C["always"])):
+        vals = [expB[t][key] for t in topo]
+        ax.bar(x + off, vals, w * 0.95, color=color, label=label)
+        for xi, v in zip(x + off, vals):
+            ax.text(xi, v + 0.006, f"{v:.4f}", ha="center", va="bottom", fontsize=S["tick"], color="#222222")
+    ax.set_xticks(x, ["isolated supply", "shared manifold"])
+    ax.set_ylabel("Curvature RMSE (1/m)")
+    gain = max(expB[t]["dynamic_improvement"] for t in topo)
+    ax.set_title(f"Lagged inputs change the old-life error\nby under {max(gain * 100, 0.1):.1f} %"
+                 if gain < 0.01 else "Static versus dynamic corrector at old life")
+    ax.set_ylim(0, max(expB[t]["static_kappa_rmse"] for t in topo) * 1.3)
+    ax.legend(loc="upper right")
+    figstyle.footnote(fig, f"Simulation: Phase D cohort, {n} held-out actuators; correctors fitted on 0.1–0.5 of "
+                      "life and tested at 0.7 and 0.9; mean over actuators. Improvement: "
+                      + ", ".join(f"{t} {expB[t]['dynamic_improvement'] * 100:.3f} %" for t in topo) + ".")
+    figstyle.save(fig, os.path.join(DATA, "study2_fig2_static_vs_dynamic")); plt.close(fig)
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--replot" in sys.argv:                      # redraw from the saved result, no recomputation
+        plot(json.load(open(os.path.join(DATA, "study2_results.json"))))
+        print("replotted from the saved result")
+    else:
+        main()

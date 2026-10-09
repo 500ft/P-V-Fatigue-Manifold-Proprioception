@@ -230,35 +230,33 @@ def main():
         print("(matplotlib unavailable, skipped figure)")
         print(f"results -> {DATA}/study4_results.json")
         return
+    C, S = figstyle.COLOR, figstyle.SIZE
 
-    fig, ax = plt.subplots()
-    ax.plot(SWEEP_MULT, np.asarray(c_Rs) * 100.0, "o-",
-            label="softer supply  (R_s up)")
-    ax.plot(SWEEP_MULT, np.asarray(c_Cm) * 100.0, "s--",
-            label="bigger node buffer  (C_m up)", alpha=0.85)
-    # default operating point
-    ax.scatter([1.0], [default_coupling * 100.0], color="#000000", zorder=5, s=45)
-    ax.annotate(f"default\n{default_coupling*100:.1f}% (2nd-order)",
-                xy=(1.0, default_coupling * 100.0), xytext=(1.15, default_coupling * 100.0 + 9),
-                fontsize=8.5, ha="left",
-                arrowprops=dict(arrowstyle="->", lw=0.8))
-    # first-order regime markers (on the R_s curve)
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.8))
     for th in THRESHOLDS:
         m = crossings["R_s"][f"{th:.2f}"]
-        if m is not None:
-            ax.axhline(th * 100.0, color="#D55E00", lw=0.8, ls=":", alpha=0.6)
-            ax.annotate(f"{th*100:.0f}%  (R_s x{m:.1f})",
-                        xy=(SWEEP_MULT[-1], th * 100.0), xytext=(SWEEP_MULT[-1], th * 100.0 + 1.0),
-                        fontsize=8, ha="right", color="#D55E00")
-    # shade the "would-become-first-order" band (>= 10 %)
-    ax.axhspan(THRESHOLDS[0] * 100.0, max(np.max(c_Rs) * 100.0, THRESHOLDS[-1] * 100.0 + 5),
-               color="#D55E00", alpha=0.06)
-    ax.set_xscale("log")
-    ax.set_xlabel("supply softness  (parameter / default)")
-    ax.set_ylabel("cross-talk coupling ratio  [%]")
-    ax.set_title("Cross-talk vs shared-supply softness")
-    ax.legend(loc="upper left")
-    fig.tight_layout()
+        ax.axhline(th * 100.0, color=C["ref"], lw=0.7, ls=":")
+        note = f"{th:.0%}: R_s ×{m:.1f}" if m is not None else f"{th:.0%} not reached"
+        ax.text(SWEEP_MULT[-1], th * 100.0 + 0.6, note, fontsize=S["note"], color=C["ref"], va="bottom", ha="right")
+    ax.plot(SWEEP_MULT, np.asarray(c_Rs) * 100.0, "o-", color=C["supply"], ms=3, markevery=2)
+    ax.plot(SWEEP_MULT, np.asarray(c_Cm) * 100.0, "s--", color=C["compliance"], ms=3, markevery=2)
+    ax.plot([1.0], [default_coupling * 100.0], "D", color="#222222", ms=5, zorder=5)
+    ax.annotate(f"default network\n{default_coupling * 100:.1f} %", (1.0, default_coupling * 100.0),
+                xytext=(0.27, default_coupling * 100.0 + 7.0), fontsize=S["note"], ha="left", va="bottom",
+                arrowprops=dict(arrowstyle="-", lw=0.6, color="#222222", shrinkB=3))
+    figstyle.end_label(ax, SWEEP_MULT[-1], c_Rs[-1] * 100.0, "supply\nresistance R_s", C["supply"])
+    figstyle.end_label(ax, SWEEP_MULT[-1], c_Cm[-1] * 100.0, "manifold\ncompliance C_m", C["compliance"])
+    ax.set_xscale("log", base=2)
+    ticks = [0.25, 0.5, 1, 2, 4, 8, 16, 32]
+    ax.set_xticks(ticks, [f"{v:g}" for v in ticks])
+    ax.minorticks_off()
+    ax.set_xlim(SWEEP_MULT[0] / 1.15, SWEEP_MULT[-1] * 1.15)
+    ax.set_ylim(0, None)
+    ax.set_xlabel("Parameter / default value (log scale)")
+    ax.set_ylabel("Cross-talk, neighbour / driven\npressure amplitude (%)")
+    ax.set_title("Supply resistance drives cross-talk;\nmanifold compliance barely moves it")
+    figstyle.footnote(fig, f"Simulation: lumped three-chamber network, one parameter varied at a time with the "
+                      f"others at default, {results['probe']['freq_hz']:g} Hz probe. No physical gripper tested.")
     figstyle.save(fig, os.path.join(DATA, "study4_fig_crosstalk_sensitivity"))
     plt.close(fig)
     print(f"figure + results -> {DATA}/")

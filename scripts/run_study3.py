@@ -360,39 +360,85 @@ def main():
               f"[{lt['min_lead_life']:.3f}, {lt['max_lead_life']:.3f}], "
               f"excluded={lt['n_excluded']}")
 
+    plot(results, mean_curves(test_ids, err, hn))
+    print(f"figures + results -> {DATA}/")
+
+
+
+def mean_curves(test_ids, err, hn):
+    """Held-out mean of normalized loop area and of young-calibration pose error at each life stage."""
+    return {"loop_area": np.mean([hn[a] for a in test_ids], axis=0),
+            "fixed_error_mm": np.mean([[err[a][i][0] for i in range(len(LIFE))] for a in test_ids], axis=0)}
+
+
+def plot(results, curves):
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         print("(matplotlib unavailable, skipped figures)")
         return
+    C, S = figstyle.COLOR, figstyle.SIZE
+    n = len(results["test_actuators"])
+    life = results["life_fractions"]
 
-    # Fig 3: health indicator — health drift & fixed-cal error over life (mean over test acts)
-    mean_h = np.mean([hn[a] for a in test_ids], axis=0)
-    mean_fixed = np.mean([[err[a][i][0] for i in range(len(LIFE))] for a in test_ids], axis=0)
-    fig, ax1 = plt.subplots()
-    ax1.plot(LIFE, mean_h, "o-", color="#0072B2", label="P-V loop-area growth")
-    ax1.set_xlabel("normalized life"); ax1.set_ylabel("P-V loop area (×young)", color="#0072B2")
-    ax1.tick_params(axis="y", labelcolor="#0072B2")
-    ax2 = ax1.twinx()
-    ax2.plot(LIFE, mean_fixed, "s--", color="#D55E00", label="fixed-cal pose error")
-    ax2.set_ylabel("fixed-cal pose RMSE [mm]", color="#D55E00")
-    ax2.tick_params(axis="y", labelcolor="#D55E00"); ax2.grid(False)
-    plt.title(f"P-V loop area tracks pose degradation (r = {results['leading_indicator_corr']['r']:.2f})")
-    fig.tight_layout(); figstyle.save(fig, os.path.join(DATA, "study3_fig3_leading_indicator"))
+    # Fig 3: health signal and young-calibration error over life, two aligned panels
+    fig, (a, b) = plt.subplots(2, 1, figsize=(figstyle.SINGLE, 3.6), sharex=True, gridspec_kw={"hspace": 0.15})
+    a.plot(life, curves["loop_area"], "o-", color=C["pv"], ms=4)
+    a.set_ylabel("P-V loop area\n(× young)")
+    b.plot(life, curves["fixed_error_mm"], "s-", color=C["fixed"], ms=4)
+    b.set_ylabel("Pose RMSE, young\ncalibration (mm)")
+    b.set_xticks(life)
+    b.set_xlabel("Normalized life")
+    for ax in (a, b):
+        ax.margins(x=0.05, y=0.1)
+    a.set_title("P-V loop area and young-calibration pose\nerror both rise with life")
+    r = results["leading_indicator_corr"]
+    figstyle.footnote(fig, f"Simulation: Phase D cohort, mean of {n} held-out actuators. Pooled r = {r['r']:.3f} "
+                      "over actuator × stage points. One fatigue law drives both signals, so the association is "
+                      "built in (matched_clock_audit.json).")
+    figstyle.save(fig, os.path.join(DATA, "study3_fig3_leading_indicator"))
     plt.close(fig)
 
-    # Fig 4: the trade-off — pose error vs recalibration count per policy
-    plt.figure()
-    for name, mk in [("fixed", "o"), ("scheduled", "^"), ("triggered", "D"), ("always", "s")]:
-        p = pol[name]
-        plt.scatter(p["recal_per_actuator"], p["mean_pose_rmse_mm"], s=110, marker=mk, label=name)
-    plt.xlabel("recalibrations per actuator (over life)")
-    plt.ylabel("pose RMSE [mm]")
-    plt.title("Recalibration trade-off (held-out actuators)")
-    plt.legend(); plt.tight_layout()
-    figstyle.save(plt.gcf(), os.path.join(DATA, "study3_fig4_recal_tradeoff"))
-    plt.close()
-    print(f"figures + results -> {DATA}/")
+    # Fig 4: the trade-off, pose error vs recalibration count per policy
+    pol = results["policies_on_heldout"]
+    budget = results["accuracy_budget_mm"]
+    names = {"fixed": ("initial calibration only", C["fixed"], "o"),
+             "scheduled": (f"clock, {results['period_selected_cycles']:,.0f} cycles", C["clock"], "^"),
+             "triggered": (f"P-V trigger, τ = {results['tau_selected']:g}", C["pv"], "D"),
+             "always": ("every life stage", C["always"], "X")}
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    ax.axhline(budget, ls="--", lw=0.8, color=C["ref"])
+    ax.text(5.6, budget + 0.008, f"error budget {budget:.3f} mm", ha="right", va="bottom", fontsize=S["note"],
+            color=C["ref"])
+    for key, (label, color, marker) in names.items():
+        p = pol[key]
+        ax.plot(p["recal_per_actuator"], p["mean_pose_rmse_mm"], marker, color=color, ms=7, ls="none")
+        figstyle.end_label(ax, p["recal_per_actuator"], p["mean_pose_rmse_mm"], label, color,
+                           dx=-9 if key == "always" else 8, ha="right" if key == "always" else "left")
+    ax.set_xlim(0.5, 5.7)
+    ax.set_ylim(0, max(p["mean_pose_rmse_mm"] for p in pol.values()) * 1.12)
+    ax.set_xlabel("Calibrations per actuator over life")
+    ax.set_ylabel("Mean pose RMSE (mm)")
+    within = [names[k][0] for k in names if pol[k]["mean_pose_rmse_mm"] <= budget]
+    ax.set_title("More calibrations lower the error; the trigger\nand every-stage policies meet the budget"
+                 if set(within) == {names["triggered"][0], names["always"][0]} else "Recalibration trade-off")
+    figstyle.footnote(fig, f"Simulation: {n} held-out actuators; counts include the initial calibration. This saved "
+                      "run has no matched-cost clock; at 2,400 cycles a clock ties the trigger "
+                      "(data/sim/summary/policy_comparison.png).")
+    figstyle.save(fig, os.path.join(DATA, "study3_fig4_recal_tradeoff"))
+    plt.close(fig)
+
+def replot():
+    """Redraw from the saved result; only the two mean curves of Fig 3 are recomputed from the dataset."""
+    results = json.load(open(os.path.join(DATA, "study3_results.json")))
+    d, m = load()
+    _, test_ids, _, err, hn, _ = prepare(d, m)
+    plot(results, mean_curves(test_ids, err, hn))
+    print("replotted from the saved result")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--replot" in sys.argv:
+        replot()
+    else:
+        main()

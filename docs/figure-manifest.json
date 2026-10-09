@@ -7,8 +7,10 @@
       "evidence_type": "simulation",
       "generator": "scripts/gate0_lumped_rc.py",
       "command": "python -m scripts.gate0_lumped_rc",
+      "redraw": "python -m scripts.gate0_lumped_rc",
       "inputs": [
-        "sim/plant.py"
+        "sim/plant.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/gate0/fig_crosstalk_vs_compliance.png",
@@ -23,8 +25,10 @@
       "evidence_type": "simulation",
       "generator": "scripts/phaseA_plant_demo.py",
       "command": "python -m scripts.phaseA_plant_demo",
+      "redraw": "python -m scripts.phaseA_plant_demo",
       "inputs": [
-        "sim/plant.py"
+        "sim/plant.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseA/fig_gate0_consistency.png",
@@ -39,9 +43,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/phaseB_fatigue_demo.py",
       "command": "python -m scripts.phaseB_fatigue_demo",
+      "redraw": "python -m scripts.phaseB_fatigue_demo --replot",
       "inputs": [
         "sim/fatigue.py",
-        "sim/plant.py"
+        "sim/plant.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseB/fig_fatigue_trajectory.png",
@@ -59,9 +65,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study1.py",
       "command": "python -m scripts.run_study1",
+      "redraw": "python -m scripts.run_study1 --replot",
       "inputs": [
         "sim/fatigue.py",
-        "pipeline/validation.py"
+        "pipeline/validation.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/study1/fig_detector_comparison.png",
@@ -78,9 +86,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study2.py",
       "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study2",
+      "redraw": "python -m scripts.run_study2 --replot",
       "inputs": [
         "data/sim/phaseD/dataset.npz",
-        "data/sim/phaseD/manifest.json"
+        "data/sim/phaseD/manifest.json",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseD/study2_fig1_drift.png",
@@ -96,9 +106,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study3.py",
       "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study3",
+      "redraw": "python -m scripts.phaseD_dataset && python -m scripts.run_study3 --replot",
       "inputs": [
         "data/sim/phaseD/dataset.npz",
-        "data/sim/phaseD/manifest.json"
+        "data/sim/phaseD/manifest.json",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseD/study3_fig3_leading_indicator.png",
@@ -114,9 +126,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study3_cluster_ci.py",
       "command": "python -m scripts.phaseD_dataset && python -m scripts.run_study3_cluster_ci",
+      "redraw": "python -m scripts.phaseD_dataset && python -m scripts.run_study3_cluster_ci --replot",
       "inputs": [
         "data/sim/phaseD/dataset.npz",
-        "data/sim/phaseD/manifest.json"
+        "data/sim/phaseD/manifest.json",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseD/study3_fig3b_correlation_cluster_ci.png",
@@ -132,9 +146,11 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_study4.py",
       "command": "python -m scripts.run_study4",
+      "redraw": "python -m scripts.run_study4",
       "inputs": [
         "sim/network.py",
-        "sim/fatigue.py"
+        "sim/fatigue.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/phaseD/study4_fig_crosstalk_sensitivity.png",
@@ -148,11 +164,13 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_studyA.py",
       "command": "python -m scripts.run_studyA",
+      "redraw": "python -m scripts.run_studyA",
       "inputs": [
         "sim/fatigue.py",
         "sim/plant.py",
         "sim/sensors.py",
-        "pipeline/dispersion.py"
+        "pipeline/dispersion.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/studyA/studyA_fig_indicator_spread.png",
@@ -168,12 +186,14 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_studyB.py",
       "command": "python -m scripts.run_studyB",
+      "redraw": "python -m scripts.run_studyB --replot",
       "inputs": [
         "sim/fatigue.py",
         "sim/plant.py",
         "sim/sensors.py",
         "pipeline/dispersion.py",
-        "pipeline/identifiability.py"
+        "pipeline/identifiability.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/studyB/studyB_fig_identifiability_map.png",
@@ -187,13 +207,15 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_studyC.py",
       "command": "python -m scripts.run_studyC",
+      "redraw": "python -m scripts.run_studyC --replot",
       "inputs": [
         "sim/fatigue.py",
         "sim/plant.py",
         "sim/sensors.py",
         "pipeline/dispersion.py",
         "pipeline/identifiability.py",
-        "scripts/run_studyB.py"
+        "scripts/run_studyB.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/studyC/studyC_fig_transfer.png",
@@ -207,11 +229,13 @@
       "evidence_type": "simulation",
       "generator": "scripts/analyze_studyC_failure.py",
       "command": "python -m scripts.analyze_studyC_failure",
+      "redraw": "python -m scripts.analyze_studyC_failure --replot",
       "inputs": [
         "data/sim/studyC/studyC_results.json",
         "scripts/run_studyC.py",
         "pipeline/dispersion.py",
-        "pipeline/identifiability.py"
+        "pipeline/identifiability.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/studyC/studyC_fig_failure_map.png",
@@ -225,12 +249,14 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_studyB_structural.py",
       "command": "python -m scripts.run_studyB_structural",
+      "redraw": "python -m scripts.run_studyB_structural --replot",
       "inputs": [
         "pipeline/identifiability.py",
         "pipeline/dispersion.py",
         "sim/fatigue.py",
         "sim/plant.py",
-        "scripts/run_studyB.py"
+        "scripts/run_studyB.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/studyB/studyB_fig_structural.png",
@@ -244,11 +270,13 @@
       "evidence_type": "simulation",
       "generator": "scripts/run_dispersion_audit.py",
       "command": "python -m scripts.run_dispersion_audit",
+      "redraw": "python -m scripts.run_dispersion_audit --replot",
       "inputs": [
         "pipeline/dispersion.py",
         "scripts/run_studyC.py",
         "pipeline/identifiability.py",
-        "sim/fatigue.py"
+        "sim/fatigue.py",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/dispersion_audit/dispersion_audit_fig.png",
@@ -262,10 +290,12 @@
       "evidence_type": "simulation",
       "generator": "scripts/plot_result_summaries.py",
       "command": "python -m scripts.plot_result_summaries",
+      "redraw": "python -m scripts.plot_result_summaries",
       "inputs": [
         "data/sim/phaseD/matched_clock_audit.json",
         "data/sim/phaseD/study3_results.json",
-        "data/sim/phaseD/study4_results.json"
+        "data/sim/phaseD/study4_results.json",
+        "scripts/figstyle.py"
       ],
       "outputs": [
         "data/sim/summary/policy_comparison.png",
