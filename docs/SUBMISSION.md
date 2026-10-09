@@ -1,7 +1,8 @@
 # Citable Release Runbook — preprint v1.3
 
 > **Publication stopped.** The owner withdrew v1.4 and closed the study in the
-> [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md).
+> [withdrawal decision](corrections/v1.4-withdrawn-2026-10-02.md); maintenance
+> theory predicts the tie ([why the tie was expected](corrections/v1.4-withdrawn-2026-10-02.md#why-the-tie-was-expected-2026-10-09)).
 > Do not execute the review, rendering, endorsement or deposit steps below.
 > The dated instructions are retained as history. [Current scope](../ROADMAP.md).
 
