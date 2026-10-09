@@ -1,7 +1,7 @@
 """Render closed-study summaries from committed JSON only; no fitting or simulation.
 
 Run: python -m scripts.plot_result_summaries
-Original manuscript figures and their generators are intentionally untouched.
+Figures use the shared style in scripts/figstyle.py; the CSV views and tables keep their values.
 """
 from pathlib import Path
 import csv
@@ -9,29 +9,31 @@ import hashlib
 import json
 
 import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import numpy as np
+
+from scripts import figstyle
+
+plt = figstyle.setup(style=False)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'data/sim/summary'
 INPUTS = [f'data/sim/phaseD/{name}.json' for name in
           ('matched_clock_audit', 'study3_results', 'study4_results')]
-BLUE, RED, GREEN, GRAY = '#2980b9', '#c0392b', '#27ae60', '#66717e'
+C = figstyle.COLOR
 
 
 def save(fig, name):
-    fig.savefig(OUT / f'{name}.png', dpi=180, facecolor='white')
-    fig.savefig(OUT / f'{name}.svg', metadata={'Date': None}, facecolor='white')
-    svg = OUT / f'{name}.svg'
-    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines()) + '\n')
+    figstyle.save(fig, OUT / name, formats=('png', 'svg'))
     plt.close(fig)
 
 
-def axes_style(ax, grid='x'):
-    ax.spines[['top', 'right']].set_visible(False)
-    ax.grid(axis=grid, alpha=.18, linewidth=.7)
-    ax.set_axisbelow(True)
+def header(fig, ax, title, status, pad=8):
+    """Figure title and evidence line, left-aligned with the first panel, ``pad`` points above it."""
+    box = ax.get_position()
+    pt = 1 / 72 / fig.get_figheight()
+    fig.text(box.x0, box.y1 + pad * pt, status, ha='left', va='bottom', fontsize=figstyle.SIZE['note'],
+             color=C['muted'])
+    fig.text(box.x0, box.y1 + (pad + 12) * pt, title, ha='left', va='bottom', fontsize=figstyle.SIZE['label'])
 
 
 def write_csv(name, rows):
@@ -69,93 +71,125 @@ def policies(audit, study):
 
 
 def policy_figure(rows, audit, study):
-    fig, axes = plt.subplots(1, 2, figsize=(11, 5.2), sharey=True,
-                             gridspec_kw={'width_ratios': [1.5, 1]})
-    fig.subplots_adjust(left=.32, right=.96, top=.77, bottom=.28, wspace=.17)
-    fig.suptitle('Matched-cost clock and P-V trigger tie', fontsize=15, y=.97)
-    fig.text(.5, .875, f"SIMULATION • {len(study['test_actuators'])} held-out actuators • point summaries, no uncertainty bars", ha='center', fontsize=11)
-    styles = [(GRAY, 'o'), (BLUE, '^'), (BLUE, 's'), (RED, 'D'), (GRAY, 'x')]
-    for ax, field, title, xmax in zip(axes, ['mean_pose_rmse_mm','recalibrations_per_actuator'],
-                                     ['Mean pose RMSE [mm]', 'Calibrations / actuator'], [.50, 6.1]):
+    styles = [(C['fixed'], 'o'), (C['clock'], '^'), (C['clock'], 's'), (C['pv'], 'D'), (C['always'], 'X')]
+    fig, axes = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.3), sharey=True,
+                             gridspec_kw={'width_ratios': [1.5, 1], 'wspace': 0.08})
+    fig.subplots_adjust(left=.30, right=.97, top=.86, bottom=.2)
+    for ax, field, label, xmax in zip(axes, ['mean_pose_rmse_mm', 'recalibrations_per_actuator'],
+                                      ['Mean pose RMSE (mm)', 'Calibrations per actuator'], [.50, 6.1]):
         for y, (row, (color, marker)) in enumerate(zip(rows, styles)):
             value = row[field]
-            ax.plot(value, y, marker=marker, color=color, markersize=8, linestyle='none')
-            ax.text(value+xmax*.028, y, f'{value:.3f}' if field.endswith('_mm') else f'{value:.1f}', va='center', fontsize=11)
+            ax.plot(value, y, marker=marker, color=color, markersize=6, linestyle='none')
+            ax.annotate(f'{value:.3f}' if field.endswith('_mm') else f'{value:.1f}', (value, y), xytext=(7, 0),
+                        textcoords='offset points', va='center', fontsize=figstyle.SIZE['note'],
+                        color=figstyle.ink(color))
         ax.set_xlim(0, xmax)
-        ax.set_ylim(len(rows)-.5, -.8)
-        ax.set_xlabel(title)
-        axes_style(ax)
+        ax.set_ylim(len(rows) - .5, -.9)
+        ax.set_xlabel(label)
+        ax.grid(axis='x')
+        ax.set_axisbelow(True)
+        ax.tick_params(axis='y', length=0)
+    axes[1].spines['left'].set_visible(False)
     axes[0].set_yticks(range(len(rows)), [r['label'] for r in rows])
-    axes[0].axvline(audit['budget_mm'], color='#222222', ls='--', lw=1)
-    axes[0].text(audit['budget_mm'], -.55, f"Budget {audit['budget_mm']:.3f}", ha='center', fontsize=10)
-    fig.text(.5, .075, 'Counts include the initial calibration. Error averages life stages, then actuators.\nSources: matched_clock_audit.json and study3_results.json; no physical measurements.', ha='center', fontsize=10)
+    for tick, (color, _) in zip(axes[0].get_yticklabels(), styles):
+        tick.set_color(figstyle.ink(color) if color != C['fixed'] else '#222222')
+        tick.set_fontsize(figstyle.SIZE['label'])
+    axes[0].axvline(audit['budget_mm'], color=C['ref'], ls='--', lw=.8)
+    axes[0].text(audit['budget_mm'] + .006, -.62, f"error budget {audit['budget_mm']:.3f} mm", ha='left',
+                 va='center', fontsize=figstyle.SIZE['note'], color=C['ref'])
+    header(fig, axes[0], 'At matched cost the cycle-count clock ties the P-V trigger',
+           f"Simulation · {len(study['test_actuators'])} held-out actuators · point summaries, no uncertainty bars · "
+           "left is better in both panels")
+    figstyle.footnote(fig, 'Counts include the initial calibration. Error averages life stages, then actuators. '
+                      'Sources: matched_clock_audit.json and study3_results.json; no physical measurements.')
     save(fig, 'policy_comparison')
 
 
 def lead_figure(study):
     rows = study['lead_time_heldout']['per_actuator']
-    fig, (timing, lead) = plt.subplots(1, 2, figsize=(10.5, 5), sharey=True)
-    fig.subplots_adjust(left=.12, right=.96, top=.76, bottom=.28, wspace=.25)
-    fig.suptitle('The deployed trigger follows the budget crossing', fontsize=15, y=.97)
-    fig.text(.5, .885, f"SIMULATION • τ = {study['tau_selected']:.2f} • {len(rows)} held-out actuators; {study['lead_time_heldout']['n_excluded']} excluded", ha='center', fontsize=11)
+    n_late = sum(r['lead_life'] < 0 for r in rows)
+    fig, (timing, lead) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.4), sharey=True,
+                                       gridspec_kw={'wspace': 0.12})
+    fig.subplots_adjust(left=.12, right=.97, top=.76, bottom=.2)
     for y, row in enumerate(rows):
-        a,b = row['budget_violation_life'],row['trigger_life']
-        timing.plot([a,b],[y,y],color='#b9bdc4',lw=1.5)
-        timing.plot(a,y,'^',color=GRAY,ms=7,label='Budget crossing' if y==0 else None)
-        timing.plot(b,y,'D',color=RED,ms=7,label='P-V trigger' if y==0 else None)
-        lead.plot([0,row['lead_life']],[y,y],color=RED,lw=1.5)
-        lead.plot(row['lead_life'],y,'D',color=RED,ms=6)
-        lead.text(row['lead_life']-.009,y,f"{row['lead_life']:.3f}",ha='right',va='center',fontsize=10)
-    timing.set_xlim(0,1)
-    timing.set_xlabel('Normalized life [fraction]')
+        a, b = row['budget_violation_life'], row['trigger_life']
+        timing.plot([a, b], [y, y], color='#BDBDBD', lw=1.2, zorder=1)
+        timing.plot(a, y, '^', color=C['ref'], ms=5.5, zorder=2)
+        timing.plot(b, y, 'D', color=C['pv'], ms=5, zorder=2)
+        lead.plot([0, row['lead_life']], [y, y], color=C['pv'], lw=1.2)
+        lead.plot(row['lead_life'], y, 'D', color=C['pv'], ms=5)
+        lead.text(row['lead_life'] - .012, y, f"{row['lead_life']:.3f}".replace('-', '\u2212'), ha='right', va='center',
+                  fontsize=figstyle.SIZE['note'], color=figstyle.ink(C['pv']))
+    first = rows[0]
+    timing.annotate('budget crossed', (first['budget_violation_life'], 0), xytext=(-4, 7), textcoords='offset points',
+                    ha='right', va='bottom', fontsize=figstyle.SIZE['note'], color=C['ref'])
+    timing.annotate('trigger fires', (first['trigger_life'], 0), xytext=(4, 7), textcoords='offset points',
+                    ha='left', va='bottom', fontsize=figstyle.SIZE['note'], color=figstyle.ink(C['pv']))
+    timing.set_xlim(0, 1)
+    timing.set_xlabel('Normalized life (fraction)')
     timing.set_yticks(range(len(rows)), [f"Actuator {r['actuator_id']}" for r in rows])
-    timing.legend(loc='lower left',bbox_to_anchor=(0,1.02),ncol=2,fontsize=10,frameon=False)
-    lead.set_xlim(-.36,.05)
-    lead.axvline(0,color='#222222',ls='--',lw=1)
-    lead.set_title('Negative lead = late trigger',fontsize=12)
-    lead.set_xlabel('Budget crossing − trigger [life fraction]')
-    for ax in (timing,lead):
-        ax.set_ylim(len(rows)-.5,-.5)
-        axes_style(ax)
-    fig.text(.5,.075,'Crossings are interpolated estimates from the saved life-stage analysis.\nSource: study3_results.json; connectors are paired values, not confidence intervals.',ha='center',fontsize=10)
+    timing.set_title('Life at the budget crossing and at the trigger')
+    lead.set_xlim(-.36, .05)
+    lead.axvline(0, color=C['ref'], ls='--', lw=.8)
+    lead.set_title('Lead: below zero means a late trigger')
+    lead.set_xlabel('Budget crossing − trigger (life fraction)')
+    lead.spines['left'].set_visible(False)
+    for ax in (timing, lead):
+        ax.set_ylim(len(rows) - .5, -.9)
+        ax.grid(axis='x')
+        ax.set_axisbelow(True)
+        ax.tick_params(axis='y', length=0)
+    figstyle.panel_letter(timing, 'a', dx=-58)
+    figstyle.panel_letter(lead, 'b', dx=-16)
+    late = 'every held-out actuator' if n_late == len(rows) else f'{n_late} of {len(rows)} held-out actuators'
+    header(fig, timing, f'The deployed P-V trigger fires after the error budget is crossed on {late}',
+           f"Simulation · τ = {study['tau_selected']:.2f} · {len(rows)} held-out actuators; "
+           f"{study['lead_time_heldout']['n_excluded']} excluded", pad=22)
+    figstyle.footnote(fig, 'Crossings are interpolated estimates from the saved life-stage analysis. Connectors join '
+                      'paired values and are not confidence intervals. Source: study3_results.json.')
     save(fig, 'trigger_timing')
     write_csv('trigger_timing.csv', rows)
 
 
 def coupling_figure(study):
-    fig, ax = plt.subplots(figsize=(9.5,5.1))
-    fig.subplots_adjust(left=.11,right=.96,top=.76,bottom=.28)
-    fig.suptitle('Cross-talk depends on the assumed supply network',fontsize=15,y=.97)
-    fig.text(.5,.875,f"SIMULATION • one parameter varied at a time • probe {study['probe']['freq_hz']:g} Hz",ha='center',fontsize=11)
+    fig, ax = plt.subplots(figsize=(figstyle.WIDE, 2.7))
+    fig.subplots_adjust(left=.13, right=.80, top=.80, bottom=.2)
     x = study['sweep_multiplier']
-    for key, label, color, marker, ls in [('R_s','Supply resistance',BLUE,'o','-'),
-                                         ('C_m','Manifold compliance',GREEN,'s','--')]:
-        ax.plot(x,np.asarray(study['coupling_vs_multiplier'][key])*100,
-                color=color,marker=marker,markevery=3,ms=5,lw=2,ls=ls,label=label)
     for threshold in study['thresholds']:
-        ax.axhline(threshold*100,color=GRAY,ls=':',lw=1)
-        ax.text(x[-1],threshold*100+.9,f'{threshold:.0%} reference',ha='right',fontsize=10,color=GRAY)
-    ax.plot(1,study['default_coupling']*100,'D',color='#222222',ms=7,label='Default network')
-    ax.axvline(1,color='#222222',ls=':',lw=.7)
-    ax.set_xscale('log',base=2)
-    ax.set_xlim(min(x)/1.08,max(x)*1.08)
-    ticks=[.25,.5,1,2,4,8,16,32]
-    ax.set_xticks(ticks,[f'{v:g}' for v in ticks])
-    ax.set_ylim(0,45)
-    ax.set_xlabel('Varied parameter / default [ratio, logarithmic scale]')
-    ax.set_ylabel('Neighbor / driven pressure amplitude [%]')
-    ax.legend(frameon=False,loc='upper left',fontsize=11)
-    axes_style(ax,'y')
-    fig.text(.5,.065,'Saved deterministic sweep; reference levels are not confidence limits.\nSource: study4_results.json. Other parameters stay fixed; no physical gripper tested.',ha='center',fontsize=10)
-    save(fig,'cross_talk')
-    write_csv('cross_talk.csv',[dict(multiplier=m,R_s_coupling_ratio=a,C_m_coupling_ratio=b)
-              for m,a,b in zip(x,study['coupling_vs_multiplier']['R_s'],study['coupling_vs_multiplier']['C_m'])])
+        ax.axhline(threshold * 100, color=C['ref'], ls=':', lw=.8)
+        ax.text(x[-1], threshold * 100 + .8, f'{threshold:.0%} reference', ha='right', va='bottom',
+                fontsize=figstyle.SIZE['note'], color=C['ref'])
+    curves = [('R_s', 'supply resistance', C['supply'], 'o', '-'),
+              ('C_m', 'manifold compliance', C['compliance'], 's', '--')]
+    for key, label, color, marker, ls in curves:
+        y = np.asarray(study['coupling_vs_multiplier'][key]) * 100
+        ax.plot(x, y, color=color, marker=marker, markevery=3, ms=3.5, ls=ls)
+        figstyle.end_label(ax, x[-1], y[-1], label, color)
+    ax.plot(1, study['default_coupling'] * 100, 'D', color='#222222', ms=5, zorder=5)
+    ax.annotate('default network', (1, study['default_coupling'] * 100), xytext=(-6, 26), textcoords='offset points',
+                ha='right', va='bottom', fontsize=figstyle.SIZE['note'], color='#222222',
+                arrowprops=dict(arrowstyle='-', lw=.6, color='#222222', shrinkB=3))
+    ax.set_xscale('log', base=2)
+    ax.set_xlim(min(x) / 1.08, max(x) * 1.08)
+    ticks = [.25, .5, 1, 2, 4, 8, 16, 32]
+    ax.set_xticks(ticks, [f'{v:g}' for v in ticks])
+    ax.minorticks_off()
+    ax.set_ylim(0, 45)
+    ax.set_xlabel('Varied parameter / default (ratio, log scale)')
+    ax.set_ylabel('Neighbour / driven pressure\namplitude (%)')
+    ax.grid(axis='y')
+    ax.set_axisbelow(True)
+    header(fig, ax, 'Cross-talk depends on the assumed supply network',
+           f"Simulation · one parameter varied at a time · probe {study['probe']['freq_hz']:g} Hz")
+    figstyle.footnote(fig, 'Saved deterministic sweep; reference levels are not confidence limits. Other parameters '
+                      'stay fixed; no physical gripper tested. Source: study4_results.json.')
+    save(fig, 'cross_talk')
+    write_csv('cross_talk.csv', [dict(multiplier=m, R_s_coupling_ratio=a, C_m_coupling_ratio=b)
+              for m, a, b in zip(x, study['coupling_vs_multiplier']['R_s'], study['coupling_vs_multiplier']['C_m'])])
 
 
 def main():
-    plt.rcParams.update({'font.family':'DejaVu Sans','font.size':11,'axes.labelsize':11,
-                         'axes.titlesize':12,'svg.fonttype':'none','svg.hashsalt':'soft-summary',
-                         'figure.facecolor':'white','axes.facecolor':'white'})
+    figstyle.apply()
     OUT.mkdir(parents=True,exist_ok=True)
     audit, study3, study4 = [json.loads((ROOT/p).read_text()) for p in INPUTS]
     rows=policies(audit,study3)
@@ -163,7 +197,7 @@ def main():
     lead_figure(study3)
     coupling_figure(study4)
     write_csv('policy_comparison.csv',rows)
-    table='| Policy | Mean pose RMSE [mm] | Calibrations / actuator |\n|:---|---:|---:|\n'
+    table='| Policy | Mean pose error, RMSE (mm) | Calibrations per actuator |\n|:---|---:|---:|\n'
     table+='\n'.join(f"| {r['label']} | {r['mean_pose_rmse_mm']:.3f} | {r['recalibrations_per_actuator']:.1f} |" for r in rows)
     for path in ('README.md','docs/results.md'):
         replace_table(ROOT/path,table)

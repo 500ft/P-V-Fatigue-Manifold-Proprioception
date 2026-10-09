@@ -306,38 +306,78 @@ def main():
           f"{channels['mean_rmse_clock_channel_muted']:.3f}, pressure muted "
           f"{channels['mean_rmse_pressure_channels_muted']:.3f}")
 
-    plt = figstyle.setup()
-    if plt is None:  # pragma: no cover
-        return
-    fig, (a, b) = plt.subplots(1, 2, figsize=(9.6, 3.6))
-    # units sharing a post-onset count collide on the left panel; stagger their labels vertically
-    seen_x = {}
-    for r in sorted(rows, key=lambda r: (r["n_post_onset"], r["rmse"])):
-        ok = r["within_target"]
-        a.scatter(r["n_post_onset"], r["rmse"], s=46, marker="o" if ok else "X",
-                  color=figstyle.PALETTE[2] if ok else figstyle.PALETTE[1], zorder=3)
-        k = seen_x.get(r["n_post_onset"], 0)
-        seen_x[r["n_post_onset"]] = k + 1
-        a.annotate(f"{r['rupture_cycles']:.0f}", (r["n_post_onset"], r["rmse"]),
-                   textcoords="offset points", xytext=(6, 3 + 10 * k), fontsize=7)
-    a.axhline(PASS_RMSE, ls="--", color="k", lw=0.8)
-    a.set_xlabel("post-onset probes [count]"); a.set_ylabel("held-out u-RMSE [life]")
-    a.set_title("error vs schedule coverage\n(labels: rupture cycles)", fontsize=9)
-    for r in rows:
-        ok = r["within_target"]
-        b.scatter(r["rupture_deviation_from_training_median"], r["rmse"], s=46, marker="o" if ok else "X",
-                  color=figstyle.PALETTE[2] if ok else figstyle.PALETTE[1], zorder=3)
-        b.annotate(f"{r['n_post_onset']}", (r["rupture_deviation_from_training_median"], r["rmse"]),
-                   textcoords="offset points", xytext=(5, 3), fontsize=7)
-    b.axhline(PASS_RMSE, ls="--", color="k", lw=0.8)
-    b.set_xlabel("|rupture − training median| / median"); b.set_ylabel("held-out u-RMSE [life]")
-    b.set_title("error vs clock-prior mismatch\n(labels: post-onset probes)", fontsize=9)
-    fig.suptitle("Study C diagnostic failure map; not a new held-out evaluation", fontsize=9, y=1.02)
-    fig.tight_layout()
-    figstyle.save(fig, os.path.join(DATA, "studyC_fig_failure_map"))
-    plt.close(fig)
+    plot(results)
     print(f"analysis + figure -> {DATA}/")
 
 
+
+def plot(results):
+    """Diagnostic failure map from a saved or fresh analysis dict."""
+    plt = figstyle.setup()
+    if plt is None:  # pragma: no cover
+        return
+    C, S = figstyle.COLOR, figstyle.SIZE
+    rows, assoc = results["per_unit"], results["associations"]
+    fig, (a, b) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.8), sharey=True, gridspec_kw={"wspace": 0.12})
+
+    def mark(ax, x, row):
+        ok = row["within_target"]
+        ax.plot(x, row["rmse"], "o" if ok else "X", color=C["pv"], mfc=C["pv"] if ok else "white",
+                ms=6 if ok else 7, mew=1.2, zorder=3)
+
+    ordered = sorted(rows, key=lambda r: (r["n_post_onset"], r["rmse"]))
+    for i, row in enumerate(ordered):
+        mark(a, row["n_post_onset"], row)
+        # two units sharing a probe count and nearly the same error: label one above and one below
+        near = lambda q: q["n_post_onset"] == row["n_post_onset"] and abs(q["rmse"] - row["rmse"]) < 0.012
+        lower = i + 1 < len(ordered) and near(ordered[i + 1])
+        upper = i > 0 and near(ordered[i - 1])
+        if lower or upper:
+            xy, ha, va = (0, -9 if lower else 9), "center", "top" if lower else "bottom"
+        else:
+            # otherwise right of the point, or left when the next column has a point at similar error
+            crowded = any(q["n_post_onset"] == row["n_post_onset"] + 1 and abs(q["rmse"] - row["rmse"]) < 0.03
+                          for q in rows)
+            xy, ha, va = (-7 if crowded else 7, 8 if abs(row["rmse"] - PASS_RMSE) < 0.005 else 0), \
+                ("right" if crowded else "left"), "center"
+        a.annotate(f"{row['rupture_cycles']:,.0f}", (row["n_post_onset"], row["rmse"]), textcoords="offset points",
+                   xytext=xy, ha=ha, va=va, fontsize=S["tick"], color=C["muted"])
+    for row in rows:
+        mark(b, row["rupture_deviation_from_training_median"], row)
+        b.annotate(f"{row['n_post_onset']}", (row["rupture_deviation_from_training_median"], row["rmse"]),
+                   textcoords="offset points", xytext=(6, 3), fontsize=S["tick"], color=C["muted"])
+    for ax in (a, b):
+        ax.axhline(PASS_RMSE, ls="--", color=C["ref"], lw=0.8)
+        ax.margins(x=0.08, y=0.08)
+    a.set_ylim(0.015, None)
+    b.text(0.98, PASS_RMSE + 0.004, f"target {PASS_RMSE:.2f}", transform=b.get_yaxis_transform(), ha="right",
+           va="bottom", fontsize=S["note"], color=C["ref"])
+    few = max(r["n_post_onset"] for r in rows if not r["within_target"] and
+              all(not q["within_target"] for q in rows if q["n_post_onset"] <= r["n_post_onset"]))
+    a.set_xlabel("Post-onset probes (count)")
+    a.set_ylabel("Held-out life-estimate RMSE (life)")
+    a.set_title(f"Every unit with {few} or fewer post-onset\nprobes misses the target")
+    a.text(0.25, 0.80, "point labels:\nrupture cycles", transform=a.transAxes, va="top", fontsize=S["note"],
+           color=C["muted"])
+    b.set_xlabel("|rupture − training median| / median")
+    b.set_title(f"Error rises with distance from the training-\nmedian life (r = {assoc['error_vs_rupture_deviation']:.2f})")
+    b.text(0.98, 0.02, "point labels: post-onset probes", transform=b.transAxes, ha="right", fontsize=S["note"],
+           color=C["muted"])
+    a.plot([], [], "o", color=C["pv"], ms=6, label="within target")
+    a.plot([], [], "X", color=C["pv"], mfc="white", ms=7, mew=1.2, label="misses target")
+    a.legend(loc="upper right")
+    figstyle.panel_letter(a, "a", dx=-40)
+    figstyle.panel_letter(b, "b", dx=-14)
+    figstyle.footnote(fig, f"Post-hoc diagnostic of the committed Study C run, not a new held-out evaluation; "
+                      f"n = {len(rows)} held-out synthetic units, descriptive Pearson r only. The two candidate causes "
+                      f"are collinear (r = {assoc['collinearity_post_onset_count_vs_rupture_deviation']:.2f})."
+                      .replace("r = -", "r = \u2212"))
+    figstyle.save(fig, os.path.join(DATA, "studyC_fig_failure_map")); plt.close(fig)
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--replot" in sys.argv:                      # redraw from the saved result, no recomputation
+        plot(json.load(open(os.path.join(DATA, "studyC_failure_analysis.json"))))
+        print("replotted from the saved result")
+    else:
+        main()

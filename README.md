@@ -44,7 +44,7 @@ calibration; pose error averages life stages, then actuators. The dashed line is
 the train-derived error budget. [Download values](data/sim/summary/policy_comparison.csv).
 
 <!-- policy-summary:start -->
-| Policy | Mean pose RMSE [mm] | Calibrations / actuator |
+| Policy | Mean pose error, RMSE (mm) | Calibrations per actuator |
 |:---|---:|---:|
 | Initial calibration only | 0.401 | 1.0 |
 | Clock: 2,700 cycles (train-selected) | 0.208 | 1.5 |

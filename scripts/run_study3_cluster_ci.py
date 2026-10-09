@@ -426,176 +426,159 @@ def main():
     _figures(results, per_act_xy, test_ids)
 
 
+def _spread(values, gap):
+    """Shift sorted label positions apart so neighbours sit at least ``gap`` apart (keeps order)."""
+    order = np.argsort(values)
+    out = np.asarray(values, dtype=float).copy()
+    for prev, cur in zip(order[:-1], order[1:]):
+        out[cur] = max(out[cur], out[prev] + gap)
+    return out
+
+
 def _figures(results, per_act_xy, test_ids):
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         print("(matplotlib unavailable, skipped figures)")
         return
-
+    COL, S = figstyle.COLOR, figstyle.SIZE
     C = results["correlation"]
     P = results["policies_on_heldout_with_cluster_ci"]
     FR = results["lead_frontier_with_cluster_ci"]
     budget = results["provenance"]["accuracy_budget_mm"]
     tau_star = results["provenance"]["tau_selected"]
-    pal = figstyle.PALETTE
-    act_col = [pal[0], pal[4], pal[2], pal[3], pal[5], pal[1]]
-    grey = "#5A5A5A"
-    S_LAB, S_NOTE = 8.0, 7.0
+    n = C["n_clusters"]
 
     # ---------- Fig 3b: correlation with cluster-aware intervals ----------
-    fig = plt.figure(figsize=(7.4, 3.3))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1.15, 1.0], wspace=0.42)
-    ax = fig.add_subplot(gs[0, 0])
-    label_dy = {0: 2, 1: 0, 2: 3.5, 3: 1, 4: 1, 5: -4.5}
-    for i, a in enumerate(test_ids):
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.9), gridspec_kw={"width_ratios": [1.1, 1],
+                                                                                    "wspace": 1.0})
+    for a in test_ids:
         x, y = per_act_xy[a]
-        ax.plot(x, y, "-", color=act_col[i], lw=1.0, alpha=0.85, zorder=2)
-        ax.plot(x, y, "o", color=act_col[i], ms=4.2, mec="white", mew=0.6, zorder=3)
-        ax.annotate(
-            f"#{a}", (x[-1], y[-1]), textcoords="offset points",
-            xytext=(4, label_dy[i]), fontsize=S_NOTE, color=act_col[i], va="center",
-        )
+        ax.plot(x, y, "-", color=COL["unit"], lw=1.0, zorder=2)
+        ax.plot(x, y, "o", color=COL["unit"], ms=3.5, mec="white", mew=0.5, zorder=3)
+    ends = [per_act_xy[a][1][-1] for a in test_ids]
+    ylo, yhi = min(min(per_act_xy[a][1]) for a in test_ids), max(ends)
+    for a, y_end, y_lab in zip(test_ids, ends, _spread(ends, (yhi - ylo) * 0.055)):
+        ax.annotate(f"#{a}", (per_act_xy[a][0][-1], y_end), xytext=(per_act_xy[a][0][-1] * 1.04, y_lab),
+                    textcoords="data", fontsize=S["tick"], color=COL["muted"], va="center")
     X = np.concatenate([per_act_xy[a][0] for a in test_ids])
     Y = np.concatenate([per_act_xy[a][1] for a in test_ids])
     b1, b0 = np.polyfit(X, Y, 1)
     xs = np.linspace(X.min(), X.max(), 50)
-    ax.plot(xs, b0 + b1 * xs, "--", color=grey, lw=1.3, zorder=1)
-    ax.annotate(
-        f"pooled fit\nr = {C['r']:.3f}",
-        (xs[len(xs) // 2], b0 + b1 * xs[len(xs) // 2]),
-        textcoords="offset points", xytext=(-6, 26), fontsize=S_LAB, color=grey, ha="right",
-    )
-    ax.set_xlabel("fractional P-V loop-area growth from young  [–]", fontsize=S_LAB + 1)
-    ax.set_ylabel("pose error at young calibration  [mm]", fontsize=S_LAB + 1)
+    ax.plot(xs, b0 + b1 * xs, "--", color=COL["pv"], lw=1.2, zorder=1)
+    ax.text(X.max(), 0.25, f"pooled fit\nr = {C['r']:.3f}", fontsize=S["note"], color=figstyle.ink(COL["pv"]),
+            ha="right", va="center")
+    ax.set_xlabel("P-V loop-area growth from young")
+    ax.set_ylabel("Pose error, young calibration (mm)")
     inv = results.get("indicator_invariance_check", {})
-    if inv.get("indicator_is_actuator_invariant"):
-        title_a = "All six actuators share one indicator\ntrajectory; only the pose error differs"
-        note_a = (f"{C['n_clusters']} held-out actuators x {C['points_per_cluster']} life stages, "
-                  f"but only {inv['distinct_x_values']} distinct x values\n"
-                  f"(indicator is actuator-invariant, so the x positions coincide)")
-    else:
-        title_a = "Each actuator traces the same tight\ntrend; pooling them loosens it"
-        note_a = f"{C['n_clusters']} held-out actuators x {C['points_per_cluster']} life stages"
-    ax.set_title(title_a, loc="left", fontsize=S_LAB + 1)
-    ax.margins(0.11)
-    ax.set_ylim(-0.30, None)
-    ax.xaxis.labelpad = 7
-    ax.tick_params(labelsize=S_NOTE)
-    fig.text(0.005, -0.03, note_a.replace("\n", " "), fontsize=S_NOTE, color=grey,
-             va="top", ha="left")
+    ax.set_title("Six actuators share one indicator\ntrajectory; only pose error differs"
+                 if inv.get("indicator_is_actuator_invariant") else "Pose error against indicator growth")
+    ax.margins(x=0.06, y=0.08)
+    ax.set_xlim(None, X.max() * 1.18)
 
-    ax2 = fig.add_subplot(gs[0, 1])
-    rows = [
-        ("point-level bootstrap\n(as previously reported)", C["committed_point_level_bootstrap"], "#B0B0B0"),
-        ("actuator-cluster bootstrap\n(exhaustive, 6\u2076 resamples)", C["actuator_cluster_bootstrap"], pal[0]),
-        ("leave-one-actuator-out\njackknife (Fisher z)", C["leave_one_actuator_out_fisher_z"], pal[1]),
-    ]
-    for (lab, v, col), yp in zip(rows, [2.6, 1.6, 0.6]):
-        ax2.plot([v["ci_low"], v["ci_high"]], [yp, yp], "-", color=col, lw=2.4, solid_capstyle="round")
-        ax2.plot([v["ci_low"], v["ci_high"]], [yp, yp], "|", color=col, ms=7, mew=1.6)
-        ax2.plot(C["r"], yp, "o", color=col, ms=6, mec="white", mew=0.8, zorder=4)
-        ax2.text(0.245, yp + 0.22, lab, fontsize=S_LAB - 0.5, va="bottom", ha="left", color="black")
-        ax2.text(v["ci_high"] + 0.014, yp, f"[{v['ci_low']:.2f}, {v['ci_high']:.2f}]",
-                 fontsize=S_NOTE, va="center", color=col)
-    w = C["within_actuator"]
-    ax2.plot([w["ci_low"], w["ci_high"]], [-0.45, -0.45], "-", color=pal[2], lw=2.4, solid_capstyle="round")
-    ax2.plot([w["ci_low"], w["ci_high"]], [-0.45, -0.45], "|", color=pal[2], ms=7, mew=1.6)
-    ax2.plot(w["r_within_actuator"], -0.45, "s", color=pal[2], ms=5.5, mec="white", mew=0.8, zorder=4)
-    ax2.text(0.245, -0.30, "within-actuator r — different estimand\n(actuator offsets removed)",
-             fontsize=S_LAB - 0.5, va="bottom", color=pal[2])
-    ax2.text(w["ci_high"] + 0.014, -0.45, f"[{w['ci_low']:.2f}, {w['ci_high']:.2f}]",
-             fontsize=S_NOTE, va="center", color=pal[2])
-    ax2.set_xlim(0.24, 1.20)
-    ax2.set_ylim(-0.72, 3.6)
-    ax2.set_yticks([])
-    ax2.spines["left"].set_visible(False)
-    ax2.set_xticks([0.4, 0.6, 0.8, 1.0])
-    ax2.grid(axis="y", visible=False)
-    ax2.tick_params(labelsize=S_NOTE)
-    ax2.xaxis.labelpad = 7
-    ax2.set_xlabel("Pearson r  (point and 95% interval)", fontsize=S_LAB + 1)
-    ax2.set_title("The interval depends on what you resample,\nnot on the estimate",
-                  loc="left", fontsize=S_LAB + 1)
-    for a_, L in ((ax, "a"), (ax2, "b")):
-        a_.text(-0.14, 1.06, L, transform=a_.transAxes, fontsize=11, fontweight="bold", va="bottom")
+    rows = [("point-level bootstrap\n(superseded)", C["committed_point_level_bootstrap"], "#B0B0B0", C["r"], "o"),
+            (f"actuator-cluster bootstrap\n(exhaustive, {n}{str(n).translate(str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹'))})",
+             C["actuator_cluster_bootstrap"], COL["always"],
+             C["r"], "o"),
+            ("leave-one-actuator-out\n(Fisher z)", C["leave_one_actuator_out_fisher_z"], COL["always"], C["r"], "o"),
+            ("within-actuator r\n(different estimand)", C["within_actuator"], COL["muted"],
+             C["within_actuator"]["r_within_actuator"], "s")]
+    for yp, (lab, v, col, point, mk) in enumerate(rows):
+        ax2.plot([v["ci_low"], v["ci_high"]], [yp, yp], "-", color=col, lw=2.2, solid_capstyle="butt")
+        ax2.plot(point, yp, mk, color=col, ms=5.5, mec="white", mew=0.8, zorder=4)
+        ax2.annotate(f"{v['ci_low']:.2f}–{v['ci_high']:.2f}", (v["ci_high"], yp), xytext=(5, 0),
+                     textcoords="offset points", va="center", fontsize=S["note"], color=col)
+    ax2.set_yticks(range(len(rows)), [r[0] for r in rows])
+    ax2.set_ylim(len(rows) - 0.5, -0.6)
+    ax2.tick_params(axis="y", length=0)
+    ax2.set_xlim(0.5, 1.12)
+    ax2.set_xticks([0.6, 0.7, 0.8, 0.9, 1.0])
+    ax2.set_xlabel("Pearson r, point and 95 % interval")
+    ax2.set_title("The interval depends on what is\nresampled; the estimate does not")
+    figstyle.panel_letter(ax, "a", dx=-40)
+    figstyle.panel_letter(ax2, "b", dx=-118)
+    figstyle.footnote(fig, f"Simulation: {n} held-out actuators × {C['points_per_cluster']} life stages, but only "
+                      f"{inv.get('distinct_x_values', '?')} distinct indicator values because the indicator is the "
+                      "same for every actuator. Labels: actuator id.")
     figstyle.save(fig, os.path.join(DATA, "study3_fig3b_correlation_cluster_ci"))
     plt.close(fig)
 
     # ---------- Fig 4b: recalibration trade-off + lead frontier ----------
-    fig2 = plt.figure(figsize=(7.6, 3.4))
-    gs2 = fig2.add_gridspec(1, 2, wspace=0.34)
-    axA = fig2.add_subplot(gs2[0, 0])
-    order = [
-        ("fixed", "never recalibrate", pal[1]),
-        ("scheduled", f"fixed clock (every {results['provenance']['period_selected_cycles']:.0f} cycles)", pal[4]),
-        ("triggered", f"P-V triggered (\u03c4* = {tau_star})", pal[0]),
-        ("always", "recalibrate at every stage", pal[2]),
-    ]
-    for key, lab, col in order:
+    fig2, (axA, axB) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.9), gridspec_kw={"wspace": 0.38})
+    order = [("fixed", "initial calibration only", COL["fixed"], "o"),
+             ("scheduled", f"clock, {results['provenance']['period_selected_cycles']:,.0f} cycles", COL["clock"], "^"),
+             ("triggered", f"P-V trigger, τ = {tau_star:g}", COL["pv"], "D"),
+             ("always", "every life stage", COL["always"], "X")]
+    for key, lab, col, mk in order:
         v = P[key]
-        axA.errorbar(
-            v["recal_per_actuator"], v["mean_pose_rmse_mm"],
-            xerr=[[v["recal_per_actuator"] - v["recal_ci_low"]], [v["recal_ci_high"] - v["recal_per_actuator"]]],
-            yerr=[[v["mean_pose_rmse_mm"] - v["rmse_ci_low"]], [v["rmse_ci_high"] - v["mean_pose_rmse_mm"]]],
-            fmt="o", color=col, ms=6.5, mec="white", mew=0.8, elinewidth=1.6, capsize=3,
-            zorder=3, label=lab,
-        )
-    axA.axhline(budget, color=grey, lw=1.0, ls="--")
-    axA.text(0.98, budget + 0.010, f"accuracy budget {budget:.3f} mm",
-             fontsize=S_NOTE, color=grey, ha="left", va="bottom")
-    axA.legend(loc="upper right", frameon=False, fontsize=S_LAB - 0.5,
-               handletextpad=0.4, borderaxespad=0.2, labelspacing=0.45)
-    axA.set_xlabel("recalibrations per actuator over life  [count]", fontsize=S_LAB + 1)
-    axA.set_ylabel("mean pose RMSE  [mm]", fontsize=S_LAB + 1)
-    axA.set_title("Only the fixed-clock baseline varies\nacross actuators", loc="left", fontsize=S_LAB + 1)
-    axA.set_xlim(0.3, 5.7)
-    axA.set_ylim(0.0, 0.66)
-    axA.xaxis.labelpad = 7
-    axA.tick_params(labelsize=S_NOTE)
-    fig2.text(0.005, -0.03,
-              "Bars are 95% actuator-cluster bootstrap intervals; in panel a lower-left is better.",
-              fontsize=S_NOTE, color=grey, va="top", ha="left")
+        axA.errorbar(v["recal_per_actuator"], v["mean_pose_rmse_mm"],
+                     xerr=[[v["recal_per_actuator"] - v["recal_ci_low"]], [v["recal_ci_high"] - v["recal_per_actuator"]]],
+                     yerr=[[v["mean_pose_rmse_mm"] - v["rmse_ci_low"]], [v["rmse_ci_high"] - v["mean_pose_rmse_mm"]]],
+                     fmt=mk, color=col, ms=6, mec="white", mew=0.6, elinewidth=1.3, capsize=2.5, zorder=3)
+        dx = {"always": -9, "scheduled": 24}.get(key, 9)
+        figstyle.end_label(axA, v["recal_per_actuator"], v["mean_pose_rmse_mm"], lab, col, dx=dx,
+                           ha="right" if key == "always" else "left")
+    axA.axhline(budget, color=COL["ref"], lw=0.8, ls="--")
+    axA.text(5.6, budget - 0.012, f"error budget {budget:.3f} mm", fontsize=S["note"], color=COL["ref"],
+             ha="right", va="top")
+    axA.set_xlabel("Calibrations per actuator over life")
+    axA.set_ylabel("Mean pose RMSE (mm)")
+    varies = [lab for key, lab, _, _ in order if not P[key]["recal_identical_across_actuators"]]
+    axA.set_title("Only the clock's calibration count\nvaries across actuators" if varies == [order[1][1]]
+                  else "Policy error and calibration count")
+    axA.text(0.98, 0.98, "lower and further left is better", transform=axA.transAxes, ha="right", va="top",
+             fontsize=S["note"], color=COL["muted"])
+    axA.set_xlim(0.5, 5.7)
+    axA.set_ylim(0, 0.62)
 
-    axB = fig2.add_subplot(gs2[0, 1])
     taus = np.array([p["tau"] for p in FR])
     lead = np.array([p["mean_lead_life"] for p in FR])
-    lo = np.array([p["lead_ci_low"] for p in FR])
-    hi = np.array([p["lead_ci_high"] for p in FR])
-    axB.fill_between(taus, lo, hi, color=pal[0], alpha=0.18, lw=0)
-    axB.plot(taus, lead, "-o", color=pal[0], lw=1.5, ms=4.5, mec="white", mew=0.6, zorder=3)
-    axB.axhline(0, color="black", lw=0.9)
-    axB.axvline(tau_star, color=pal[1], lw=1.2, ls="--")
-    best = min(FR, key=lambda p: abs(p["tau"] - 0.01))
-    axB.text(
-        0.97, 0.97,
-        f"\u03c4 = {best['tau']}: mean lead {best['mean_lead_life']:+.3f} life\n"
-        f"95% CI [{best['lead_ci_low']:.3f}, {best['lead_ci_high']:.3f}]\n"
-        f"{best['recal_per_actuator']:.0f} recalibrations, within budget",
-        transform=axB.transAxes, fontsize=S_LAB - 0.5, color=pal[0],
-        ha="right", va="top", linespacing=1.4,
-    )
-    axB.text(taus.max() * 0.976, -0.255,
-             f"deployed \u03c4* = {tau_star}: lead {FR[-1]['mean_lead_life']:+.3f} life,\n"
-             f"{FR[-1]['n_nonpositive_lead']}/{C['n_clusters']} actuators negative",
-             fontsize=S_LAB - 0.5, color=pal[1], ha="right", va="bottom")
-    axB.text(0.0012, 0.028, "warns before breach", fontsize=S_NOTE, color=grey, va="bottom")
-    axB.text(0.0012, -0.030, "warns after breach", fontsize=S_NOTE, color=grey, va="top")
-    axB.set_xlabel("trigger threshold \u03c4  [–]", fontsize=S_LAB + 1)
-    axB.set_ylabel("mean lead over budget violation  [life fraction]", fontsize=S_LAB + 1)
-    axB.set_title("The deployed threshold fires after the\nerror budget is already breached",
-                  loc="left", fontsize=S_LAB + 1)
-    axB.set_xlim(0.0, taus.max() * 1.11)
-    axB.set_ylim(-0.30, 0.66)
-    axB.set_xticks([t for t in taus if abs(t * 1000 % 10) < 1e-9])   # drop the 0.005 tick
-    axB.xaxis.labelpad = 7
-    axB.tick_params(labelsize=S_NOTE)
-    for a_, L in ((axA, "a"), (axB, "b")):
-        a_.text(-0.17, 1.06, L, transform=a_.transAxes, fontsize=11, fontweight="bold", va="bottom")
+    per = np.array([p["lead_per_actuator"] for p in FR])
+    for j in range(per.shape[1]):
+        axB.plot(taus, per[:, j], "-", color=COL["unit"], lw=0.7, zorder=1)
+    axB.fill_between(taus, [p["lead_ci_low"] for p in FR], [p["lead_ci_high"] for p in FR], color=COL["pv"],
+                     alpha=0.18, lw=0, zorder=2)
+    axB.plot(taus, lead, "-o", color=COL["pv"], lw=1.4, ms=4, mec="white", mew=0.5, zorder=3)
+    axB.axhline(0, color=COL["ref"], lw=0.8)
+    axB.axvline(tau_star, color=COL["ref"], lw=0.8, ls="--")
+    axB.text(taus.max() * 1.07, 0.015, "warns early", fontsize=S["note"], color=COL["muted"], ha="right",
+             va="bottom")
+    axB.text(taus.max() * 1.07, -0.015, "warns late", fontsize=S["note"], color=COL["muted"], ha="right", va="top")
+    last = FR[-1]
+    lead_txt = f"{last['mean_lead_life']:+.3f}".replace("-", "\u2212")
+    axB.text(tau_star - 0.001, 0.53, f"deployed τ = {tau_star:g}:\nmean lead {lead_txt},\n"
+             f"{last['n_nonpositive_lead']} of {n} actuators negative", ha="right", va="top", fontsize=S["note"],
+             color=figstyle.ink(COL["pv"]))
+    axB.set_xlabel("Trigger threshold τ (loop-area growth)")
+    axB.set_ylabel("Lead over the budget crossing\n(life fraction)")
+    axB.set_title("The deployed threshold fires after the\nerror budget is already crossed")
+    axB.set_xlim(0, taus.max() * 1.08)
+    axB.set_ylim(-0.36, 0.56)
+    axB.set_xticks([0.01, 0.02, 0.03, 0.04, 0.05])
+    figstyle.panel_letter(axA, "a", dx=-40)
+    figstyle.panel_letter(axB, "b", dx=-48)
+    figstyle.footnote(fig2, f"Simulation: {n} held-out actuators. Bars and band: 95 % actuator-cluster bootstrap "
+                      "intervals; thin gray lines in b: individual actuators. Counts include the initial "
+                      "calibration.")
     figstyle.save(fig2, os.path.join(DATA, "study3_fig4b_recal_cluster_ci"))
     plt.close(fig2)
     print(f"wrote {DATA}/study3_fig3b_correlation_cluster_ci.(png|pdf) and "
           f"{DATA}/study3_fig4b_recal_cluster_ci.(png|pdf)")
 
 
+def replot():
+    """Redraw from the saved result; only the per-actuator points of Fig 3b are recomputed from the dataset."""
+    results = json.load(open(os.path.join(DATA, "study3_cluster_ci_results.json")))
+    d, m = S3.load()
+    _, test_ids, _, err, hn, _ = S3.prepare(d, m)
+    per_act_xy = {a: (np.array([hn[a][i] - 1.0 for i in range(len(LIFE))]),
+                      np.array([err[a][i][0] for i in range(len(LIFE))])) for a in test_ids}
+    _figures(results, per_act_xy, test_ids)
+    print("replotted from the saved result")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--replot" in sys.argv:
+        replot()
+    else:
+        main()

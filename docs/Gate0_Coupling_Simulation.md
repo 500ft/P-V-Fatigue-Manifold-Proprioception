@@ -46,19 +46,21 @@ real operating band of Dragon Skin grippers.
 
 ## Results
 
-| Finding | Value |
-|---|---|
-| DC (static) cross-talk change over *C₁* = 1×→2× | **0.0000 %** |
-| Cross-talk at 3 Hz vs fatigue, Spearman ρ | **+1.000** (p ≈ 0) |
-| Cross-talk relative drift at 3 Hz over the fatigue range | **+99 %** |
-| Most fatigue-sensitive frequency (by measurable \|H₂₁\|) | **1.6 Hz** |
-| Usable / measurable cross-talk band | **0.3 – 5.7 Hz** |
-| Robustness: 400 randomized R/C/P configs, fraction monotone | **100 %** (all positive sign) |
-| Robustness: fraction with usable (>10 %) drift | **90 %** |
+| Result | Value | Unit |
+|:---|---:|:---|
+| Change in static (DC) cross-talk, *C₁* 1× → 2× | 0.0000 | % |
+| Rank correlation of 3 Hz cross-talk with *C₁* (Spearman ρ, p ≈ 0) | +1.000 | – |
+| Rise in 3 Hz cross-talk over the *C₁* sweep | +99 | % |
+| Most fatigue-sensitive frequency, by neighbour pressure \|H₂₁\| | 1.6 | Hz |
+| Usable cross-talk band | 0.3–5.7 | Hz |
+| Randomized R/C/P sets with monotone cross-talk, all positive sign (n = 400) | 100 | % |
+| Randomized R/C/P sets with more than 10 % drift (n = 400) | 90 | % |
 
-![cross-talk vs frequency](../data/gate0/fig_crosstalk_vs_freq.png)
-![cross-talk vs compliance](../data/gate0/fig_crosstalk_vs_compliance.png)
-![DC independence](../data/gate0/fig_dc_independence.png)
+Source: [gate0_results.json](../data/gate0/gate0_results.json).
+
+![Relative cross-talk and neighbour pressure against drive frequency for five chamber-1 compliance steps](../data/gate0/fig_crosstalk_vs_freq.png)
+![Cross-talk at 3 Hz rising steadily as chamber-1 compliance doubles](../data/gate0/fig_crosstalk_vs_compliance.png)
+![Identical static gain matrices at 1× and 2× chamber-1 compliance](../data/gate0/fig_dc_independence.png)
 
 ## What the sim taught us (this changes the experiment)
 

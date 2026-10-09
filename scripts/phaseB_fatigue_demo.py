@@ -36,7 +36,7 @@ ONSET_SWEEP = [0.50, 0.70, 0.85]
 LEAK_SWEEP = [10.0, 20.0, 40.0]
 
 
-def main():
+def main(write_results=True):
     outdir = REPO / "data" / "sim" / "phaseB"
     outdir.mkdir(parents=True, exist_ok=True)
     params = FatigueParams()
@@ -190,7 +190,8 @@ def main():
         "checks": checks,
         "verdict": verdict,
     }
-    (outdir / "phaseB_results.json").write_text(json.dumps(results, indent=2))
+    if write_results:
+        (outdir / "phaseB_results.json").write_text(json.dumps(results, indent=2))
 
     if plt is not None:
         _plots(
@@ -239,68 +240,118 @@ def _plots(
     leak_sensitivity,
     base_area,
 ):
-    fig, ax = plt.subplots(figsize=(7, 5))
-    for n in [0, 10, 2000, 2450, 3200, 3500]:
+    figstyle.apply()
+    C, S = figstyle.COLOR, figstyle.SIZE
+    onset_cycle = params.rupture_cycles * params.acceleration_onset_fraction
+    model = (f"Simulation: deterministic fatigue laws (sim/fatigue.py), rupture at {params.rupture_cycles:,.0f} "
+             f"cycles,\nacceleration onset at {params.acceleration_onset_fraction:.2f} of life, no rest unless stated.")
+
+    # P-V loops over life (imposed volume): ordered life stages on one vermillion ramp
+    shown = [0, 10, 2000, 2450, 3200, 3500]
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 3.0))
+    for n, col in zip(shown, figstyle.ramp(C["pv"], len(shown))):
         loop = loops[n]
-        ax.plot(loop["V"] * 1e6, loop["P"] / 1e3, label=f"N={n}")
-    ax.set(xlabel="volume [mL]", ylabel="pressure [kPa]",
-           title="Synthetic P-V loops over life (imposed volume; leak not observable)")
-    ax.legend(fontsize=8); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_pv_loops_over_life.png", dpi=130); plt.close(fig)
+        ax.plot(loop["V"] * 1e6, loop["P"] / 1e3, color=col, lw=1.0, label=f"{n:,}")
+    ax.set_xlabel("Chamber volume (mL)")
+    ax.set_ylabel("Chamber pressure (kPa)")
+    ax.set_title("At imposed volume the loop barely changes")
+    ax.legend(title="Cycles", loc="upper left", alignment="left", handlelength=1.2)
+    ax.margins(0.05)
+    figstyle.footnote(fig, model + "\nImposed-volume probing cannot see the leak; pressure decay measures it.")
+    figstyle.save(fig, outdir / "fig_pv_loops_over_life", formats=("png",)); plt.close(fig)
 
-    fig, axes = plt.subplots(3, 1, figsize=(7, 8), sharex=True)
-    axes[0].plot(cycles, (compliance - 1) * 100)
-    axes[0].set_ylabel("compliance rise [%]")
-    axes[1].plot(cycles, (loop_area / base_area - 1) * 100)
-    axes[1].set_ylabel("loop-area rise [%]")
-    axes[2].plot(cycles, leak)
-    axes[2].set_ylabel("latent leak multiplier [x]"); axes[2].set_xlabel("cycles")
-    for ax in axes:
-        ax.axvline(params.rupture_cycles * params.acceleration_onset_fraction,
-                   ls="--", c="k", alpha=0.4)
-        ax.grid(alpha=0.3)
-    fig.suptitle("Canonical synthetic life trajectory (consistency output)")
-    fig.tight_layout(); fig.savefig(outdir / "fig_fatigue_trajectory.png", dpi=130)
-    plt.close(fig)
+    # life trajectory: three stacked panels sharing the cycle axis
+    fig, axes = plt.subplots(3, 1, figsize=(figstyle.SINGLE, 4.6), sharex=True,
+                             gridspec_kw={"hspace": 0.18})
+    series = [((compliance - 1) * 100, "Compliance\nrise (%)", C["compliance"]),
+              ((loop_area / base_area - 1) * 100, "Loop area\nrise (%)", C["pv"]),
+              (leak, "Leak conductance\n(× healthy)", C["leak"])]
+    for ax, (y, lab, col) in zip(axes, series):
+        ax.plot(cycles, y, color=col)
+        ax.axvline(onset_cycle, ls="--", lw=0.8, color=C["ref"])
+        ax.set_ylabel(lab)
+        ax.margins(x=0.02, y=0.08)
+    axes[0].annotate(f"onset {onset_cycle:,.0f} cycles", (onset_cycle, 1), xycoords=("data", "axes fraction"),
+                     xytext=(-4, -2), textcoords="offset points", ha="right", va="top",
+                     fontsize=S["note"], color=C["ref"])
+    axes[-1].set_xlabel("Cycles")
+    axes[0].set_title("Compliance and loop area rise together;\nthe leak grows only after onset")
+    figstyle.footnote(fig, model)
+    figstyle.save(fig, outdir / "fig_fatigue_trajectory", formats=("png",)); plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    for n, decay in decays.items():
-        ax.plot(decay["t"], decay["P"] / decay["P"][0], label=f"N={n}")
-    ax.axhline(0.5, ls="--", c="k", alpha=0.4)
-    ax.set(xlabel="hold time [s]", ylabel="normalized pressure [-]",
-           title="Closed-valve pressure decay: explicit leak observable")
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_pressure_decay_over_life.png", dpi=130); plt.close(fig)
+    # closed-valve pressure decay at four life stages
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    shades = figstyle.ramp(C["leak"], len(decays) + 1)[1:]
+    for (n, decay), col in zip(decays.items(), shades):
+        ax.plot(decay["t"], decay["P"] / decay["P"][0], color=col, label=f"{n:,}")
+    ax.axhline(0.5, ls="--", lw=0.8, color=C["ref"])
+    ax.text(0.35, 0.52, "half pressure", ha="left", va="bottom", fontsize=S["note"], color=C["ref"])
+    ax.set_xlabel("Hold time with valve closed (s)")
+    ax.set_ylabel("Pressure / initial pressure")
+    ax.set_title("Hold pressure falls faster once the leak grows")
+    ax.legend(title="Cycles", loc="upper right", alignment="left", bbox_to_anchor=(1.0, 1.04))
+    ax.margins(x=0.02, y=0.04)
+    figstyle.footnote(fig, model + " Initial pressure 60 kPa.")
+    figstyle.save(fig, outdir / "fig_pressure_decay_over_life", formats=("png",)); plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(7, 4.5))
+    # partial Mullins recovery during rest
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
     hours = [r["rest_hours"] for r in recovery_records]
-    permanent = [r["mullins_permanent"] * 100 for r in recovery_records]
-    recoverable = [r["mullins_recoverable"] * 100 for r in recovery_records]
-    ax.stackplot(hours, permanent, recoverable, labels=["permanent floor", "recoverable"])
+    permanent = np.array([r["mullins_permanent"] * 100 for r in recovery_records])
+    recoverable = np.array([r["mullins_recoverable"] * 100 for r in recovery_records])
+    green = figstyle.ramp(C["compliance"], 5)
+    ax.stackplot(hours, permanent, recoverable, colors=[green[3], green[1]], lw=0)
+    ax.plot(hours, permanent + recoverable, "o", color=green[3], ms=3.5)
     ax.set_xscale("symlog", linthresh=1)
-    ax.set(xlabel="rest time [hours]", ylabel="Mullins compliance contribution [%]",
-           title="Partial Mullins recovery at N=2000")
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_rest_recovery.png", dpi=130); plt.close(fig)
+    ax.set_xticks([0, 1, 10, 100], ["0", "1", "10", "100"])
+    ax.text(1.5, permanent[0] / 2, "permanent", fontsize=S["note"], color="white", va="center")
+    ax.text(1.5, permanent[0] + recoverable[1] / 2, "recoverable", fontsize=S["note"],
+            color=figstyle.ink(C["compliance"]), va="center")
+    ax.set_xlabel("Rest time (h)")
+    ax.set_ylabel("Mullins compliance rise (%)")
+    ax.set_title("Rest recovers Mullins softening down to its floor")
+    ax.set_ylim(0, None)
+    ax.margins(x=0.02)
+    figstyle.footnote(fig, f"Simulation: state after 2,000 cycles; recovery τ = {params.recovery_tau_s / 3600:.0f} h, "
+                      f"permanent fraction\n{params.mullins_permanent_fraction:.0%}. Dots mark the {len(hours)} "
+                      "sampled rest times.")
+    figstyle.save(fig, outdir / "fig_rest_recovery", formats=("png",)); plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(7, 4.5))
-    for onset, trajectory in onset_sensitivity.items():
-        ax.plot(cycles, np.asarray(trajectory) * 100, label=f"u_d={onset}")
-    ax.set(xlabel="cycles", ylabel="accelerating contribution [%]",
-           title="Injected acceleration-onset sensitivity (not detected lead time)")
-    ax.legend(); ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_onset_sensitivity.png", dpi=130); plt.close(fig)
+    # injected acceleration-onset sensitivity
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.6))
+    blues = figstyle.ramp(C["onset"], len(onset_sensitivity) + 2)[2:]
+    for (onset, trajectory), col in zip(onset_sensitivity.items(), blues):
+        y = np.asarray(trajectory) * 100
+        ax.plot(cycles, y, color=col, label=f"{float(onset):.2f}")
+    ax.set_xlabel("Cycles")
+    ax.set_ylabel("Accelerating compliance term (%)")
+    ax.set_title("A later onset packs the same rise into fewer cycles")
+    ax.legend(title="Onset (fraction of life)", loc="upper left", alignment="left")
+    ax.margins(x=0.02, y=0.05)
+    figstyle.footnote(fig, model.split(",\n")[0] + ". The onset is an injected model\n"
+                      "parameter; the curves are not detected lead times.")
+    figstyle.save(fig, outdir / "fig_onset_sensitivity", formats=("png",)); plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    # leak-magnitude sensitivity
+    fig, ax = plt.subplots(figsize=(figstyle.SINGLE, 2.4))
     multipliers = [r["terminal_multiplier"] for r in leak_sensitivity]
-    half_lives = [r["rupture_half_life_s"] for r in leak_sensitivity]
-    ax.plot(multipliers, half_lives, "o-")
-    ax.set(xlabel="terminal leak conductance multiplier [x]",
-           ylabel="pressure half-life at rupture [s]",
-           title="Leak-magnitude sensitivity")
-    ax.grid(alpha=0.3); fig.tight_layout()
-    fig.savefig(outdir / "fig_leak_sensitivity.png", dpi=130); plt.close(fig)
+    half_lives = [r["rupture_half_life_s"] * 1e3 for r in leak_sensitivity]
+    ax.plot(multipliers, half_lives, "o-", color=C["leak"])
+    for x, y in zip(multipliers, half_lives):
+        ax.annotate(f"{y:.1f} ms", (x, y), xytext=(6, 4), textcoords="offset points",
+                    fontsize=S["note"], color=figstyle.ink(C["leak"]))
+    ax.set_xticks(multipliers, [f"{m:g}×" for m in multipliers])
+    ax.set_xlabel("Leak conductance at rupture (× healthy)")
+    ax.set_ylabel("Hold half-life at rupture (ms)")
+    ax.set_title("Doubling the terminal leak halves the half-life")
+    ax.set_ylim(0, max(half_lives) * 1.2)
+    ax.margins(x=0.08)
+    figstyle.footnote(fig, model.split(",\n")[0] + ".\nInitial hold pressure 60 kPa.")
+    figstyle.save(fig, outdir / "fig_leak_sensitivity", formats=("png",)); plt.close(fig)
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    # --replot recomputes the deterministic curves and redraws the figures without
+    # rewriting phaseB_results.json (a full run would also record fatigue_exponent there).
+    main(write_results="--replot" not in sys.argv)

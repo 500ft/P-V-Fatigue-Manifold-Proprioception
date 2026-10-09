@@ -5,7 +5,7 @@
     "data/sim/phaseD/study3_results.json": "128c17e9ad3b5c7e777f0b7d14e459e9af47567134453e1cc1fef3ea99b77341",
     "data/sim/phaseD/study4_results.json": "63179a65ac1d2454274f52460ab26ec59d7d41234c5939dc6e014533dd3c8f3e"
   },
-  "generator_sha256": "448fabcd2e9fb056e6ca23ae5fe953ed5ff71edf12d14d0343bc91a9582fc829",
+  "generator_sha256": "f71f3c478b797996f86c2c6ac519f0aedbe699535eb489d1311ee3e2340d79e4",
   "matplotlib_version": "3.11.2",
   "visual_reference": {
     "repository": "500ft/sensor-enclosure-thermal-design",

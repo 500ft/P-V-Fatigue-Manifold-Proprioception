@@ -179,23 +179,49 @@ def plot(results):
     plt = figstyle.setup()
     if plt is None:  # pragma: no cover
         return
+    C, S = figstyle.COLOR, figstyle.SIZE
     t = results["B_transfer_sensitivity"]["results"]
-    fig, (a, b) = plt.subplots(1, 2, figsize=(10.0, 3.8))
+    refs = results["B_transfer_sensitivity"]["measured_reference_values"]
+    fig, (a, b) = plt.subplots(1, 2, figsize=(figstyle.FULL, 2.7), gridspec_kw={"wspace": 0.42})
     cvs = [x["rupture_cv"] for x in t]
-    a.plot(cvs, [x["mean_rmse"] for x in t], "o-", label="transferred estimator")
-    a.plot(cvs, [x["mean_rmse_clock"] for x in t], "s--", label="clock only")
-    a.axhline(PASS_RMSE, ls=":", color="k", lw=0.8)
-    for k, v in results["B_transfer_sensitivity"]["measured_reference_values"].items():
-        a.axvline(v, ls="-", lw=0.8, color="grey", alpha=0.6)
-    a.set_xlabel("assumed rupture-life CV"); a.set_ylabel("mean held-out u-RMSE [life]")
-    a.set_title("grey lines = CoV of specific published cohorts", fontsize=9); a.legend(fontsize=7)
-    b.plot(cvs, [x["n_within_target"] for x in t], "o-", label="within 0.10 life")
-    b.plot(cvs, [x["n_beats_clock"] for x in t], "s-", label="beats the clock")
-    b.axhline(8, ls="--", color="k", lw=0.8)
-    b.set_ylim(0, 10.5); b.set_xlabel("assumed rupture-life CV")
-    b.set_ylabel("held-out units (of 10)"); b.set_title("C rule needs 8/10 on both", fontsize=9)
-    b.legend(fontsize=7)
-    fig.tight_layout()
+    for ax in (a, b):
+        for name, v in refs.items():
+            ax.axvline(v, ls="-", lw=0.7, color="#C8C8C8", zorder=0)
+            if ax is a:                                 # name the published cohorts once
+                ax.text(v, 1.0, name.split(" ", 2)[-1], transform=ax.get_xaxis_transform(), rotation=90,
+                        ha="right", va="top", fontsize=S["tick"], color=C["muted"])
+        ax.set_xticks(cvs)
+        ax.set_xlim(0, 0.33)
+        ax.set_xlabel("Assumed rupture-life CV")
+    est = [x["mean_rmse"] for x in t]
+    clk = [x["mean_rmse_clock"] for x in t]
+    a.plot(cvs, est, "o-", color=C["pv"])
+    a.plot(cvs, clk, "s--", color=C["clock"])
+    figstyle.end_label(a, cvs[-1], est[-1], "transferred\nestimator", C["pv"], dy=-8)
+    figstyle.end_label(a, cvs[-1], clk[-1], "clock only", C["clock"], dy=4)
+    a.axhline(PASS_RMSE, ls=":", color=C["ref"], lw=0.8)
+    a.text(0.005, PASS_RMSE + 0.003, f"target {PASS_RMSE:.2f}", fontsize=S["note"], color=C["ref"], va="bottom")
+    a.set_ylim(0, 0.14)
+    a.set_ylabel("Mean held-out life-estimate\nRMSE (life)")
+    a.set_title("The clock is as good or better until CV 0.30")
+    within = [x["n_within_target"] for x in t]
+    beats = [x["n_beats_clock"] for x in t]
+    b.plot(cvs, within, "o-", color=C["always"])
+    b.plot(cvs, beats, "s--", color=C["fixed"])
+    figstyle.end_label(b, cvs[-1], within[-1], "within 0.10 life", C["always"], dy=-7)
+    figstyle.end_label(b, cvs[-1], beats[-1], "beats the clock", C["fixed"], dy=7)
+    b.axhline(8, ls=":", color=C["ref"], lw=0.8)
+    b.text(0.005, 7.8, "rule: 8 of 10 on both", fontsize=S["note"], color=C["ref"], va="top")
+    b.set_ylim(0, 10.5)
+    b.set_yticks(range(0, 11, 2))
+    b.set_ylabel("Held-out units (of 10)")
+    passed = [w >= 8 and c >= 8 for w, c in zip(within, beats)]
+    b.set_title("No dispersion level passes both counts" if not any(passed) else "Rule outcome by dispersion level")
+    figstyle.panel_letter(a, "a", dx=-44)
+    figstyle.panel_letter(b, "b", dx=-30)
+    figstyle.footnote(fig, "Simulation: the Study C evaluation repeated on cohorts drawn at each assumed CV, 10 "
+                      "held-out units each. Gray lines: coefficients of variation measured in published cohorts ("
+                      + "; ".join(f"{k} {v:g}" for k, v in refs.items()) + ").")
     figstyle.save(fig, os.path.join(DATA, "dispersion_audit_fig"))
     plt.close(fig)
 
